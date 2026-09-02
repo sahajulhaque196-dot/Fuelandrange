@@ -1,0 +1,106 @@
+---
+// src/components/common/AuthorBox.astro
+// Global E-E-A-T Editorial Verification & Author Authority Card
+// Rendered on all pages directly above the site footer
+---
+
+<section class="border-t border-white/[0.08] bg-[#07090E]/90 relative overflow-hidden py-12" aria-labelledby="author-authority-heading">
+  <!-- Subtle Ambient Glow -->
+  <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-[700px] h-[200px] bg-gradient-to-r from-neon-cyan/10 via-emerald-500/10 to-transparent blur-3xl pointer-events-none rounded-full"></div>
+
+  <div class="container-site max-w-5xl relative z-10">
+    <div class="rounded-3xl p-6 sm:p-8 bg-[#0D1117] border border-white/[0.08] shadow-2xl backdrop-blur-xl">
+      
+      <div class="flex flex-col md:flex-row items-center md:items-start gap-6 sm:gap-8">
+        
+        <!-- Author Avatar & Verified Badge -->
+        <div class="relative shrink-0 text-center">
+          <div class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden p-1 bg-gradient-to-br from-cyan-400 via-emerald-400 to-rose-500 shadow-xl shadow-cyan-500/10">
+            <img 
+              src="/images/author-sahajul.jpg" 
+              alt="Sahajul — Lead Automotive Data Architect & Founder" 
+              class="w-full h-full object-cover rounded-[14px]"
+              width="112"
+              height="112"
+              loading="lazy"
+            />
+          </div>
+          <!-- Verified Pill -->
+          <div class="mt-2.5 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-[10px] font-mono font-bold text-cyan-400">
+            <span>✓</span>
+            <span>NRCan Verified Desk</span>
+          </div>
+        </div>
+
+        <!-- Author Bio & Credentials -->
+        <div class="flex-1 text-center md:text-left space-y-3">
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <div class="flex items-center justify-center md:justify-start gap-2.5">
+                <h3 id="author-authority-heading" class="text-xl sm:text-2xl font-display font-bold text-white tracking-tight">
+                  Sahajul
+                </h3>
+                <span class="text-xs font-mono px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.08] text-slate-300">
+                  Assam, India 🇮🇳
+                </span>
+              </div>
+              <p class="text-xs font-mono text-neon-cyan font-semibold mt-0.5">
+                Founder &amp; Lead Automotive Data Architect · RangeAndFuel.ca
+              </p>
+            </div>
+
+            <!-- Social & Profile Links -->
+            <div class="flex items-center justify-center md:justify-end gap-2 pt-1 sm:pt-0">
+              <a 
+                href="https://x.com/saddamh58509953" 
+                target="_blank" 
+                rel="noopener noreferrer author" 
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#06080C] border border-white/[0.1] hover:border-cyan-400 text-slate-300 hover:text-white text-xs font-mono transition-all group"
+                title="Follow Sahajul on X (Twitter)"
+              >
+                <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-cyan-400 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+                <span>@saddamh58509953</span>
+              </a>
+
+              <a 
+                href="/about" 
+                class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 text-xs font-mono font-bold transition-all"
+              >
+                <span>About Desk</span>
+                <span>→</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Bio Description -->
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            Automotive data researcher and engineer dedicated to building transparent, high-precision vehicle telemetry algorithms. Leading research on Canadian winter sub-zero (-15°C) battery thermodynamic degradation, Natural Resources Canada (NRCan) 5-cycle EnerGuide consumption models, and provincial energy cost simulations across all 10 provinces.
+          </p>
+
+          <!-- Editorial Verification Badges -->
+          <div class="pt-2 flex flex-wrap items-center justify-center md:justify-start gap-3 text-[11px] font-mono text-slate-400">
+            <span class="flex items-center gap-1.5 text-emerald-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              100% Sourced from Official NRCan Datasets
+            </span>
+            <span class="text-slate-600">·</span>
+            <span class="flex items-center gap-1.5 text-cyan-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+              Transport Canada CMVSS Recall Synchronized
+            </span>
+            <span class="text-slate-600">·</span>
+            <a href="/about" class="text-slate-300 hover:text-neon-cyan underline transition-colors">
+              Read Editorial Standards &amp; Testing Methodology
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</section>

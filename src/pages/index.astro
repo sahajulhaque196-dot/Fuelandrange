@@ -1,0 +1,965 @@
+---
+// src/pages/index.astro
+// Homepage — Premium CSS hero, live search, top vehicles, make grid, stats
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SearchBar from '../components/widgets/SearchBar.tsx';
+import CanadianComparisonTool from '../components/widgets/CanadianComparisonTool.tsx';
+import vehicles from '../data/vehicles.json';
+import fuelPrices from '../data/fuel-prices.json';
+import { websiteSchema, orgSchema, breadcrumbSchema, nrcanDatasetSchema } from '../lib/schema.ts';
+import { fuelTypePill, fuelTypeLabel, calcHwyRange, toSlug } from '../lib/calculations.ts';
+import type { Vehicle } from '../lib/calculations.ts';
+
+const allVehicles = vehicles as unknown as Vehicle[];
+
+// Stats
+const totalVehicles = allVehicles.length;
+const totalMakes    = [...new Set(allVehicles.map(v => v.make))].length;
+const evCount       = allVehicles.filter(v => v.fuelType === 'BEV' || v.fuelType === 'PHEV').length;
+
+// Featured vehicles (newest, most efficient)
+const featured = [...allVehicles]
+  .filter(v => v.year >= 2023)
+  .sort((a, b) => {
+    const aEff = a.combinedL100km ?? a.kwhPer100km ?? 99;
+    const bEff = b.combinedL100km ?? b.kwhPer100km ?? 99;
+    return aEff - bEff;
+  })
+  .slice(0, 8);
+
+// Make grid (all unique makes with vehicle count)
+const makeCounts: Record<string, number> = {};
+for (const v of allVehicles) {
+  makeCounts[v.make] = (makeCounts[v.make] ?? 0) + 1;
+}
+const makeGrid = Object.entries(makeCounts)
+  .sort(([,a], [,b]) => b - a);
+
+const jsonLd = [
+  websiteSchema(),
+  orgSchema(),
+  nrcanDatasetSchema(),
+  breadcrumbSchema([{ name: 'Home', url: '/' }]),
+];
+
+const canonicalUrl = '/';
+---
+
+<BaseLayout
+  title="RangeAndFuel.ca — Canada's Fuel Economy & EV Range Authority | L/100km, CAD Costs, TC Recalls"
+  description="Canada's #1 source for official NRCan fuel consumption ratings (L/100km), real provincial CAD fuel costs, EV/hybrid winter range analysis at -15°C, and Transport Canada safety recalls. All metric, all Canadian."
+  canonical={canonicalUrl}
+  jsonLd={jsonLd}
+>
+  <!-- ╔══════════════════════════════════════╗ -->
+  <!-- ║   HERO SECTION — CSS Animated       ║ -->
+  <!-- ╚══════════════════════════════════════╝ -->
+  <section class="hero-root relative overflow-hidden" style="min-height: 100vh; display: flex; flex-direction: column; justify-content: center;">
+
+    <!-- ── Layered background ── -->
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="hero-grid" aria-hidden="true"></div>
+    <div class="hero-glow-orb orb-cyan" aria-hidden="true"></div>
+    <div class="hero-glow-orb orb-green" aria-hidden="true"></div>
+    <div class="hero-glow-orb orb-red" aria-hidden="true"></div>
+    <!-- Animated horizontal scan line -->
+    <div class="hero-scanline" aria-hidden="true"></div>
+
+    <!-- ── Main hero content ── -->
+    <div class="container-site relative z-10 py-12 md:py-16 flex-1 flex items-center">
+      <div class="w-full mx-auto">
+
+        <div class="hero-layout">
+
+          <!-- LEFT: Copy + Search -->
+          <div class="hero-copy">
+
+            <!-- Canada eyebrow badge -->
+            <div class="hero-badge animate-fade-up">
+              <span class="flag-dot">🍁</span>
+              <span>Canada's Automotive Intelligence Platform</span>
+            </div>
+
+            <!-- H1 -->
+            <h1 class="hero-h1 animate-fade-up-2">
+              <span class="hero-h1-main">Real Canadian</span>
+              <span class="hero-h1-accent">Fuel Economy</span>
+              <span class="hero-h1-sub">L/100km &nbsp;·&nbsp; CAD Costs &nbsp;·&nbsp; km Range</span>
+            </h1>
+
+            <!-- Subtitle -->
+            <p class="hero-sub animate-fade-up-3">
+              Official <strong>NRCan</strong> ratings · Provincial CAD fuel costs · EV winter range at
+              <span class="hero-temp">−15°C</span> · Transport Canada recalls.
+              Built exclusively for <strong>Canada</strong>.
+            </p>
+
+            <!-- Search bar -->
+            <div class="hero-search-wrap animate-fade-up-4">
+              <SearchBar vehicles={allVehicles} client:load />
+              <p class="hero-search-hint">
+                {totalVehicles.toLocaleString()} vehicles &nbsp;·&nbsp; {totalMakes} makes &nbsp;·&nbsp; All metric
+              </p>
+            </div>
+
+            <!-- CTA row -->
+            <div class="hero-cta-row animate-fade-up-4">
+              <a href="#makes" class="btn-neon">Browse All Makes →</a>
+              <a href="/recalls" class="hero-recall-link">
+                <span class="recall-dot"></span>
+                Check TC Recalls
+              </a>
+            </div>
+          </div>
+
+          <!-- RIGHT: Cinematic Canadian Winter Intelligence Visual with Ambient Theme Gradient Glow -->
+          <div class="hero-right-col" id="cockpit">
+            <div class="relative group">
+              <!-- Ambient Neon Halo Light (Background Glow) -->
+              <div class="absolute -inset-2 bg-gradient-to-r from-[#00F0FF]/35 via-[#10B981]/25 to-[#FF2E4D]/25 rounded-[32px] blur-2xl opacity-75 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
+              
+              <!-- High-Precision Gradient Border Container -->
+              <div class="relative p-[1.5px] rounded-[28px] overflow-hidden shadow-2xl shadow-cyan-500/15"
+                style="background: linear-gradient(135deg, #00F0FF 0%, #10B981 45%, rgba(255,46,77,0.6) 80%, #00F0FF 100%);">
+                
+                <div class="relative rounded-[26px] overflow-hidden bg-[#07090E]">
+                  <img
+                    src="/images/hero-car.jpg"
+                    alt="Canadian EV and Hybrid Winter Testing in the Rocky Mountains"
+                    class="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
+                    width="800"
+                    height="600"
+                    loading="eager"
+                  />
+
+                  <!-- Ambient Gradient Dark Overlay -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-[#07090E]/95 via-[#07090E]/20 to-transparent pointer-events-none"></div>
+
+                  <!-- Floating Top Status Pill -->
+                  <div class="absolute top-4 left-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#07090E]/85 backdrop-blur-md border border-white/[0.15] shadow-lg">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-sm shadow-emerald-400"></span>
+                    <span class="text-xs font-mono font-bold text-white uppercase tracking-wider">🍁 -15°C Winter Testing Active</span>
+                  </div>
+
+                  <!-- Bottom Telemetry HUD Overlay -->
+                  <div class="absolute bottom-4 left-4 right-4 p-4 rounded-2xl bg-[#07090E]/90 backdrop-blur-md border border-white/[0.12] shadow-2xl">
+                    <div class="flex items-center justify-between gap-2">
+                      <div>
+                        <div class="text-[10px] font-mono text-slate-400 uppercase">Real-World Benchmark</div>
+                        <div class="text-xs font-bold text-white mt-0.5">NRCan L/100km & Cold EV Range</div>
+                      </div>
+                      <div class="text-right font-mono">
+                        <div class="text-[10px] text-neon-cyan uppercase font-bold">100% Metric</div>
+                        <div class="text-xs font-bold text-emerald-400">CAD $ Pricing</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Live Provincial Fuel Ticker (Positioned above Stat Cards) ── -->
+        <div class="hero-mid-ticker-wrap animate-fade-up-4">
+          <div class="hero-mid-ticker-badge">🍁 Live Canadian Fuel Prices</div>
+          <div class="ticker-track-wrap">
+            <div class="ticker-track">
+              {(fuelPrices as any).provinces.concat((fuelPrices as any).provinces).map((p: any) => (
+                <span class="ticker-item">
+                  <span class="ticker-province">{p.code}</span>
+                  <span class="ticker-sep">⛽</span>
+                  <span class="ticker-price">{p.gasolineCentsPerL.toFixed(1)}¢/L</span>
+                  <span class="ticker-sep">·</span>
+                  <span class="ticker-ev">⚡ {p.electricityCentsPerKwh.toFixed(1)}¢/kWh</span>
+                  <span class="ticker-divider">|</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Bottom stat strip ── -->
+        <div class="hero-stats animate-fade-up-4">
+          {[
+            { value: `${totalMakes}+`,    label: 'Canadian Makes',        color: '#00F0FF', icon: '🚗' },
+            { value: `${totalVehicles}+`, label: 'Vehicle Trims',         color: '#10B981', icon: '📊' },
+            { value: `${evCount}+`,       label: 'EV & PHEV Models',      color: '#8B5CF6', icon: '⚡' },
+            { value: '10',                label: 'Provincial Prices',     color: '#FF2E4D', icon: '🍁' },
+          ].map(s => (
+            <div class="hero-stat">
+              <span class="hero-stat-icon">{s.icon}</span>
+              <div>
+                <div class="hero-stat-val" style={`color:${s.color};`}>{s.value}</div>
+                <div class="hero-stat-label">{s.label}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+      </div>
+    </div>
+
+    <!-- bottom fade -->
+    <div class="absolute bottom-0 left-0 right-0 h-20 pointer-events-none"
+      style="background: linear-gradient(to bottom, transparent, #07090E);" aria-hidden="true" />
+  </section>
+
+  <style>
+    /* ── Hero root ── */
+    .hero-root { background: #07090E; }
+
+    /* ── Layered dark background ── */
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 70% 55% at 60% 20%, rgba(0,240,255,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 10% 80%, rgba(16,185,129,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 35% at 90% 70%, rgba(139,92,246,0.04) 0%, transparent 60%),
+        #07090E;
+    }
+
+    /* ── Animated neon grid ── */
+    .hero-grid {
+      position: absolute; inset: 0; z-index: 1;
+      background-image:
+        linear-gradient(rgba(0,240,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,240,255,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 90% 80% at 50% 0%, black 30%, transparent 100%);
+      animation: gridDrift 20s linear infinite;
+    }
+    @keyframes gridDrift {
+      0%   { background-position: 0 0; }
+      100% { background-position: 48px 48px; }
+    }
+
+    /* ── Glow orbs ── */
+    .hero-glow-orb {
+      position: absolute; z-index: 1;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+    }
+    .orb-cyan {
+      width: 600px; height: 400px;
+      top: -120px; right: -80px;
+      background: rgba(0,240,255,0.07);
+      animation: orbFloat 12s ease-in-out infinite;
+    }
+    .orb-green {
+      width: 400px; height: 350px;
+      bottom: 0; left: -100px;
+      background: rgba(16,185,129,0.06);
+      animation: orbFloat 16s ease-in-out infinite reverse;
+    }
+    .orb-red {
+      width: 300px; height: 250px;
+      top: 40%; right: 5%;
+      background: rgba(255,46,77,0.04);
+      animation: orbFloat 10s ease-in-out infinite;
+    }
+    @keyframes orbFloat {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50%       { transform: translateY(-30px) scale(1.05); }
+    }
+
+    /* ── Horizontal scan line ── */
+    .hero-scanline {
+      position: absolute; left: 0; right: 0; z-index: 2;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(0,240,255,0.4) 50%, transparent 100%);
+      animation: scanDown 8s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes scanDown {
+      0%   { top: 0%;   opacity: 0; }
+      5%   { opacity: 0.6; }
+      95%  { opacity: 0.6; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    /* ── Ticker strip ── */
+    .ticker-strip {
+      position: relative; z-index: 10;
+      background: rgba(0,240,255,0.04);
+      border-bottom: 1px solid rgba(0,240,255,0.1);
+      padding: 0;
+      overflow: hidden;
+      height: 36px;
+      display: flex;
+      align-items: center;
+    }
+    .ticker-track {
+      display: flex;
+      white-space: nowrap;
+      animation: tickerScroll 40s linear infinite;
+    }
+    @keyframes tickerScroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 20px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .ticker-province { font-weight: 700; color: #00F0FF; letter-spacing: 0.05em; }
+    .ticker-price    { color: #F59E0B; font-weight: 600; }
+    .ticker-ev       { color: #8B5CF6; font-weight: 600; }
+    .ticker-sep      { color: #1E2536; }
+    .ticker-divider  { color: rgba(0,240,255,0.2); margin: 0 8px; }
+
+    /* ── Hero layout: Full Width 2-Col Grid ── */
+    .hero-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+      align-items: center;
+      width: 100%;
+    }
+    @media (min-width: 1024px) {
+      .hero-layout {
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 3.5rem;
+      }
+    }
+
+    /* ── Hero copy ── */
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: rgba(255,46,77,0.1);
+      border: 1px solid rgba(255,46,77,0.25);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #FF2E4D;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero-h1 {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 1.25rem;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+    .hero-h1-main {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      color: #ffffff;
+    }
+    .hero-h1-accent {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      background: linear-gradient(135deg, #00F0FF 0%, #10B981 60%, #00C8D4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-h1-sub {
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
+      color: #64748b;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .hero-sub {
+      font-size: 1rem;
+      color: #94A3B8;
+      line-height: 1.7;
+      margin-bottom: 1.75rem;
+      max-width: 540px;
+    }
+    .hero-sub strong { color: #e2e8f0; }
+    .hero-temp {
+      color: #FF2E4D;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .hero-search-wrap { margin-bottom: 1.25rem; }
+    .hero-search-hint {
+      font-size: 11px;
+      color: #475569;
+      margin-top: 8px;
+      letter-spacing: 0.03em;
+    }
+
+    .hero-cta-row {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .hero-recall-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #FF2E4D;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .hero-recall-link:hover { opacity: 0.75; }
+    .recall-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #FF2E4D;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(255,46,77,0.4); }
+      50%       { opacity: 0.7; box-shadow: 0 0 0 6px rgba(255,46,77,0); }
+    }
+
+    /* ── 3D Glowing Hologram Screen Container ── */
+    .hero-right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      align-self: center;
+      width: 100%;
+      max-width: 490px;
+      margin: 0 auto;
+    }
+
+    .hero-3d-hologram-wrap {
+      position: relative;
+      border-radius: 28px;
+      line-height: 0;
+      width: 100%;
+      animation: holoFloat 5s ease-in-out infinite;
+    }
+    @keyframes holoFloat {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50%       { transform: translateY(-7px) rotate(0.4deg); }
+    }
+
+    /* Outer Dynamic Multilayer Neon Border */
+    .hero-3d-hologram-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -3.5px;
+      border-radius: 30px;
+      background: conic-gradient(
+        from var(--holo-angle, 0deg),
+        #8B5CF6 0%,
+        #00F0FF 25%,
+        #10B981 50%,
+        #FF2E4D 75%,
+        #8B5CF6 100%
+      );
+      z-index: 0;
+      animation: holoBorderSpin 4s linear infinite;
+    }
+    @property --holo-angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+    @keyframes holoBorderSpin {
+      to { --holo-angle: 360deg; }
+    }
+
+    /* Ultra-Glow Ambient Halo Blur */
+    .hero-3d-hologram-wrap::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 30px;
+      background: conic-gradient(
+        from var(--holo-angle, 0deg),
+        #8B5CF6, #00F0FF, #10B981, #FF2E4D, #8B5CF6
+      );
+      z-index: 0;
+      animation: holoBorderSpin 4s linear infinite;
+      filter: blur(20px);
+      opacity: 0.75;
+    }
+
+    .hero-3d-hologram-inner {
+      position: relative;
+      z-index: 1;
+      border-radius: 26px;
+      overflow: hidden;
+      background: #07090E;
+      line-height: 0;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: inset 0 0 40px rgba(0,240,255,0.15);
+    }
+
+    .hero-3d-hologram-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      border-radius: 26px;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s ease;
+      filter: brightness(1.08) contrast(1.05) saturate(1.15);
+    }
+    .hero-3d-hologram-inner:hover .hero-3d-hologram-img {
+      transform: scale(1.03);
+      filter: brightness(1.15) contrast(1.1) saturate(1.25);
+    }
+
+    /* Inside Image Dynamic Color-Shifting Light Wave Overlay */
+    .holo-ambient-pulse {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 10;
+      background: radial-gradient(circle at 60% 40%, rgba(0,240,255,0.18) 0%, rgba(139,92,246,0.14) 40%, transparent 70%);
+      mix-blend-mode: color-dodge;
+      animation: ambientShift 6s ease-in-out infinite alternate;
+    }
+    @keyframes ambientShift {
+      0%   { opacity: 0.4; transform: scale(0.95); background: radial-gradient(circle at 40% 30%, rgba(0,240,255,0.25) 0%, rgba(139,92,246,0.15) 50%, transparent 75%); }
+      50%  { opacity: 0.8; transform: scale(1.05); background: radial-gradient(circle at 70% 60%, rgba(16,185,129,0.25) 0%, rgba(0,240,255,0.2) 50%, transparent 75%); }
+      100% { opacity: 0.5; transform: scale(1.0); background: radial-gradient(circle at 50% 50%, rgba(139,92,246,0.25) 0%, rgba(255,46,77,0.18) 50%, transparent 75%); }
+    }
+
+    /* Hologram Scanning Light Line */
+    .holo-scan-bar {
+      position: absolute;
+      left: 0; right: 0;
+      height: 2px;
+      z-index: 15;
+      pointer-events: none;
+      background: linear-gradient(90deg, transparent, rgba(0,240,255,0.85), rgba(139,92,246,0.85), transparent);
+      box-shadow: 0 0 12px #00F0FF;
+      animation: scanSweep 3.5s linear infinite;
+    }
+    @keyframes scanSweep {
+      0%   { top: 0%; opacity: 0; }
+      10%  { opacity: 0.9; }
+      90%  { opacity: 0.9; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    /* ── Mid Hero Fuel Ticker Strip (above Stat Cards) ── */
+    .hero-mid-ticker-wrap {
+      width: 100%;
+      margin-top: 2.5rem;
+      border-radius: 14px;
+      background: rgba(13,17,23,0.85);
+      border: 1px solid rgba(0,240,255,0.18);
+      box-shadow: 0 0 30px rgba(0,240,255,0.06), inset 0 0 20px rgba(0,240,255,0.02);
+      overflow: hidden;
+      backdrop-filter: blur(16px);
+      display: flex;
+      flex-direction: column;
+    }
+    @media (min-width: 768px) {
+      .hero-mid-ticker-wrap {
+        flex-direction: row;
+        align-items: center;
+      }
+    }
+    .hero-mid-ticker-badge {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #FF2E4D;
+      padding: 8px 16px;
+      background: rgba(255,46,77,0.08);
+      border-bottom: 1px solid rgba(0,240,255,0.1);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    @media (min-width: 768px) {
+      .hero-mid-ticker-badge {
+        border-bottom: none;
+        border-right: 1px solid rgba(0,240,255,0.12);
+        padding: 10px 18px;
+      }
+    }
+    .ticker-track-wrap {
+      overflow: hidden;
+      padding: 10px 0;
+      position: relative;
+      flex: 1;
+    }
+    .ticker-track-wrap::before,
+    .ticker-track-wrap::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 40px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .ticker-track-wrap::before {
+      left: 0;
+      background: linear-gradient(to right, rgba(13,17,23,0.9), transparent);
+    }
+    .ticker-track-wrap::after {
+      right: 0;
+      background: linear-gradient(to left, rgba(13,17,23,0.9), transparent);
+    }
+    .ticker-track {
+      display: flex;
+      white-space: nowrap;
+      animation: tickerScroll 20s linear infinite; /* Faster snappy scroll */
+    }
+    @keyframes tickerScroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 16px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .ticker-province { font-weight: 800; color: #00F0FF; letter-spacing: 0.05em; font-size: 12px; }
+    .ticker-price    { color: #F59E0B; font-weight: 600; }
+    .ticker-ev       { color: #8B5CF6; font-weight: 600; }
+    .ticker-sep      { color: #1E2536; }
+    .ticker-divider  { color: rgba(0,240,255,0.18); margin: 0 8px; }
+
+    /* ── Bottom stat strip ── */
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      margin-top: 1rem;
+      border: 1px solid rgba(30,37,54,0.8);
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(30,37,54,0.8);
+    }
+    @media (min-width: 640px) {
+      .hero-stats { grid-template-columns: repeat(4, 1fr); }
+    }
+    .hero-stat {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 1rem 1.25rem;
+      background: rgba(13,17,23,0.8);
+      transition: background 0.2s;
+    }
+    .hero-stat:hover { background: rgba(22,27,37,0.9); }
+    .hero-stat-icon { font-size: 1.25rem; }
+    .hero-stat-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.35rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .hero-stat-label {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  </style>
+
+  <!-- ╔══════════════════════════════════════╗ -->
+  <!-- ║    WHY CANADA NEEDS THIS SITE        ║ -->
+  <!-- ╚══════════════════════════════════════╝ -->
+  <section class="py-20 bg-cyber-slate-2">
+    <div class="container-site">
+      <div class="text-center mb-14">
+        <h2 class="section-title">Why US Sites Fail Canadian Drivers</h2>
+        <p class="section-subtitle max-w-2xl mx-auto">
+          Edmunds, KBB, and FuelEconomy.gov use MPG, Gallons, USD, and NHTSA recalls. None of that is useful when you're filling up in Winnipeg in January.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[
+          {
+            icon: '🇨🇦',
+            title: 'Metric: L/100km',
+            desc: 'Every rating in Litres per 100 Kilometres — the NRCan standard used on Canadian dealer stickers and pump displays.',
+            color: '#00F0FF',
+          },
+          {
+            icon: '💰',
+            title: 'Real CAD Costs',
+            desc: 'Live provincial gas prices (¢/L) and electricity rates (¢/kWh) for Ontario, BC, Alberta, Quebec, and 6 more provinces.',
+            color: '#10B981',
+          },
+          {
+            icon: '🌨️',
+            title: '-15°C Winter Model',
+            desc: 'Honest EV range after Canadian winter degradation (+32% loss), plus ICE cold-start penalty (+15% fuel burn).',
+            color: '#FF2E4D',
+          },
+          {
+            icon: '⚠️',
+            title: 'TC Safety Recalls',
+            desc: "Transport Canada recall bulletins (not NHTSA). CMVSS numbers, corrective dealership actions, and affected VIN ranges.",
+            color: '#F59E0B',
+          },
+        ].map(f => (
+          <div class="card group">
+            <div class="text-3xl mb-4">{f.icon}</div>
+            <h3 class="font-display font-bold text-white text-lg mb-2" style={`color: ${f.color}`}>{f.title}</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">{f.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════════════╗ -->
+  <!-- ║      FEATURED VEHICLES GRID          ║ -->
+  <!-- ╚══════════════════════════════════════╝ -->
+  <section class="py-20">
+    <div class="container-site">
+      <div class="flex items-center justify-between mb-10 flex-wrap gap-4">
+        <div>
+          <h2 class="section-title">Most Efficient 2023–2024 Vehicles</h2>
+          <p class="text-slate-500 text-sm mt-1">Ranked by NRCan combined L/100km or kWh/100km</p>
+        </div>
+        <a href="/search" class="btn-neon text-sm">Explore Vehicle Catalog →</a>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {featured.map((v: Vehicle, i: number) => {
+          const hwyRange = calcHwyRange(v);
+          const isEV = v.fuelType === 'BEV';
+          const isPHEV = v.fuelType === 'PHEV';
+          const eff = v.combinedL100km ?? v.kwhPer100km;
+          const effUnit = v.combinedL100km ? 'L/100km' : 'kWh/100km';
+          const effColor = isEV || isPHEV ? '#8B5CF6' : v.combinedL100km && v.combinedL100km < 7 ? '#10B981' : '#F59E0B';
+
+          return (
+            <a
+              href={`/makes/${toSlug(v.make)}/${toSlug(v.model)}/${v.year}`}
+              class="card group relative overflow-hidden"
+              style="text-decoration: none;"
+            >
+              {/* Rank badge */}
+              <div class="absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center text-xs font-mono font-black"
+                style="background: rgba(0,240,255,0.1); color:#00F0FF; border: 1px solid rgba(0,240,255,0.2);">
+                {i + 1}
+              </div>
+
+              {/* Fuel type pill */}
+              <div class="mb-3">
+                <span class={fuelTypePill(v.fuelType)}>{fuelTypeLabel(v.fuelType)}</span>
+              </div>
+
+              {/* Year/Make/Model */}
+              <div class="text-xs text-slate-500 font-mono mb-0.5">{v.year}</div>
+              <div class="font-display font-bold text-white text-lg leading-tight mb-0.5 group-hover:text-neon-cyan transition-colors">
+                {v.make} {v.model}
+              </div>
+              <div class="text-xs text-slate-500 mb-4 truncate">{v.trim}</div>
+
+              {/* Efficiency HUD */}
+              <div class="hud-badge w-full mb-3">
+                <div class="hud-value" style={`color: ${effColor}; font-size: 2rem;`}>{eff}</div>
+                <div class="hud-label">{effUnit}</div>
+              </div>
+
+              {/* Sub-stats */}
+              <div class="flex justify-between text-xs text-slate-500">
+                <span>City: {v.cityL100km ?? '—'}</span>
+                <span>Hwy: {v.hwyL100km ?? '—'}</span>
+              </div>
+
+              {/* Range or tank */}
+              {(isEV && v.electricRangeKm) ? (
+                <div class="mt-2 text-xs" style="color: #8B5CF6;">
+                  ⚡ {v.electricRangeKm} km EV Range
+                </div>
+              ) : hwyRange ? (
+                <div class="mt-2 text-xs text-slate-500">
+                  🛣️ ~{hwyRange} km hwy range
+                </div>
+              ) : null}
+
+              {/* Hover arrow */}
+              <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                <svg class="w-4 h-4 text-neon-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════════════╗ -->
+  <!-- ║          MAKE DIRECTORY GRID         ║ -->
+  <!-- ╚══════════════════════════════════════╝ -->
+  <section class="py-20 bg-cyber-slate-2" id="makes">
+    <div class="container-site">
+      <div class="text-center mb-12">
+        <h2 class="section-title">Browse by Make</h2>
+        <p class="section-subtitle">Select a manufacturer to see all models, trims, and NRCan fuel ratings</p>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+        {makeGrid.map(([make, count]) => (
+          <a
+            href={`/makes/${toSlug(make)}`}
+            class="flex flex-col items-center gap-2 p-4 rounded-xl border border-slate-border hover:border-neon-cyan/30 hover:bg-neon-cyan/5 transition-all duration-200 group text-center"
+          >
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center text-lg font-black"
+              style="background: rgba(0,240,255,0.08); color: #00F0FF;">
+              {make.charAt(0)}
+            </div>
+            <div class="font-semibold text-white text-sm group-hover:text-neon-cyan transition-colors">{make}</div>
+            <div class="text-xs text-slate-600">{count} models</div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════════════╗ -->
+  <!-- ║      PROVINCIAL FUEL PRICES          ║ -->
+  <!-- ╚══════════════════════════════════════╝ -->
+  <section class="py-20">
+    <div class="container-site">
+      <div class="text-center mb-12">
+        <h2 class="section-title">Today's Provincial Fuel Prices</h2>
+        <p class="section-subtitle">Statistics Canada & NRCan Petroleum Weekly Averages · Updated regularly</p>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+        {(fuelPrices as any).provinces.map((p: any) => (
+          <div class="card text-center group hover:border-neon-cyan/20">
+            <div class="font-mono font-black text-neon-cyan text-xl mb-0.5">{p.code}</div>
+            <div class="text-xs text-slate-500 mb-3">{p.name}</div>
+            <div class="space-y-1.5 text-xs">
+              <div class="flex justify-between">
+                <span class="text-slate-500">⛽ Gas</span>
+                <span class="font-mono font-bold text-amber-fuel">{p.gasolineCentsPerL.toFixed(1)}¢/L</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">🔴 Diesel</span>
+                <span class="font-mono font-bold text-orange-400">{p.dieselCentsPerL.toFixed(1)}¢/L</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">⚡ Elec</span>
+                <span class="font-mono font-bold text-purple-ev">{p.electricityCentsPerKwh.toFixed(1)}¢/kWh</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════════════╗ -->
+  <!-- ║     INTERACTIVE HEAD-TO-HEAD ENGINE    ║ -->
+  <!-- ╚══════════════════════════════════════╝ -->
+  <section class="py-20 bg-cyber-slate-2" id="comparison">
+    <div class="container-site">
+      <CanadianComparisonTool 
+        vehicles={allVehicles} 
+        provinces={(fuelPrices as any).provinces} 
+        client:load 
+      />
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════════════╗ -->
+  <!-- ║   CANADIAN WINTER REALITY EXPLAINED   ║ -->
+  <!-- ╚══════════════════════════════════════╝ -->
+  <section class="py-20" id="winter-model">
+    <div class="container-site">
+      <div class="text-center mb-14">
+        <span class="text-xs font-mono font-bold text-rose-400 uppercase tracking-wider block mb-2">
+          ❄️ Real Canadian Winter Test Data (-15°C to -30°C)
+        </span>
+        <h2 class="section-title">How Canadian Cold Affects Your Range & Fuel Burn</h2>
+        <p class="section-subtitle max-w-2xl mx-auto">
+          Official lab tests happen at 20°C in climate-controlled rooms. Here is what actually happens when you drive in Calgary, Ottawa, or Montreal in January.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl bg-[#0D1117] border border-white/[0.08] relative">
+          <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center font-bold mb-4">
+            ⚡
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2">Pure Electric (BEV): -30% to -40% Range</h3>
+          <p class="text-sm text-slate-400 leading-relaxed">
+            In winter, your battery works harder to heat the cabin and keep lithium cells warm. A Tesla Model Y or Hyundai IONIQ 5 rated for 500 km will realistically deliver about 320–350 km during freezing weather.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-[#0D1117] border border-white/[0.08] relative">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold mb-4">
+            🌿
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2">Hybrids (HEV): +12% to +18% Fuel Burn</h3>
+          <p class="text-sm text-slate-400 leading-relaxed">
+            A Toyota RAV4 Hybrid burns extra fuel on cold starts because the gas engine must run continuously to heat the cabin coolant before switching to electric drive mode.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-[#0D1117] border border-white/[0.08] relative">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center font-bold mb-4">
+            ⛽
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2">Gas & Diesel (ICE): +15% Cold-Start Drag</h3>
+          <p class="text-sm text-slate-400 leading-relaxed">
+            Thicker motor oil, winter-blend gasoline with lower energy density, and winter tire rolling resistance increase gas consumption across Ontario and Quebec highways.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════════════╗ -->
+  <!-- ║           RECALL ALERT BANNER        ║ -->
+  <!-- ╚══════════════════════════════════════╝ -->
+  <section class="py-16 bg-cyber-slate-2">
+    <div class="container-site">
+      <div class="recall-alert items-start gap-4 flex-wrap md:flex-nowrap max-w-4xl mx-auto">
+        <div class="text-3xl shrink-0">⚠️</div>
+        <div class="flex-1">
+          <h2 class="font-display font-bold text-white text-xl mb-2">
+            Transport Canada Safety Recall Directory
+          </h2>
+          <p class="text-sm text-slate-400 leading-relaxed mb-4">
+            Check your vehicle against the official TC Motor Vehicle Safety Recalls (MVSR) database. 
+            Unlike US NHTSA recalls, Transport Canada bulletins apply specifically to Canadian-market vehicles 
+            with Canadian CMVSS numbers and Canadian dealer corrective actions.
+          </p>
+          <div class="flex flex-wrap gap-3">
+            <a href="/recalls" class="btn-crimson text-sm" id="cta-recalls-main">
+              Browse TC Recall Database →
+            </a>
+            <a href="https://tc.canada.ca/en/road-transportation/vehicle-safety/defect-investigations-recalls/recalls-searchable-database" 
+              target="_blank" rel="noopener"
+              class="btn-neon text-sm">
+              Official TC Site ↗
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>

@@ -1,0 +1,859 @@
+{
+  "updated": "2026-09-02",
+  "source": "Transport Canada Motor Vehicle Safety Recalls (MVSR) Open Dataset",
+  "recalls": [
+    {
+      "recallId": "2024-102",
+      "make": "Toyota",
+      "model": "RAV4",
+      "years": [
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "system": "Fuel System",
+      "component": "Fuel Pump Impeller",
+      "defectSummary": "The fuel pump impeller may deform due to solvent exposure, potentially causing low-pressure fuel starvation and engine stalling.",
+      "correctiveAction": "Toyota dealerships will replace the fuel pump assembly free of charge under Canadian recall campaign.",
+      "recallDate": "2024-03-11",
+      "cmvssNumber": "2024-183",
+      "safetyRisk": "HIGH",
+      "affectedUnits": 14700
+    },
+    {
+      "recallId": "2024-103",
+      "make": "Toyota",
+      "model": "Tundra",
+      "years": [
+        2022,
+        2023,
+        2024
+      ],
+      "system": "Fuel System",
+      "component": "Fuel Tube Clamping Line",
+      "defectSummary": "Plastic fuel tube may rub against brake line, causing fuel leakage in the engine compartment.",
+      "correctiveAction": "Dealers will replace the fuel tube and add protective clamps.",
+      "recallDate": "2024-04-18",
+      "cmvssNumber": "2024-220",
+      "safetyRisk": "HIGH",
+      "affectedUnits": 8900
+    },
+    {
+      "recallId": "2024-215",
+      "make": "Ford",
+      "model": "F-150",
+      "years": [
+        2021,
+        2022,
+        2023
+      ],
+      "system": "Electrical / Brakes",
+      "component": "Electric Parking Brake Wiring",
+      "defectSummary": "Rear axle wiring harness contact with the axle housing may chafe wires, causing unexpected electric parking brake application.",
+      "correctiveAction": "Ford dealers will inspect the rear axle wiring harness, repair damaged wiring, and install a protective tie-strap.",
+      "recallDate": "2024-01-22",
+      "cmvssNumber": "2024-054",
+      "safetyRisk": "CRITICAL",
+      "affectedUnits": 24300
+    },
+    {
+      "recallId": "2024-216",
+      "make": "Ford",
+      "model": "Mustang Mach-E",
+      "years": [
+        2021,
+        2022,
+        2023
+      ],
+      "system": "High Voltage Battery",
+      "component": "High Voltage Battery Main Contactors",
+      "defectSummary": "Main contactors may overheat during DC fast charging, causing power loss while driving.",
+      "correctiveAction": "Dealers will replace the high-voltage battery junction box (HVBJB).",
+      "recallDate": "2023-11-15",
+      "cmvssNumber": "2023-612",
+      "safetyRisk": "HIGH",
+      "affectedUnits": 5200
+    },
+    {
+      "recallId": "2024-059",
+      "make": "Tesla",
+      "model": "Model Y",
+      "years": [
+        2020,
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "system": "Driver Assistance / ADAS",
+      "component": "Autosteer Engagement Controls",
+      "defectSummary": "Autopilot autosteer feature prominent alert controls may be insufficient to prevent driver misuse.",
+      "correctiveAction": "Tesla deployed over-the-air (OTA) software update 2023.44.30 to enhance visual and auditory driver monitoring alerts.",
+      "recallDate": "2023-12-13",
+      "cmvssNumber": "2023-682",
+      "safetyRisk": "MEDIUM",
+      "affectedUnits": 193000
+    },
+    {
+      "recallId": "2024-060",
+      "make": "Tesla",
+      "model": "Model 3",
+      "years": [
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023
+      ],
+      "system": "Exterior Lighting",
+      "component": "Rear View Camera Cable Harness",
+      "defectSummary": "Trunk lid harness may become damaged over time from opening/closing, causing rearview camera display feed loss.",
+      "correctiveAction": "Tesla service will inspect and install harness guide and replace damaged coaxial cable.",
+      "recallDate": "2023-08-04",
+      "cmvssNumber": "2023-421",
+      "safetyRisk": "LOW",
+      "affectedUnits": 42000
+    },
+    {
+      "recallId": "2024-331",
+      "make": "Honda",
+      "model": "CR-V",
+      "years": [
+        2023,
+        2024
+      ],
+      "system": "Steering",
+      "component": "Electric Power Steering Gearbox",
+      "defectSummary": "Steering gearbox worm wheel may swell due to environmental moisture absorption, increasing steering effort.",
+      "correctiveAction": "Honda dealers will inspect and apply high-performance grease or replace the gearbox assembly.",
+      "recallDate": "2024-02-08",
+      "cmvssNumber": "2024-098",
+      "safetyRisk": "MEDIUM",
+      "affectedUnits": 18200
+    },
+    {
+      "recallId": "2024-332",
+      "make": "Honda",
+      "model": "Civic",
+      "years": [
+        2022,
+        2023,
+        2024
+      ],
+      "system": "Steering",
+      "component": "Steering Rack Spring Preload",
+      "defectSummary": "Steering gearbox spring preload set too high may cause momentary sticky steering feel.",
+      "correctiveAction": "Dealers will adjust the steering spring preload and re-grease the gearbox mechanism.",
+      "recallDate": "2024-03-29",
+      "cmvssNumber": "2024-177",
+      "safetyRisk": "MEDIUM",
+      "affectedUnits": 22100
+    },
+    {
+      "recallId": "2024-412",
+      "make": "Hyundai",
+      "model": "IONIQ 5",
+      "years": [
+        2022,
+        2023,
+        2024
+      ],
+      "system": "Electrical Charging System",
+      "component": "Integrated Charging Control Unit (ICCU)",
+      "defectSummary": "ICCU may become damaged by overcurrent, resulting in 12V auxiliary battery discharge and loss of drive power.",
+      "correctiveAction": "Hyundai dealers will inspect and update ICCU software or replace ICCU and fuse assembly free of charge.",
+      "recallDate": "2024-03-18",
+      "cmvssNumber": "2024-156",
+      "safetyRisk": "HIGH",
+      "affectedUnits": 9800
+    },
+    {
+      "recallId": "2024-413",
+      "make": "Hyundai",
+      "model": "Tucson",
+      "years": [
+        2022,
+        2023
+      ],
+      "system": "Brakes",
+      "component": "Hydraulic Electronic Control Unit (HECU)",
+      "defectSummary": "Electrical short in the ABS/HECU module could increase the risk of an engine compartment fire.",
+      "correctiveAction": "Dealers will replace the ABS multi-fuse with a lower amperage rating.",
+      "recallDate": "2023-10-05",
+      "cmvssNumber": "2023-532",
+      "safetyRisk": "CRITICAL",
+      "affectedUnits": 16400
+    },
+    {
+      "recallId": "2024-488",
+      "make": "Kia",
+      "model": "EV6",
+      "years": [
+        2022,
+        2023,
+        2024
+      ],
+      "system": "Electrical Charging System",
+      "component": "Integrated Charging Control Unit (ICCU)",
+      "defectSummary": "Overcurrent stress inside ICCU can disable auxiliary 12V charging, causing reduction of vehicle speed.",
+      "correctiveAction": "Kia dealers will update ICCU software and replace affected hardware under safety warranty.",
+      "recallDate": "2024-03-18",
+      "cmvssNumber": "2024-157",
+      "safetyRisk": "HIGH",
+      "affectedUnits": 6100
+    },
+    {
+      "recallId": "2024-489",
+      "make": "Kia",
+      "model": "Sportage",
+      "years": [
+        2023,
+        2024
+      ],
+      "system": "Brakes",
+      "component": "Brake Booster Diaphragm",
+      "defectSummary": "Brake booster diaphragm may misalign, resulting in reduced braking assist.",
+      "correctiveAction": "Dealers will inspect and replace the brake booster assembly.",
+      "recallDate": "2023-12-08",
+      "cmvssNumber": "2023-640",
+      "safetyRisk": "HIGH",
+      "affectedUnits": 8700
+    },
+    {
+      "recallId": "2024-511",
+      "make": "Chevrolet",
+      "model": "Silverado 1500",
+      "years": [
+        2023,
+        2024
+      ],
+      "system": "Driver Assistance / ADAS",
+      "component": "Forward Collision Alert / AEB",
+      "defectSummary": "Software calibration in the front camera module may prevent automatic emergency braking from engaging.",
+      "correctiveAction": "GM dealers will reprogram the front camera module with updated firmware.",
+      "recallDate": "2024-02-15",
+      "cmvssNumber": "2024-112",
+      "safetyRisk": "MEDIUM",
+      "affectedUnits": 11400
+    },
+    {
+      "recallId": "2024-512",
+      "make": "Chevrolet",
+      "model": "Equinox EV",
+      "years": [
+        2024
+      ],
+      "system": "Electrical",
+      "component": "Instrument Cluster Display Driver",
+      "defectSummary": "Instrument panel cluster may fail to display vehicle speed and telltales upon vehicle startup.",
+      "correctiveAction": "Dealers will update the body control module software via OTA or dealership flash.",
+      "recallDate": "2024-05-12",
+      "cmvssNumber": "2024-290",
+      "safetyRisk": "LOW",
+      "affectedUnits": 2800
+    },
+    {
+      "recallId": "2024-515",
+      "make": "GMC",
+      "model": "Sierra 1500",
+      "years": [
+        2023,
+        2024
+      ],
+      "system": "Exterior Lighting / Body",
+      "component": "Tailgate Switch Circuit",
+      "defectSummary": "Water intrusion into the electronic tailgate switch may cause the tailgate to unlatch inadvertently while parked.",
+      "correctiveAction": "GMC dealers will replace the exterior touchpad switch assembly with a sealed unit.",
+      "recallDate": "2024-03-01",
+      "cmvssNumber": "2024-133",
+      "safetyRisk": "MEDIUM",
+      "affectedUnits": 19500
+    },
+    {
+      "recallId": "2024-601",
+      "make": "Volkswagen",
+      "model": "ID.4",
+      "years": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "system": "Body / Latches",
+      "component": "Door Handle Electronics Water Intrusion",
+      "defectSummary": "Water ingress into door handle printed circuit boards may trigger unintended door opening while moving at low speed.",
+      "correctiveAction": "Volkswagen dealers will inspect door handles, update handle parameter software, and replace hardware as necessary.",
+      "recallDate": "2024-04-03",
+      "cmvssNumber": "2024-205",
+      "safetyRisk": "HIGH",
+      "affectedUnits": 7600
+    },
+    {
+      "recallId": "2024-602",
+      "make": "Volkswagen",
+      "model": "Tiguan",
+      "years": [
+        2022,
+        2023,
+        2024
+      ],
+      "system": "Suspension",
+      "component": "Rear Knuckle Casting",
+      "defectSummary": "Rear axle steering knuckle may break under extreme load due to manufacturing casting flaw.",
+      "correctiveAction": "Dealers will inspect and replace the rear wheel bearing housing.",
+      "recallDate": "2023-09-19",
+      "cmvssNumber": "2023-499",
+      "safetyRisk": "HIGH",
+      "affectedUnits": 4300
+    },
+    {
+      "recallId": "2024-709",
+      "make": "BMW",
+      "model": "i4",
+      "years": [
+        2022,
+        2023,
+        2024
+      ],
+      "system": "Electrical / Battery",
+      "component": "Combined Charging Unit (CCU)",
+      "defectSummary": "CCU software error may interrupt high-voltage charging or lead to drivetrain shut-off while operating in traffic.",
+      "correctiveAction": "BMW service centres will perform a CCU software flash to correct power interruption logic.",
+      "recallDate": "2024-01-30",
+      "cmvssNumber": "2024-071",
+      "safetyRisk": "HIGH",
+      "affectedUnits": 2900
+    },
+    {
+      "recallId": "2024-710",
+      "make": "BMW",
+      "model": "X3",
+      "years": [
+        2020,
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "system": "Structure",
+      "component": "Cargo Rail Attachment Bolts",
+      "defectSummary": "Bolts securing the luggage compartment cargo rails may loosen during severe rear collision.",
+      "correctiveAction": "Dealers will replace cargo rail attaching screws with upgraded torque fasteners.",
+      "recallDate": "2024-06-20",
+      "cmvssNumber": "2024-340",
+      "safetyRisk": "MEDIUM",
+      "affectedUnits": 12100
+    },
+    {
+      "recallId": "2024-750",
+      "make": "Nissan",
+      "model": "Rogue",
+      "years": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "system": "Engine / Fuel",
+      "component": "1.5L VC-Turbo Bearing Seizure",
+      "defectSummary": "Main bearing and L-link manufacturing clearances may lead to bearing seizure and complete engine failure.",
+      "correctiveAction": "Dealers will inspect engine diagnostic codes and replace long-block assembly if metallic wear is detected.",
+      "recallDate": "2024-02-10",
+      "cmvssNumber": "2024-099",
+      "safetyRisk": "HIGH",
+      "affectedUnits": 28400
+    },
+    {
+      "recallId": "2024-751",
+      "make": "Nissan",
+      "model": "Leaf",
+      "years": [
+        2020,
+        2021,
+        2022,
+        2023
+      ],
+      "system": "Vehicle Speed Control",
+      "component": "Cruise Control Vehicle Control Module",
+      "defectSummary": "Vehicle control module software may cause vehicle to accelerate after cruise control is deactivated.",
+      "correctiveAction": "Dealers will reprogram the vehicle control module (VCM) with updated software.",
+      "recallDate": "2023-07-28",
+      "cmvssNumber": "2023-388",
+      "safetyRisk": "CRITICAL",
+      "affectedUnits": 9100
+    },
+    {
+      "recallId": "2024-801",
+      "make": "Subaru",
+      "model": "Outback",
+      "years": [
+        2023,
+        2024
+      ],
+      "system": "Driver Assistance / ADAS",
+      "component": "EyeSight Stereo Camera Software",
+      "defectSummary": "EyeSight system software may fail to detect obstacles in low light conditions or during cold weather startup.",
+      "correctiveAction": "Subaru dealers will update the EyeSight camera control unit software.",
+      "recallDate": "2024-03-05",
+      "cmvssNumber": "2024-142",
+      "safetyRisk": "MEDIUM",
+      "affectedUnits": 15600
+    },
+    {
+      "recallId": "2024-802",
+      "make": "Subaru",
+      "model": "Forester",
+      "years": [
+        2022,
+        2023,
+        2024
+      ],
+      "system": "Electrical",
+      "component": "Thermo Control Valve Assembly",
+      "defectSummary": "Thermo control valve internal sensor may fail, causing check engine light and reduced cabin heating.",
+      "correctiveAction": "Subaru will replace the thermo control valve with an improved mechanical sensor unit.",
+      "recallDate": "2023-11-20",
+      "cmvssNumber": "2023-625",
+      "safetyRisk": "LOW",
+      "affectedUnits": 18900
+    },
+    {
+      "recallId": "2024-830",
+      "make": "Mazda",
+      "model": "CX-5",
+      "years": [
+        2022,
+        2023,
+        2024
+      ],
+      "system": "Fuel System",
+      "component": "Fuel Pump Impeller",
+      "defectSummary": "Low-pressure fuel pump impeller could deform and cause intermittent engine stalling.",
+      "correctiveAction": "Mazda dealers will replace the fuel pump module free of charge.",
+      "recallDate": "2024-01-18",
+      "cmvssNumber": "2024-041",
+      "safetyRisk": "HIGH",
+      "affectedUnits": 12800
+    },
+    {
+      "recallId": "2024-831",
+      "make": "Mazda",
+      "model": "3",
+      "years": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "system": "Electrical / Brakes",
+      "component": "Smart Brake Support (SBS) Radar Sensor",
+      "defectSummary": "False obstacle detection by the millimeter-wave radar may trigger unexpected automatic braking.",
+      "correctiveAction": "Dealers will update the vehicle control unit radar calibration software.",
+      "recallDate": "2023-09-07",
+      "cmvssNumber": "2023-470",
+      "safetyRisk": "HIGH",
+      "affectedUnits": 7400
+    },
+    {
+      "recallId": "2024-850",
+      "make": "Jeep",
+      "model": "Wrangler 4xe",
+      "years": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "system": "High Voltage Battery",
+      "component": "PHEV Battery Pack Internal Defect",
+      "defectSummary": "Internal separator degradation inside the high-voltage battery pack may increase the risk of battery thermal event.",
+      "correctiveAction": "FCA dealers will update battery management software and replace the HV battery pack if anomalies exist.",
+      "recallDate": "2023-11-27",
+      "cmvssNumber": "2023-655",
+      "safetyRisk": "CRITICAL",
+      "affectedUnits": 4900
+    },
+    {
+      "recallId": "2024-851",
+      "make": "Jeep",
+      "model": "Grand Cherokee",
+      "years": [
+        2022,
+        2023,
+        2024
+      ],
+      "system": "Suspension",
+      "component": "Upper Control Arm Pinch Bolt",
+      "defectSummary": "Upper control arm ball joint pinch bolt may separate from the steering knuckle, causing wheel misalignment.",
+      "correctiveAction": "Dealers will inspect and replace the upper control arm pinch bolt and nut assembly.",
+      "recallDate": "2024-02-23",
+      "cmvssNumber": "2024-125",
+      "safetyRisk": "CRITICAL",
+      "affectedUnits": 9800
+    },
+    {
+      "recallId": "2024-855",
+      "make": "Dodge",
+      "model": "Hornet",
+      "years": [
+        2023,
+        2024
+      ],
+      "system": "Brakes",
+      "component": "Brake Pedal Arm",
+      "defectSummary": "Brake pedal arm may collapse or disengage while applying emergency stopping force.",
+      "correctiveAction": "Dodge dealers will reinforce the brake pedal arm assembly with a steel bolt attachment.",
+      "recallDate": "2023-10-12",
+      "cmvssNumber": "2023-550",
+      "safetyRisk": "CRITICAL",
+      "affectedUnits": 2100
+    },
+    {
+      "recallId": "2024-860",
+      "make": "Ram",
+      "model": "1500",
+      "years": [
+        2023,
+        2024
+      ],
+      "system": "Electrical / Steering",
+      "component": "Steering Column Control Module (SCCM)",
+      "defectSummary": "Internal connector pins in the turn signal switch may cause turn signal lights to fail to illuminate.",
+      "correctiveAction": "Dealers will inspect and replace the steering column control module.",
+      "recallDate": "2024-04-12",
+      "cmvssNumber": "2024-219",
+      "safetyRisk": "MEDIUM",
+      "affectedUnits": 16700
+    },
+    {
+      "recallId": "2024-880",
+      "make": "Mercedes-Benz",
+      "model": "GLC 300",
+      "years": [
+        2023,
+        2024
+      ],
+      "system": "Fuel System",
+      "component": "Fuel Delivery Module Fuse",
+      "defectSummary": "Fuel pump impeller friction may blow the fuel pump fuse, leading to sudden loss of engine propulsion.",
+      "correctiveAction": "Mercedes-Benz dealers will replace the fuel delivery module assembly.",
+      "recallDate": "2024-01-10",
+      "cmvssNumber": "2024-022",
+      "safetyRisk": "HIGH",
+      "affectedUnits": 8900
+    },
+    {
+      "recallId": "2024-881",
+      "make": "Mercedes-Benz",
+      "model": "EQE",
+      "years": [
+        2023,
+        2024
+      ],
+      "system": "High Voltage Electrical",
+      "component": "Battery Management System Software",
+      "defectSummary": "Software diagnostic malfunction in the high-voltage battery management system may trigger shutdown of propulsion.",
+      "correctiveAction": "Dealers will update high-voltage battery management software free of charge.",
+      "recallDate": "2024-05-18",
+      "cmvssNumber": "2024-301",
+      "safetyRisk": "HIGH",
+      "affectedUnits": 1400
+    },
+    {
+      "recallId": "2024-901",
+      "make": "Audi",
+      "model": "Q5",
+      "years": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "system": "Electrical",
+      "component": "Gateway Control Module Liquid Ingress",
+      "defectSummary": "Liquid spilled in the rear seat area can penetrate the gateway control module, causing the vehicle to enter emergency limp mode.",
+      "correctiveAction": "Audi dealers will install a protective waterproof cover on the gateway module.",
+      "recallDate": "2023-12-15",
+      "cmvssNumber": "2023-660",
+      "safetyRisk": "MEDIUM",
+      "affectedUnits": 11300
+    },
+    {
+      "recallId": "2024-902",
+      "make": "Audi",
+      "model": "Q4 e-tron",
+      "years": [
+        2022,
+        2023,
+        2024
+      ],
+      "system": "Airbags",
+      "component": "Side Curtain Airbag Inflation",
+      "defectSummary": "Head curtain airbag may snag on the A-pillar trim during deployment in a side-impact collision.",
+      "correctiveAction": "Dealers will modify the A-pillar trim clips and inspect airbag orientation.",
+      "recallDate": "2024-02-28",
+      "cmvssNumber": "2024-130",
+      "safetyRisk": "HIGH",
+      "affectedUnits": 3100
+    },
+    {
+      "recallId": "2024-920",
+      "make": "Volvo",
+      "model": "XC40 Recharge",
+      "years": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "system": "Brakes",
+      "component": "Brake Control Module (BCM2) Software",
+      "defectSummary": "A software diagnostic glitch in the brake control module may result in loss of electronic brake support.",
+      "correctiveAction": "Volvo deployed over-the-air (OTA) software update to restore redundant brake monitoring channels.",
+      "recallDate": "2023-11-10",
+      "cmvssNumber": "2023-605",
+      "safetyRisk": "HIGH",
+      "affectedUnits": 4100
+    },
+    {
+      "recallId": "2024-921",
+      "make": "Volvo",
+      "model": "XC60",
+      "years": [
+        2022,
+        2023,
+        2024
+      ],
+      "system": "Brakes",
+      "component": "Electronic Brake Control Diagnostic Logic",
+      "defectSummary": "Diagnostic software may falsely trigger ABS warning and disengage electronic brake booster assistance.",
+      "correctiveAction": "Dealers will update brake system software via dealership diagnostic tools.",
+      "recallDate": "2024-01-25",
+      "cmvssNumber": "2024-061",
+      "safetyRisk": "HIGH",
+      "affectedUnits": 6800
+    },
+    {
+      "recallId": "2024-940",
+      "make": "Lexus",
+      "model": "RX",
+      "years": [
+        2023,
+        2024
+      ],
+      "system": "Driver Assistance / ADAS",
+      "component": "Panoramic View Monitor Camera Cable",
+      "defectSummary": "Panoramic camera signal processing box may not output video signal upon shifting into reverse.",
+      "correctiveAction": "Lexus dealers will update the parking assist ECU software or replace the camera module.",
+      "recallDate": "2024-04-10",
+      "cmvssNumber": "2024-211",
+      "safetyRisk": "LOW",
+      "affectedUnits": 7200
+    },
+    {
+      "recallId": "2024-941",
+      "make": "Lexus",
+      "model": "NX",
+      "years": [
+        2022,
+        2023,
+        2024
+      ],
+      "system": "Electrical",
+      "component": "Electronic Parking Brake Actuator",
+      "defectSummary": "Skid control ECU software may prevent the electronic parking brake from engaging automatically.",
+      "correctiveAction": "Dealers will reprogram the skid control ECU with revised operating logic.",
+      "recallDate": "2023-10-30",
+      "cmvssNumber": "2023-580",
+      "safetyRisk": "MEDIUM",
+      "affectedUnits": 5900
+    },
+    {
+      "recallId": "2024-950",
+      "make": "Acura",
+      "model": "MDX",
+      "years": [
+        2022,
+        2023,
+        2024
+      ],
+      "system": "Engine / Mechanical",
+      "component": "Engine Connecting Rod Bearings",
+      "defectSummary": "Connecting rod journals on 3.5L V6 engines may have improper diameter, causing bearing wear and engine seizure.",
+      "correctiveAction": "Acura dealers will inspect engine bearings and replace the sub-engine assembly if wear is discovered.",
+      "recallDate": "2023-11-20",
+      "cmvssNumber": "2023-622",
+      "safetyRisk": "HIGH",
+      "affectedUnits": 6400
+    },
+    {
+      "recallId": "2024-951",
+      "make": "Acura",
+      "model": "RDX",
+      "years": [
+        2021,
+        2022,
+        2023
+      ],
+      "system": "Fuel System",
+      "component": "High Pressure Fuel Pump",
+      "defectSummary": "High pressure fuel pump internal diaphragm may crack, releasing fuel vapor into the engine bay.",
+      "correctiveAction": "Dealers will inspect and replace the high pressure fuel pump assembly.",
+      "recallDate": "2024-03-14",
+      "cmvssNumber": "2024-165",
+      "safetyRisk": "HIGH",
+      "affectedUnits": 4800
+    },
+    {
+      "recallId": "2024-960",
+      "make": "Cadillac",
+      "model": "Lyriq",
+      "years": [
+        2023,
+        2024
+      ],
+      "system": "Brakes",
+      "component": "Electronic Brake Control Module (eBCM)",
+      "defectSummary": "eBCM software may falsely detect wheel slip during ABS stops below 40 km/h, resulting in anti-lock release.",
+      "correctiveAction": "GM deployed an over-the-air update to modify calibration values in the eBCM.",
+      "recallDate": "2024-05-02",
+      "cmvssNumber": "2024-272",
+      "safetyRisk": "HIGH",
+      "affectedUnits": 1950
+    },
+    {
+      "recallId": "2024-970",
+      "make": "Lincoln",
+      "model": "Corsair",
+      "years": [
+        2021,
+        2022,
+        2023
+      ],
+      "system": "Engine / Fire Safety",
+      "component": "Under-Hood Air Deflector Vents",
+      "defectSummary": "Engine block failure in 2.5L Hybrid models could release fuel and oil vapors under hood, increasing fire risk.",
+      "correctiveAction": "Lincoln dealers will modify active grille shutters and remove lower engine shield blinds.",
+      "recallDate": "2023-08-11",
+      "cmvssNumber": "2023-435",
+      "safetyRisk": "HIGH",
+      "affectedUnits": 2200
+    },
+    {
+      "recallId": "2024-980",
+      "make": "Porsche",
+      "model": "Taycan",
+      "years": [
+        2020,
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "system": "High Voltage Battery",
+      "component": "Cell Module Seal Sealant",
+      "defectSummary": "Moisture penetration into high-voltage battery cell modules may trigger electrical arcing and thermal event.",
+      "correctiveAction": "Porsche centres will test high-voltage battery cell leakage and replace defective cell modules.",
+      "recallDate": "2024-02-02",
+      "cmvssNumber": "2024-080",
+      "safetyRisk": "CRITICAL",
+      "affectedUnits": 1850
+    },
+    {
+      "recallId": "2024-985",
+      "make": "Genesis",
+      "model": "GV60",
+      "years": [
+        2023,
+        2024
+      ],
+      "system": "Drivetrain",
+      "component": "Rear Differential Actuator Shaft",
+      "defectSummary": "Rear drive unit differential lock actuator shaft may crack under heavy launch torque, causing loss of park lock.",
+      "correctiveAction": "Genesis dealers will inspect and replace the rear drive differential assembly.",
+      "recallDate": "2024-04-22",
+      "cmvssNumber": "2024-230",
+      "safetyRisk": "MEDIUM",
+      "affectedUnits": 850
+    },
+    {
+      "recallId": "2024-990",
+      "make": "Rivian",
+      "model": "R1T",
+      "years": [
+        2022,
+        2023,
+        2024
+      ],
+      "system": "Steering / Suspension",
+      "component": "Front Upper Control Arm Fastener",
+      "defectSummary": "Steering knuckle to upper control arm fastener may have insufficient torque, leading to steering wheel wobble.",
+      "correctiveAction": "Rivian Mobile Service will inspect fastener torque and replace hardware free of charge.",
+      "recallDate": "2023-09-12",
+      "cmvssNumber": "2023-480",
+      "safetyRisk": "HIGH",
+      "affectedUnits": 1100
+    },
+    {
+      "recallId": "2024-995",
+      "make": "Polestar",
+      "model": "2",
+      "years": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "system": "High Voltage Battery",
+      "component": "High Voltage Disconnect Relay",
+      "defectSummary": "Fault in the high voltage disconnect circuit may cause vehicle propulsion to shut off without warning.",
+      "correctiveAction": "Polestar service points will install updated battery disconnect software and replace affected relays.",
+      "recallDate": "2023-10-18",
+      "cmvssNumber": "2023-560",
+      "safetyRisk": "HIGH",
+      "affectedUnits": 2400
+    },
+    {
+      "recallId": "2024-998",
+      "make": "Lucid",
+      "model": "Air",
+      "years": [
+        2022,
+        2023,
+        2024
+      ],
+      "system": "Electrical / Software",
+      "component": "High Voltage Interlock Loop (HVIL)",
+      "defectSummary": "Software timing sensitivity in the HVIL diagnostic loop may open battery contactors while driving.",
+      "correctiveAction": "Lucid will deploy an over-the-air update (version 2.2.0 or higher) to refine HVIL fault thresholds.",
+      "recallDate": "2024-01-15",
+      "cmvssNumber": "2024-035",
+      "safetyRisk": "HIGH",
+      "affectedUnits": 620
+    },
+    {
+      "recallId": "2024-999",
+      "make": "Mini",
+      "model": "Cooper SE",
+      "years": [
+        2020,
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "system": "High Voltage Battery",
+      "component": "High Voltage Battery Enclosure Insulation",
+      "defectSummary": "Internal insulation fault in high-voltage battery pack can lead to battery overheating after vehicle is parked.",
+      "correctiveAction": "Mini dealers will update high-voltage battery diagnostic software and replace cell modules if isolation faults occur.",
+      "recallDate": "2024-06-11",
+      "cmvssNumber": "2024-325",
+      "safetyRisk": "CRITICAL",
+      "affectedUnits": 1900
+    }
+  ]
+}

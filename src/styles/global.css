@@ -1,0 +1,304 @@
+/* ─────────────────────────────────────────────────────────────
+   RangeAndFuel.ca — Global CSS
+   Cyber Slate dark automotive theme + utility overrides
+   ───────────────────────────────────────────────────────────── */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── CSS Custom Properties ── */
+:root {
+  --cyber-slate:    #07090E;
+  --cyber-slate-2:  #0D1117;
+  --cyber-slate-3:  #161B25;
+  --cyber-slate-4:  #1E2536;
+  --neon-cyan:      #00F0FF;
+  --neon-cyan-dim:  #00C8D4;
+  --eff-green:      #10B981;
+  --ca-crimson:     #FF2E4D;
+  --amber-fuel:     #F59E0B;
+  --purple-ev:      #8B5CF6;
+  --slate-text:     #94A3B8;
+  --slate-border:   #1E293B;
+}
+
+/* ── Base Reset ── */
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 16px;
+  }
+
+  body {
+    @apply bg-cyber-slate text-slate-100 font-sans;
+    background-color: var(--cyber-slate);
+    min-height: 100vh;
+    overflow-x: clip;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-bold leading-tight;
+  }
+
+  a { @apply transition-colors duration-200; }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--cyber-slate-2); }
+  ::-webkit-scrollbar-thumb { background: var(--slate-border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--neon-cyan-dim); }
+
+  /* Selection */
+  ::selection {
+    background: rgba(0, 240, 255, 0.2);
+    color: var(--neon-cyan);
+  }
+}
+
+/* ── Component Classes ── */
+@layer components {
+
+  /* ── Neon Buttons ── */
+  .btn-neon {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm
+           border border-neon-cyan text-neon-cyan
+           hover:bg-neon-cyan hover:text-cyber-slate
+           transition-all duration-200;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+  }
+  .btn-neon:hover {
+    box-shadow: 0 0 30px rgba(0, 240, 255, 0.5), 0 0 60px rgba(0, 240, 255, 0.2);
+  }
+
+  .btn-green {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm
+           bg-efficiency-green text-white
+           hover:bg-emerald-400 transition-all duration-200;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+  }
+
+  .btn-crimson {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm
+           bg-canadian-crimson text-white
+           hover:bg-red-400 transition-all duration-200;
+    box-shadow: 0 0 20px rgba(255, 46, 77, 0.3);
+  }
+
+  /* ── Cards ── */
+  .card {
+    @apply rounded-xl border border-slate-border bg-cyber-slate-3 p-5
+           transition-all duration-300;
+  }
+  .card:hover {
+    @apply border-neon-cyan/20;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,240,255,0.1);
+    transform: translateY(-2px);
+  }
+
+  .card-glass {
+    @apply rounded-xl p-5 border border-white/5 backdrop-blur-sm;
+    background: rgba(13, 17, 23, 0.7);
+  }
+
+  /* ── HUD Badge ── */
+  .hud-badge {
+    @apply inline-flex flex-col items-center justify-center rounded-lg
+           border border-neon-cyan/30 bg-cyber-slate-4 px-4 py-3;
+    box-shadow: inset 0 0 20px rgba(0,240,255,0.05);
+  }
+  .hud-value {
+    @apply text-2xl font-mono font-bold text-neon-cyan;
+  }
+  .hud-label {
+    @apply text-xs uppercase tracking-widest text-slate-text mt-0.5;
+  }
+
+  /* ── Fuel Type Pill ── */
+  .fuel-pill-petrol  { @apply px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-fuel/15 text-amber-fuel border border-amber-fuel/30; }
+  .fuel-pill-diesel  { @apply px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-500/15 text-yellow-400 border border-yellow-500/30; }
+  .fuel-pill-bev     { @apply px-2.5 py-0.5 rounded-full text-xs font-semibold bg-efficiency-green/15 text-efficiency-green border border-efficiency-green/30; }
+  .fuel-pill-phev    { @apply px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-ev/15 text-purple-ev border border-purple-ev/30; }
+  .fuel-pill-hybrid  { @apply px-2.5 py-0.5 rounded-full text-xs font-semibold bg-teal-500/15 text-teal-400 border border-teal-500/30; }
+  .fuel-pill-premium { @apply px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-500/15 text-blue-400 border border-blue-500/30; }
+
+  /* ── Section Containers ── */
+  .container-site {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-title {
+    @apply text-3xl md:text-4xl font-display font-bold text-white;
+  }
+
+  .section-subtitle {
+    @apply text-slate-text text-lg mt-3 leading-relaxed;
+  }
+
+  /* ── Grid Overlay ── */
+  .bg-grid {
+    background-image:
+      linear-gradient(rgba(0,240,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,240,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* ── Input fields ── */
+  .input-dark {
+    @apply w-full bg-cyber-slate-4 border border-slate-border rounded-lg px-4 py-2.5
+           text-white placeholder-slate-text text-sm
+           focus:outline-none focus:border-neon-cyan/50 focus:ring-1 focus:ring-neon-cyan/30
+           transition-colors duration-200;
+  }
+
+  /* ── Province Chip ── */
+  .province-chip {
+    @apply px-3 py-1.5 rounded-md text-sm font-medium border border-slate-border
+           text-slate-text cursor-pointer transition-all duration-150;
+  }
+  .province-chip.active, .province-chip:hover {
+    @apply border-neon-cyan/50 text-neon-cyan bg-neon-cyan/5;
+  }
+
+  /* ── Table ── */
+  .data-table {
+    @apply w-full text-sm;
+  }
+  .data-table th {
+    @apply text-left text-xs uppercase tracking-wider text-slate-text py-3 px-4 border-b border-slate-border;
+  }
+  .data-table td {
+    @apply py-3 px-4 border-b border-slate-border/50 text-slate-200;
+  }
+  .data-table tr:last-child td { @apply border-b-0; }
+  .data-table tr:hover td { @apply bg-cyber-slate-4/50; }
+
+  /* ── Winter Severity Bar ── */
+  .winter-bar-track {
+    @apply h-3 rounded-full bg-cyber-slate-4 border border-slate-border overflow-hidden;
+  }
+  .winter-bar-fill {
+    @apply h-full rounded-full transition-all duration-700;
+    background: linear-gradient(90deg, #F59E0B, #EF4444, #FF2E4D);
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+  }
+
+  /* ── Neon Divider ── */
+  .neon-divider {
+    @apply h-px my-8;
+    background: linear-gradient(90deg, transparent, rgba(0,240,255,0.3), transparent);
+  }
+
+  /* ── Recall Alert ── */
+  .recall-alert {
+    @apply flex gap-3 p-4 rounded-lg border border-canadian-crimson/30
+           bg-canadian-crimson/5;
+  }
+
+  /* ── Loading Skeleton ── */
+  .skeleton {
+    @apply rounded animate-pulse bg-cyber-slate-4;
+  }
+}
+
+/* ── Utilities ── */
+@layer utilities {
+  .text-gradient-cyan {
+    background: linear-gradient(135deg, #00F0FF, #10B981);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .text-gradient-red {
+    background: linear-gradient(135deg, #FF2E4D, #F59E0B);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .text-gradient-purple {
+    background: linear-gradient(135deg, #8B5CF6, #00F0FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glow-cyan   { box-shadow: 0 0 20px rgba(0,240,255,0.4); }
+  .glow-green  { box-shadow: 0 0 20px rgba(16,185,129,0.4); }
+  .glow-red    { box-shadow: 0 0 20px rgba(255,46,77,0.4); }
+
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Canvas fill */
+  .canvas-fill { display: block; width: 100%; height: 100%; }
+}
+
+/* ── Animations ── */
+@keyframes scanLine {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  10%  { opacity: 0.5; }
+  90%  { opacity: 0.5; }
+  100% { transform: translateY(200%); opacity: 0; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.animate-fade-up   { animation: fadeUp 0.6s ease-out both; }
+.animate-fade-up-2 { animation: fadeUp 0.6s 0.15s ease-out both; }
+.animate-fade-up-3 { animation: fadeUp 0.6s 0.3s ease-out both; }
+.animate-fade-up-4 { animation: fadeUp 0.6s 0.45s ease-out both; }
+.animate-float     { animation: float 5s ease-in-out infinite; }
+.animate-blink     { animation: blink 1s step-end infinite; }
+
+/* ── Range Slider Custom Styling ── */
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--cyber-slate-4);
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--neon-cyan);
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0,240,255,0.5);
+  transition: box-shadow 0.2s;
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 20px rgba(0,240,255,0.8);
+}
+
+/* ── Three.js canvas container ── */
+#hero-canvas-container {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+#hero-canvas-container canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}

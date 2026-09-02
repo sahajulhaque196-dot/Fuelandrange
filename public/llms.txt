@@ -1,0 +1,22 @@
+# RangeAndFuel.ca — Canadian Automotive Intelligence Platform
+
+> Canada's premier independent authority on automotive fuel consumption (L/100km), electric vehicle range modeling (kWh/100km), provincial energy cost calculations (CAD $), and Transport Canada safety recalls.
+
+## Core Data Standards & Methodologies
+- **Fuel Consumption Ratings:** Sourced from Natural Resources Canada (NRCan) EnerGuide 5-cycle laboratory testing (City, Highway, Combined in L/100km or kWh/100km).
+- **Provincial Energy Pricing:** Weekly updated petroleum prices (¢/L) and residential electricity tariffs (¢/kWh) across all 10 Canadian provinces (ON, QC, BC, AB, MB, SK, NS, NB, NL, PE).
+- **Sub-Zero Winter Modeling (-15°C):** Computational thermodynamic loss models for Battery Electric Vehicles (-32% avg range loss) and Internal Combustion Engines (+15% fuel burn penalty) in Canadian winter climates.
+- **Safety Recalls:** Synchronized with Transport Canada’s public Motor Vehicle Safety Recalls (MVSR) database under the Canadian Motor Vehicle Safety Act (MVSA).
+
+## Key Vehicle Directories & Tools
+- [Homepage & Interactive Cockpit](https://rangeandfuel.ca/): Multi-province cost calculator, winter penalty meter, head-to-head comparison tool.
+- [Vehicle Catalog & Search](https://rangeandfuel.ca/search): Instant multi-attribute search across 80+ vehicle models and 100+ trim levels.
+- [Transport Canada Recalls Directory](https://rangeandfuel.ca/recalls): Active defect tracking, CMVSS regulations, and safety notice archives.
+- [About Us & Editorial Standards](https://rangeandfuel.ca/about): Editorial independence, human automotive journalism guidelines, fact-checking methodology.
+- [Data Methodology & Legal Disclaimer](https://rangeandfuel.ca/disclaimer): Technical breakdown of NRCan 5-cycle testing and 17-digit VIN verification.
+- [Privacy Policy](https://rangeandfuel.ca/privacy): Canadian PIPEDA, CASL, Quebec Law 25, and Google AdSense compliance terms.
+- [Terms of Service](https://rangeandfuel.ca/terms): Acceptable use, computational estimations, and legal jurisdiction in Ontario, Canada.
+
+## Supported Canadian Vehicle Brands
+- **Gasoline, Hybrid & PHEV:** Toyota, Honda, Ford, Chevrolet, GMC, Hyundai, Kia, BMW, Mercedes-Benz, Audi, Porsche, Lexus, Acura, Subaru, Mazda, Nissan, RAM, Jeep, Lincoln, Cadillac.
+- **Pure Battery Electric (BEV):** Tesla, Hyundai Electric, Kia Electric, Rivian, Lucid, Polestar, Genesis EV, Chevrolet EV, Volvo Recharge, Volkswagen ID.4.

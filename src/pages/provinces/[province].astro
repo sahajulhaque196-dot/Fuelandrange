@@ -1,0 +1,577 @@
+---
+// src/pages/provinces/[province].astro
+// Programmatic SEO — 10 Canadian provincial fuel cost guide pages
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AdSlot from '../../components/common/AdSlot.astro';
+import fuelPricesData from '../../data/fuel-prices.json';
+import vehiclesRaw from '../../data/vehicles.json';
+import { breadcrumbSchema } from '../../lib/schema.ts';
+import { calcAnnualCost, toSlug, fuelTypePill, fuelTypeLabel } from '../../lib/calculations.ts';
+import type { Vehicle, Province } from '../../lib/calculations.ts';
+
+const KM_PER_YEAR = 20_000;
+
+export async function getStaticPaths() {
+  return fuelPricesData.provinces.map((prov) => ({
+    params: { province: prov.code.toLowerCase() },
+    props: { provinceData: prov as Province },
+  }));
+}
+
+const { provinceData } = Astro.props as { provinceData: Province };
+const { province } = Astro.params;
+
+const allVehicles = vehiclesRaw as unknown as Vehicle[];
+
+interface RankedVehicle {
+  vehicle: Vehicle;
+  annualCAD: number;
+  monthlyCAD: number;
+  efficiency: number;
+  unit: string;
+  fuelLabel: string;
+}
+
+const ranked: RankedVehicle[] = allVehicles
+  .filter((v) => {
+    if (v.fuelType === 'BEV') return v.kwhPer100km !== null;
+    if (v.fuelType === 'PHEV') return v.kwhPer100km !== null && v.combinedL100km !== null;
+    return v.combinedL100km !== null;
+  })
+  .map((v) => {
+    const result = calcAnnualCost(v, provinceData, KM_PER_YEAR);
+    return {
+      vehicle: v,
+      annualCAD: result.annualCAD,
+      monthlyCAD: result.monthlyCAD,
+      efficiency: result.combinedEfficiency,
+      unit: result.unit === 'kWh' ? 'kWh/100km' : 'L/100km',
+      fuelLabel: fuelTypeLabel(v.fuelType),
+    };
+  })
+  .sort((a, b) => a.annualCAD - b.annualCAD);
+
+const top10 = ranked.slice(0, 10);
+
+function avgCost(fuelTypes: string[]): number | null {
+  const subset = ranked.filter((r) => fuelTypes.includes(r.vehicle.fuelType));
+  if (subset.length === 0) return null;
+  return Math.round(subset.reduce((s, r) => s + r.annualCAD, 0) / subset.length);
+}
+
+const iceAvg  = avgCost(['X', 'Z', 'D']);
+const hevAvg  = avgCost(['HEV']);
+const bevAvg  = avgCost(['BEV']);
+const phevAvg = avgCost(['PHEV']);
+
+const provinceEmoji: Record<string, string> = {
+  ON: '🏙️', BC: '🏔️', AB: '🛢️', QC: '⚜️', MB: '🌾',
+  SK: '🌻', NS: '🦞', NB: '🌊', NL: '🐋', PE: '🥔',
+};
+const emoji = provinceEmoji[provinceData.code] ?? '🍁';
+
+const jsonLd = [
+  breadcrumbSchema([
+    { name: 'Home',                 url: '/' },
+    { name: 'Province Fuel Guides', url: '/provinces' },
+    { name: provinceData.name,      url: `/provinces/${province}` },
+  ]),
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: `${provinceData.name} Fuel Cost Guide 2024`,
+    url: `https://rangeandfuel.ca/provinces/${province}`,
+  },
+];
+
+const pageTitle = `${provinceData.name} Fuel Cost Guide 2024 — Gas Prices & EV Rates | RangeAndFuel.ca`;
+const pageDesc  = `Fuel prices in ${provinceData.name}: gas ${provinceData.gasolineCentsPerL}¢/L, electricity ${provinceData.electricityCentsPerKwh}¢/kWh. Calculate annual fuel costs for any vehicle in ${provinceData.name} with real NRCan data.`;
+---
+<BaseLayout
+  title={pageTitle}
+  description={pageDesc}
+  canonical={`/provinces/${province}`}
+  jsonLd={jsonLd}
+>
+
+  <!-- Breadcrumb Bar -->
+  <div class="border-b border-white/[0.06] bg-[#07090E]/80 backdrop-blur-md">
+    <div class="container-site py-3">
+      <nav aria-label="Breadcrumb">
+        <ol class="flex items-center gap-2 text-xs text-slate-400 font-mono">
+          <li><a href="/" class="hover:text-neon-cyan transition-colors">Home</a></li>
+          <li class="text-slate-600">/</li>
+          <li><a href="/provinces" class="hover:text-neon-cyan transition-colors">Province Fuel Guides</a></li>
+          <li class="text-slate-600">/</li>
+          <li class="text-slate-200 font-medium">{provinceData.name}</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Hero Header -->
+  <header class="relative py-12 md:py-16 bg-[#06080C] border-b border-white/[0.08] overflow-hidden">
+    <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-b from-neon-cyan/15 via-emerald-500/5 to-transparent blur-3xl pointer-events-none rounded-full"></div>
+    <div class="absolute inset-0 bg-cyber-grid bg-[size:32px_32px] opacity-10 pointer-events-none"></div>
+
+    <div class="container-site relative z-10">
+      <!-- Badge row -->
+      <div class="flex flex-wrap items-center gap-2 mb-4">
+        <span class="text-xs font-mono font-bold px-3 py-1 rounded-full text-neon-cyan bg-cyan-500/10 border border-cyan-500/20">
+          {emoji} {provinceData.code}
+        </span>
+        <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+          NRCan EnerGuide Data
+        </span>
+        {provinceData.carbonTax ? (
+          <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-md bg-amber-500/10 border border-amber-500/20 text-amber-400">
+            Federal Carbon Tax Applied
+          </span>
+        ) : (
+          <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-md bg-slate-500/10 border border-slate-500/20 text-slate-400">
+            Provincial Cap-and-Trade
+          </span>
+        )}
+      </div>
+
+      <!-- H1 -->
+      <div class="mb-8">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-display font-black text-white tracking-tight leading-tight">
+          {provinceData.name} Fuel Cost Guide 2024
+        </h1>
+        <p class="text-base sm:text-lg text-slate-400 mt-3 max-w-2xl leading-relaxed">
+          Real fuel prices for {provinceData.name} drivers. Annual cost rankings across {ranked.length.toLocaleString('en-CA')} Canadian vehicles at 20,000 km/yr — sourced from NRCan EnerGuide ratings.
+        </p>
+      </div>
+
+      <!-- 4 Stat Pillars -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="p-5 rounded-2xl bg-[#0D1117] border border-white/[0.08]">
+          <div class="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-1">Regular Gas</div>
+          <div class="text-3xl font-mono font-black text-amber-400">{provinceData.gasolineCentsPerL}¢</div>
+          <div class="text-xs font-mono text-slate-400 mt-1">per litre</div>
+        </div>
+        <div class="p-5 rounded-2xl bg-[#0D1117] border border-neon-cyan/20 shadow-lg shadow-cyan-500/5">
+          <div class="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-1">Electricity</div>
+          <div class="text-3xl font-mono font-black text-neon-cyan">{provinceData.electricityCentsPerKwh}¢</div>
+          <div class="text-xs font-mono text-slate-400 mt-1">per kWh</div>
+        </div>
+        <div class="p-5 rounded-2xl bg-[#0D1117] border border-white/[0.08]">
+          <div class="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-1">Diesel</div>
+          <div class="text-3xl font-mono font-black text-orange-400">{provinceData.dieselCentsPerL}¢</div>
+          <div class="text-xs font-mono text-slate-400 mt-1">per litre</div>
+        </div>
+        <div class="p-5 rounded-2xl bg-[#0D1117] border border-white/[0.08]">
+          <div class="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-1">Premium Gas</div>
+          <div class="text-3xl font-mono font-black text-purple-400">{provinceData.premiumCentsPerL}¢</div>
+          <div class="text-xs font-mono text-slate-400 mt-1">per litre</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <section class="py-12 md:py-16 bg-[#07090E]">
+    <div class="container-site">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+
+        <!-- Left: primary content (8 cols) -->
+        <div class="lg:col-span-8 space-y-12">
+
+          <!-- 1. Fuel Price Detail Card -->
+          <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl">
+            <div class="mb-6">
+              <span class="text-xs font-mono text-neon-cyan uppercase tracking-widest font-semibold block mb-1">⛽ Current Pump Prices</span>
+              <h2 class="text-2xl sm:text-3xl font-display font-black text-white">
+                {provinceData.name} Fuel Prices — September 2026
+              </h2>
+              <p class="text-sm text-slate-400 mt-1">Provincial averages sourced from Natural Resources Canada (NRCan) retail petroleum surveys.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="p-5 rounded-2xl bg-[#06080C] border border-amber-500/20 flex items-center gap-4">
+                <div class="w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-xl shrink-0">⛽</div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-xs font-mono text-slate-400 uppercase tracking-wider">Regular Gasoline (87 AKI)</div>
+                  <div class="text-2xl font-mono font-black text-amber-400 mt-0.5">{provinceData.gasolineCentsPerL}¢/L</div>
+                  <div class="text-xs text-slate-500 font-mono mt-0.5">${(provinceData.gasolineCentsPerL / 100 * 50).toFixed(2)} to fill 50L</div>
+                </div>
+              </div>
+              <div class="p-5 rounded-2xl bg-[#06080C] border border-purple-500/20 flex items-center gap-4">
+                <div class="w-11 h-11 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-xl shrink-0">🔋</div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-xs font-mono text-slate-400 uppercase tracking-wider">Premium Gasoline (91+ AKI)</div>
+                  <div class="text-2xl font-mono font-black text-purple-400 mt-0.5">{provinceData.premiumCentsPerL}¢/L</div>
+                  <div class="text-xs text-slate-500 font-mono mt-0.5">${(provinceData.premiumCentsPerL / 100 * 50).toFixed(2)} to fill 50L</div>
+                </div>
+              </div>
+              <div class="p-5 rounded-2xl bg-[#06080C] border border-orange-500/20 flex items-center gap-4">
+                <div class="w-11 h-11 rounded-xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-center text-xl shrink-0">🚛</div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-xs font-mono text-slate-400 uppercase tracking-wider">Diesel (Ultra-Low Sulphur)</div>
+                  <div class="text-2xl font-mono font-black text-orange-400 mt-0.5">{provinceData.dieselCentsPerL}¢/L</div>
+                  <div class="text-xs text-slate-500 font-mono mt-0.5">${(provinceData.dieselCentsPerL / 100 * 80).toFixed(2)} to fill 80L</div>
+                </div>
+              </div>
+              <div class="p-5 rounded-2xl bg-[#06080C] border border-neon-cyan/20 flex items-center gap-4">
+                <div class="w-11 h-11 rounded-xl bg-cyan-500/10 border border-neon-cyan/30 flex items-center justify-center text-xl shrink-0">⚡</div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-xs font-mono text-slate-400 uppercase tracking-wider">Electricity (Home Charging)</div>
+                  <div class="text-2xl font-mono font-black text-neon-cyan mt-0.5">{provinceData.electricityCentsPerKwh}¢/kWh</div>
+                  <div class="text-xs text-slate-500 font-mono mt-0.5">${(provinceData.electricityCentsPerKwh / 100 * 60).toFixed(2)} to charge 60 kWh</div>
+                </div>
+              </div>
+            </div>
+            <div class={`mt-5 p-4 rounded-2xl flex items-start gap-3 text-xs font-mono ${provinceData.carbonTax ? 'bg-amber-500/5 border border-amber-500/20 text-amber-300' : 'bg-slate-500/5 border border-slate-500/20 text-slate-400'}`}>
+              <span class="text-base mt-0.5 shrink-0">{provinceData.carbonTax ? '⚠️' : 'ℹ️'}</span>
+              <p>
+                {provinceData.carbonTax
+                  ? `${provinceData.name} is subject to the federal carbon pricing backstop. The carbon levy is included in these fuel prices.`
+                  : `${provinceData.name} operates under its own carbon pricing system and is not subject to the federal carbon backstop.`
+                }
+              </p>
+            </div>
+          </div>
+          <!-- 2. Top 10 Most Fuel-Efficient Vehicles -->
+          <div>
+            <div class="mb-6">
+              <span class="text-xs font-mono text-neon-cyan uppercase tracking-widest font-semibold block mb-1">🏆 Annual Cost Rankings</span>
+              <h2 class="text-2xl sm:text-3xl font-display font-black text-white">
+                Top 10 Most Fuel-Efficient Vehicles in {provinceData.name}
+              </h2>
+              <p class="text-sm text-slate-400 mt-1">
+                Ranked by estimated annual fuel cost at 20,000 km/yr using {provinceData.name} prices. NRCan combined ratings.
+              </p>
+            </div>
+
+            <div class="space-y-3">
+              {top10.map((item, idx) => {
+                const v = item.vehicle;
+                const vehicleSlug = `/makes/${toSlug(v.make)}/${toSlug(v.model)}/${v.year}`;
+                const isEV     = v.fuelType === 'BEV';
+                const isHybrid = v.fuelType === 'HEV' || v.fuelType === 'PHEV';
+                const rankColors = ['text-yellow-400','text-slate-300','text-amber-600','text-slate-400','text-slate-400','text-slate-500','text-slate-500','text-slate-500','text-slate-500','text-slate-500'];
+                const rankColor  = rankColors[idx] ?? 'text-slate-500';
+                const borderClass = idx === 0
+                  ? 'border-yellow-500/30 shadow-lg shadow-yellow-500/5'
+                  : isEV     ? 'border-neon-cyan/20'
+                  : isHybrid ? 'border-emerald-500/20'
+                  : 'border-white/[0.06]';
+                return (
+                  <a
+                    href={vehicleSlug}
+                    class={`flex items-center gap-4 p-4 sm:p-5 rounded-2xl bg-[#0D1117] border ${borderClass} hover:border-cyan-500/40 hover:shadow-xl hover:shadow-cyan-500/5 transition-all duration-200 group`}
+                    style="text-decoration: none;"
+                  >
+                    <div class={`shrink-0 w-9 h-9 rounded-xl bg-[#06080C] border border-white/[0.06] flex items-center justify-center font-mono font-black text-sm ${rankColor}`}>
+                      #{idx + 1}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex flex-wrap items-center gap-2 mb-1">
+                        <span class="font-display font-bold text-white text-sm group-hover:text-neon-cyan transition-colors">
+                          {v.year} {v.make} {v.model}
+                        </span>
+                        <span class={fuelTypePill(v.fuelType)}>{item.fuelLabel.split(' ')[0]}</span>
+                      </div>
+                      <div class="text-xs text-slate-500 font-mono">{v.trim} · {v.vehicleClass}</div>
+                    </div>
+                    <div class="hidden sm:block shrink-0 text-right">
+                      <div class="text-xs font-mono text-slate-400 mb-0.5">Efficiency</div>
+                      <div class={`text-sm font-mono font-bold ${isEV ? 'text-neon-cyan' : isHybrid ? 'text-emerald-400' : 'text-slate-300'}`}>
+                        {item.efficiency} {item.unit}
+                      </div>
+                    </div>
+                    <div class="shrink-0 text-right">
+                      <div class="text-xs font-mono text-slate-400 mb-0.5">Annual</div>
+                      <div class="text-base font-mono font-black text-white">${item.annualCAD.toLocaleString('en-CA')}</div>
+                      <div class="text-[10px] font-mono text-slate-500">/mo ${item.monthlyCAD}</div>
+                    </div>
+                    <span class="text-neon-cyan text-sm font-bold shrink-0 group-hover:translate-x-1 transition-transform hidden sm:block">→</span>
+                  </a>
+                );
+              })}
+            </div>
+
+            <p class="text-xs text-slate-500 font-mono mt-4 text-center">
+              * Annual cost estimates use NRCan combined ratings at {provinceData.gasolineCentsPerL}¢/L gas, {provinceData.electricityCentsPerKwh}¢/kWh electricity. Actual costs vary with driving habits.
+            </p>
+          </div>
+
+          <!-- 3. ICE vs HEV vs PHEV vs BEV Comparison Table -->
+          <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl">
+            <div class="mb-6">
+              <span class="text-xs font-mono text-neon-cyan uppercase tracking-widest font-semibold block mb-1">📊 Powertrain Comparison</span>
+              <h2 class="text-2xl sm:text-3xl font-display font-black text-white">
+                ICE vs Hybrid vs EV Annual Costs in {provinceData.name}
+              </h2>
+              <p class="text-sm text-slate-400 mt-1">
+                Fleet-average annual fuel costs at 20,000 km/yr. Based on all NRCan-rated vehicles in our database.
+              </p>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm font-mono">
+                <thead>
+                  <tr class="border-b border-white/[0.08]">
+                    <th class="text-left py-3 px-4 text-xs text-slate-400 uppercase tracking-wider font-semibold">Powertrain</th>
+                    <th class="text-right py-3 px-4 text-xs text-slate-400 uppercase tracking-wider font-semibold">Avg Annual</th>
+                    <th class="text-right py-3 px-4 text-xs text-slate-400 uppercase tracking-wider font-semibold">Monthly</th>
+                    <th class="text-right py-3 px-4 text-xs text-slate-400 uppercase tracking-wider font-semibold hidden sm:table-cell">vs Gas</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-white/[0.04]">
+                  {iceAvg !== null && (
+                    <tr class="hover:bg-white/[0.02] transition-colors">
+                      <td class="py-4 px-4">
+                        <div class="flex items-center gap-2.5">
+                          <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0"></span>
+                          <div>
+                            <div class="text-white font-bold">Gasoline / Diesel (ICE)</div>
+                            <div class="text-xs text-slate-500">Regular, Premium, Diesel</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="py-4 px-4 text-right"><span class="text-amber-400 font-bold text-base">${iceAvg.toLocaleString('en-CA')}</span></td>
+                      <td class="py-4 px-4 text-right text-slate-400">${Math.round(iceAvg / 12).toLocaleString('en-CA')}</td>
+                      <td class="py-4 px-4 text-right hidden sm:table-cell"><span class="text-slate-500 text-xs">baseline</span></td>
+                    </tr>
+                  )}
+                  {hevAvg !== null && iceAvg !== null && (
+                    <tr class="hover:bg-white/[0.02] transition-colors">
+                      <td class="py-4 px-4">
+                        <div class="flex items-center gap-2.5">
+                          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shrink-0"></span>
+                          <div>
+                            <div class="text-white font-bold">Full Hybrid (HEV)</div>
+                            <div class="text-xs text-slate-500">Self-charging hybrid</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="py-4 px-4 text-right"><span class="text-emerald-400 font-bold text-base">${hevAvg.toLocaleString('en-CA')}</span></td>
+                      <td class="py-4 px-4 text-right text-slate-400">${Math.round(hevAvg / 12).toLocaleString('en-CA')}</td>
+                      <td class="py-4 px-4 text-right hidden sm:table-cell"><span class="text-emerald-400 text-xs font-bold">Save ~${(iceAvg - hevAvg).toLocaleString('en-CA')}/yr</span></td>
+                    </tr>
+                  )}
+                  {phevAvg !== null && iceAvg !== null && (
+                    <tr class="hover:bg-white/[0.02] transition-colors">
+                      <td class="py-4 px-4">
+                        <div class="flex items-center gap-2.5">
+                          <span class="w-2.5 h-2.5 rounded-full bg-blue-400 shrink-0"></span>
+                          <div>
+                            <div class="text-white font-bold">Plug-in Hybrid (PHEV)</div>
+                            <div class="text-xs text-slate-500">60% EV / 40% ICE split assumed</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="py-4 px-4 text-right"><span class="text-blue-400 font-bold text-base">${phevAvg.toLocaleString('en-CA')}</span></td>
+                      <td class="py-4 px-4 text-right text-slate-400">${Math.round(phevAvg / 12).toLocaleString('en-CA')}</td>
+                      <td class="py-4 px-4 text-right hidden sm:table-cell">
+                        <span class={`text-xs font-bold ${iceAvg - phevAvg > 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                          {iceAvg - phevAvg > 0 ? 'Save' : 'Cost'} ~${Math.abs(iceAvg - phevAvg).toLocaleString('en-CA')}/yr
+                        </span>
+                      </td>
+                    </tr>
+                  )}
+                  {bevAvg !== null && iceAvg !== null && (
+                    <tr class="hover:bg-white/[0.02] transition-colors">
+                      <td class="py-4 px-4">
+                        <div class="flex items-center gap-2.5">
+                          <span class="w-2.5 h-2.5 rounded-full bg-neon-cyan shrink-0"></span>
+                          <div>
+                            <div class="text-white font-bold">Battery Electric (BEV)</div>
+                            <div class="text-xs text-slate-500">Home charging at {provinceData.electricityCentsPerKwh}¢/kWh</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="py-4 px-4 text-right"><span class="text-neon-cyan font-bold text-base">${bevAvg.toLocaleString('en-CA')}</span></td>
+                      <td class="py-4 px-4 text-right text-slate-400">${Math.round(bevAvg / 12).toLocaleString('en-CA')}</td>
+                      <td class="py-4 px-4 text-right hidden sm:table-cell">
+                        <span class={`text-xs font-bold ${iceAvg - bevAvg > 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                          {iceAvg - bevAvg > 0 ? 'Save' : 'Cost'} ~${Math.abs(iceAvg - bevAvg).toLocaleString('en-CA')}/yr
+                        </span>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            <p class="text-xs text-slate-500 font-mono mt-4">
+              Fleet averages include all NRCan-rated vehicles in the RangeAndFuel.ca database. PHEV assumes 60% EV-mode driving. Individual results vary.
+            </p>
+          </div>
+
+          <!-- Strategic CLS-safe Ad Placement (Activates automatically upon AdSense approval) -->
+          <AdSlot slotId="4589201948" minHeight="120px" className="my-6" />
+
+          <!-- 4. Province Context -->
+          <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-5">
+            <div>
+              <span class="text-xs font-mono text-neon-cyan uppercase tracking-widest font-semibold block mb-1">🍁 {provinceData.name} Fuel Context</span>
+              <h2 class="text-2xl sm:text-3xl font-display font-black text-white">Fuelling Up in {provinceData.name}</h2>
+            </div>
+            <div class="space-y-4 text-sm text-slate-300 leading-relaxed">
+              <p>
+                {provinceData.name} drivers pay <strong class="text-white">{provinceData.gasolineCentsPerL}¢/L for regular gasoline</strong> —
+                {provinceData.gasolineCentsPerL > 160
+                  ? 'among the higher pump prices in Canada, largely driven by regional distribution costs, provincial taxes, and carbon pricing.'
+                  : 'a comparatively affordable rate in the Canadian context, reflecting lower distribution costs and provincial tax structures.'
+                }
+              </p>
+              <p>
+                For EV drivers, {provinceData.name}'s electricity rate of <strong class="text-white">{provinceData.electricityCentsPerKwh}¢/kWh</strong> means home charging is
+                {provinceData.electricityCentsPerKwh < 12
+                  ? 'exceptionally cost-effective — one of the most compelling EV economics in Canada.'
+                  : provinceData.electricityCentsPerKwh < 17
+                  ? 'competitive and makes EVs a strong financial choice for most drivers.'
+                  : 'above the national average, which narrows — but does not eliminate — the fuel cost advantage of BEVs over gas vehicles.'
+                }
+              </p>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.06]">
+                  <h3 class="text-white font-bold mb-1.5 flex items-center gap-1.5"><span>❄️</span> Winter Fuel Planning</h3>
+                  <p class="text-xs text-slate-400 leading-relaxed">
+                    Canadian winters increase fuel consumption by 12–15% for ICE vehicles and reduce EV range by up to 32% at -15°C. Budget for higher monthly fuel costs from November through March.
+                  </p>
+                </div>
+                <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.06]">
+                  <h3 class="text-white font-bold mb-1.5 flex items-center gap-1.5"><span>💡</span> Tips to Reduce Fuel Costs</h3>
+                  <p class="text-xs text-slate-400 leading-relaxed">
+                    Maintain proper tire pressure, avoid prolonged idling, use cruise control on highways, and choose the lowest fuel grade your manufacturer recommends. For EVs, pre-condition while plugged in.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right: sticky sidebar (4 cols) -->
+        <aside class="lg:col-span-4 relative h-full">
+          <div class="sticky top-24 space-y-6">
+
+            <!-- Province Quick Stats -->
+            <div class="p-6 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl">
+              <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/[0.06]">
+                <span class="text-xs font-mono font-bold text-white uppercase tracking-wider">{emoji} {provinceData.name}</span>
+                <span class="text-xs font-mono text-neon-cyan font-bold">{provinceData.code}</span>
+              </div>
+              <div class="space-y-3 text-xs font-mono">
+                <div class="flex justify-between items-center">
+                  <span class="text-slate-400">Regular Gas:</span>
+                  <span class="font-bold text-amber-400">{provinceData.gasolineCentsPerL}¢/L</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-slate-400">Premium Gas:</span>
+                  <span class="font-bold text-purple-400">{provinceData.premiumCentsPerL}¢/L</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-slate-400">Diesel:</span>
+                  <span class="font-bold text-orange-400">{provinceData.dieselCentsPerL}¢/L</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-slate-400">Electricity:</span>
+                  <span class="font-bold text-neon-cyan">{provinceData.electricityCentsPerKwh}¢/kWh</span>
+                </div>
+                <div class="flex justify-between items-center pt-2 border-t border-white/[0.04]">
+                  <span class="text-slate-400">Carbon Tax:</span>
+                  <span class={`font-bold ${provinceData.carbonTax ? 'text-amber-400' : 'text-slate-400'}`}>
+                    {provinceData.carbonTax ? 'Yes (Federal)' : 'No (Provincial)'}
+                  </span>
+                </div>
+                {iceAvg !== null && (
+                  <div class="flex justify-between items-center pt-2 border-t border-white/[0.04]">
+                    <span class="text-slate-400">Avg Gas Car/yr:</span>
+                    <span class="font-bold text-white">${iceAvg.toLocaleString('en-CA')}</span>
+                  </div>
+                )}
+                {bevAvg !== null && (
+                  <div class="flex justify-between items-center">
+                    <span class="text-slate-400">Avg BEV/yr:</span>
+                    <span class="font-bold text-neon-cyan">${bevAvg.toLocaleString('en-CA')}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <!-- Other Province Links -->
+            <div class="p-6 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl">
+              <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/[0.06]">
+                <span class="text-xs font-mono font-bold text-white uppercase tracking-wider">Other Provinces</span>
+                <a href="/provinces" class="text-[10px] font-mono text-neon-cyan hover:underline">All →</a>
+              </div>
+              <div class="space-y-2">
+                {fuelPricesData.provinces
+                  .filter((p) => p.code !== provinceData.code)
+                  .map((p) => (
+                    <a
+                      href={`/provinces/${p.code.toLowerCase()}`}
+                      class="p-3 rounded-2xl bg-[#06080C] border border-white/[0.06] hover:border-cyan-500/30 transition-all flex items-center justify-between group"
+                    >
+                      <span class="text-xs font-bold text-white group-hover:text-neon-cyan transition-colors">{p.name}</span>
+                      <span class="text-xs font-mono text-slate-500 group-hover:text-neon-cyan flex items-center gap-1">
+                        <span>{p.gasolineCentsPerL}¢/L</span>
+                        <span class="group-hover:translate-x-0.5 transition-transform">→</span>
+                      </span>
+                    </a>
+                  ))
+                }
+              </div>
+            </div>
+
+            <!-- CTA Widget -->
+            <div class="p-6 rounded-3xl bg-gradient-to-br from-neon-cyan/10 to-emerald-500/10 border border-neon-cyan/20 shadow-xl">
+              <div class="text-xs font-mono text-neon-cyan uppercase tracking-widest font-semibold mb-2">🔍 Find Your Vehicle</div>
+              <h3 class="text-lg font-display font-black text-white mb-2 leading-tight">
+                Calculate Your Personal {provinceData.name} Fuel Cost
+              </h3>
+              <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+                Search any make and model to see your exact annual fuel cost in {provinceData.name} — with winter range analysis.
+              </p>
+              <a
+                href="/search"
+                class="block w-full py-3 px-4 rounded-xl font-mono font-bold text-sm text-center transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                style="background: linear-gradient(135deg, #00F0FF, #10B981); color: #07090E;"
+              >
+                Search All Vehicles →
+              </a>
+            </div>
+
+          </div>
+        </aside>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Bottom CTA -->
+  <section class="py-12 md:py-16 bg-[#06080C] border-t border-white/[0.08]">
+    <div class="container-site text-center">
+      <div class="max-w-2xl mx-auto">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-neon-cyan/10 border border-neon-cyan/20 text-xs font-mono text-neon-cyan mb-4">
+          <span class="w-1.5 h-1.5 rounded-full bg-neon-cyan animate-pulse"></span>
+          Live NRCan EnerGuide Data
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-display font-black text-white mb-3">
+          Find Your Best Vehicle for {provinceData.name}
+        </h2>
+        <p class="text-sm text-slate-400 mb-6 leading-relaxed">
+          Compare fuel costs across every Canadian make and model using {provinceData.name}'s actual pump prices. Get a full winter range analysis and CO₂ breakdown.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <a
+            href="/search"
+            class="px-6 py-3 rounded-xl font-mono font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+            style="background: linear-gradient(135deg, #00F0FF, #10B981); color: #07090E;"
+          >
+            🔍 Search All Vehicles
+          </a>
+          <a
+            href="/provinces"
+            class="px-6 py-3 rounded-xl font-mono font-bold text-sm text-slate-300 bg-white/5 border border-white/10 hover:border-white/20 transition-all"
+          >
+            🍁 Compare All Provinces
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>

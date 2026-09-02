@@ -1,0 +1,203 @@
+---
+// src/pages/disclaimer.astro
+// Comprehensive Data Methodology & Legal Disclaimer — Canadian Automotive Standards
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { breadcrumbSchema } from '../lib/schema.ts';
+
+const jsonLd = [
+  breadcrumbSchema([
+    { name: 'Home', url: '/' },
+    { name: 'Data & Legal Disclaimer', url: '/disclaimer' },
+  ]),
+];
+---
+
+<BaseLayout
+  title="Data Methodology & Legal Disclaimer | RangeAndFuel.ca"
+  description="Exhaustive data methodologies, NRCan 5-cycle testing protocols, provincial fuel rate tracking, -15°C winter degradation modeling, and Transport Canada recall disclaimers."
+  canonical="/disclaimer"
+  jsonLd={jsonLd}
+>
+  <!-- Breadcrumb Bar -->
+  <div class="border-b border-white/[0.06] bg-[#07090E]/80 backdrop-blur-md">
+    <div class="container-site py-3">
+      <nav aria-label="Breadcrumb">
+        <ol class="flex items-center gap-2 text-xs text-slate-400 font-mono">
+          <li><a href="/" class="hover:text-neon-cyan transition-colors">Home</a></li>
+          <li class="text-slate-600">/</li>
+          <li class="text-slate-200 font-medium">Data & Legal Disclaimer</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <section class="py-16 md:py-20 bg-[#06080C] relative overflow-hidden">
+    <!-- Ambient Background Glow -->
+    <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-b from-canadian-crimson/15 via-neon-cyan/5 to-transparent blur-3xl pointer-events-none rounded-full"></div>
+
+    <div class="container-site max-w-4xl relative z-10">
+      
+      <!-- Page Header -->
+      <div class="mb-12 border-b border-white/[0.08] pb-8">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-rose-400 text-xs font-mono mb-4">
+          <span>🍁</span> Official Canadian Methodology
+        </div>
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-display font-black text-white tracking-tight">
+          Data & Legal <span class="text-gradient-red">Disclaimer</span>
+        </h1>
+        <p class="text-xs font-mono text-slate-400 mt-3">
+          Last Revised: September 2, 2026 · NRCan EnerGuide 5-Cycle & Transport Canada MVSR Compliance
+        </p>
+      </div>
+
+      <!-- Legal Document Stream -->
+      <div class="space-y-8 text-slate-300 text-sm leading-relaxed">
+        
+        <!-- Section 1 -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-rose-400 font-mono">01.</span> Natural Resources Canada (NRCan) 5-Cycle Testing Protocol
+          </h2>
+          <p>
+            All baseline automotive fuel consumption ratings (City, Highway, and Combined metrics expressed in Litres per 100 Kilometres, or L/100km), electric power consumption ratings (kilowatt-hours per 100 kilometres, or kWh/100km), and equivalent fuel consumption ratings (Le/100km) published on <strong>RangeAndFuel.ca</strong> are compiled directly from official testing data published by <strong>Natural Resources Canada (NRCan)</strong> under the federal <em>Energy Efficiency Act</em>.
+          </p>
+          <p>
+            Since model year 2015, Natural Resources Canada mandates a rigorous <strong>5-cycle laboratory testing procedure</strong> to determine vehicle EnerGuide label ratings. These five standardized test cycles simulate varied driving environments on a chassis dynamometer:
+          </p>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.04]">
+              <div class="font-bold text-white text-xs mb-1">1. City Test (FTP-75)</div>
+              <p class="text-xs text-slate-400">Simulates typical urban rush-hour commuting with frequent stops, idling, and cold engine startup over an 11-mile simulated route.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.04]">
+              <div class="font-bold text-white text-xs mb-1">2. Highway Test (HFET)</div>
+              <p class="text-xs text-slate-400">Simulates rural and highway cruising at continuous speeds with a warm engine and no passenger stops over 10 miles.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.04]">
+              <div class="font-bold text-white text-xs mb-1">3. Aggressive Driving (US06)</div>
+              <p class="text-xs text-slate-400">Tests higher speeds (up to 129 km/h), rapid acceleration, and aggressive highway passing maneuvers.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.04]">
+              <div class="font-bold text-white text-xs mb-1">4. Air Conditioning Test (SC03)</div>
+              <p class="text-xs text-slate-400">Tests energy consumption at 35°C ambient temperature with the vehicle's air conditioning compressor operating.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.04] sm:col-span-2">
+              <div class="font-bold text-white text-xs mb-1">5. Cold Temperature Test (Cold FTP)</div>
+              <p class="text-xs text-slate-400">Evaluates cold-start fuel burn at -7°C (20°F) to reflect winter fuel enrichment requirements on internal combustion engines.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2 -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-rose-400 font-mono">02.</span> Laboratory Ratings vs. Real-World Canadian Driving Discrepancies
+          </h2>
+          <p>
+            While NRCan’s 5-cycle methodology represents one of the most advanced standardized automotive testing protocols globally, laboratory dynamometer tests cannot replicate every dynamic variable of Canadian driving. Natural Resources Canada officially states that EnerGuide window sticker ratings are intended primarily as a comparative benchmark to evaluate relative efficiency between competing vehicle models.
+          </p>
+          <p>
+            Your actual fuel consumption (L/100km) and electric vehicle range (km) will deviate from published EnerGuide figures due to the following real-world factors:
+          </p>
+          <ul class="list-disc pl-5 space-y-2 text-slate-400">
+            <li><strong>Highway Cruising Speeds:</strong> NRCan highway tests average approximately 77 km/h with peaks of 97 km/h. Cruising at real-world Canadian highway speeds of 115 km/h to 125 km/h on major multilane corridors (such as Ontario Highway 401, Quebec Autoroute 20, or the Trans-Canada Highway) increases aerodynamic drag exponentially, elevating consumption by 15% to 25%.</li>
+            <li><strong>Topography & Elevation Changes:</strong> Sustained mountain climbs through the Canadian Rockies, the Laurentian Mountains, or the Coquihalla Pass increase engine load significantly.</li>
+            <li><strong>Cargo, Roof Racks & Payload:</strong> Added payload weight, cargo boxes, canoe racks, bicycle carriers, and open trailers create massive aerodynamic drag penalties.</li>
+            <li><strong>Winter Tire Rolling Resistance:</strong> Mandatory 3-Peak Mountain Snowflake (3PMSF) winter tires feature softer rubber compounds and deep sipes that increase rolling resistance by 3% to 6% compared to summer low-rolling-resistance tires.</li>
+          </ul>
+        </div>
+
+        <!-- Section 3 -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-rose-400 font-mono">03.</span> Canadian Winter Degradation Algorithm (-15°C Baseline)
+          </h2>
+          <p>
+            RangeAndFuel.ca features a proprietary Canadian Winter Climate Modeling Engine calibrated to a standard Canadian winter baseline of <strong>-15°C (5°F)</strong>. This computational model is built upon empirical fleet telematics, cold-chamber research data, and Canadian thermodynamic principles:
+          </p>
+          <div class="space-y-3 pt-2">
+            <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.04]">
+              <h3 class="text-white font-bold text-xs mb-1">⚡ Battery Electric Vehicles (BEV): ~32% Average Winter Range Loss</h3>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                At sub-zero temperatures (-15°C to -25°C), lithium-ion battery chemistry experiences increased internal electrical resistance, slowing electrochemical kinetics. Furthermore, electric vehicles lack waste engine heat; heating the passenger cabin using resistive Positive Temperature Coefficient (PTC) heaters or heat pump systems draws 3.0 kW to 6.0 kW of continuous electrical power directly from the traction pack, reducing usable cruising range by approximately 28% to 38% depending on whether the vehicle was pre-conditioned while plugged in.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.04]">
+              <h3 class="text-white font-bold text-xs mb-1">⛽ Internal Combustion & Hybrid Vehicles (ICE / HEV): +12% to +18% Winter Fuel Penalty</h3>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                Cold ambient temperatures require extended open-loop rich fuel-air mixtures during engine warm-up cycles. Cold transmission fluids, differential oils, sub-zero aerodynamic air density (+10% denser air at -15°C), and remote engine idling collectively inflate gasoline and diesel fuel consumption by 12% to 18% during typical winter commuting.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4 -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-rose-400 font-mono">04.</span> Provincial Fuel & Electricity Rate Tracking
+          </h2>
+          <p>
+            Our financial energy calculators utilize regional pricing datasets compiled from Statistics Canada (Table 18-10-0001-01), Natural Resources Canada weekly petroleum pump price surveys, and provincial public energy utility tariff filings (e.g., Ontario Energy Board, Hydro-Québec, BC Hydro, ENMAX/EPCOR in Alberta).
+          </p>
+          <p>
+            Because retail petroleum pump prices fluctuate daily at individual service stations due to crude oil markets, refining crack spreads, carbon taxes, and provincial levies, all monthly and annual dollar figures presented on this site represent <strong>indicative statistical estimates</strong> rather than guaranteed price commitments. Electricity prices reflect blended residential tier averages (¢/kWh) and do not account for time-of-use off-peak ultra-low overnight charging rates unless explicitly customized in the calculator.
+          </p>
+        </div>
+
+        <!-- Section 5 -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-rose-400 font-mono">05.</span> Transport Canada Safety Recalls & Mandatory VIN Verification
+          </h2>
+          <p>
+            Transport Canada safety recall records, Canadian Motor Vehicle Safety Standards (CMVSS) defect numbers, and corrective dealer repair summaries displayed across our database are sourced from Transport Canada's public Motor Vehicle Safety Recalls database (MVSR).
+          </p>
+          <p class="font-semibold text-rose-400">
+            Critical Consumer Safety Notice:
+          </p>
+          <p>
+            Recall notices published on RangeAndFuel.ca describe general safety campaigns affecting specific model years and production batches. However, recall inclusion does NOT confirm whether a specific pre-owned or new vehicle in your possession has an open, unrepaired safety defect or whether the previous owner completed the authorized dealer repair.
+          </p>
+          <p>
+            All Canadian motorists must independently verify their vehicle’s active safety recall status by entering their unique <strong>17-digit Vehicle Identification Number (VIN)</strong> directly into Transport Canada's official recall verification tool at <a href="https://tc.canada.ca" target="_blank" rel="noopener noreferrer" class="text-neon-cyan underline">tc.canada.ca</a> or by contacting an authorized franchise dealership. Under Canadian federal law, safety recall repairs must be executed free of charge by authorized franchise dealers regardless of vehicle warranty status or current ownership history.
+          </p>
+        </div>
+
+        <!-- Section 6 -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-rose-400 font-mono">06.</span> Third-Party Intellectual Property & Non-Affiliation
+          </h2>
+          <p>
+            RangeAndFuel.ca is an independent automotive research publication and is NOT affiliated with, sponsored by, authorized by, or an official representative of Natural Resources Canada (NRCan), Transport Canada, the Government of Canada, or any automotive manufacturer (including Toyota, Ford, Honda, Tesla, General Motors, Stellantis, Hyundai, Kia, BMW, Mercedes-Benz, or others).
+          </p>
+          <p>
+            All automotive trademarks, brand logos, model designations, and official government program emblems are the intellectual property of their respective trademark holders. Their nominative use on RangeAndFuel.ca is strictly for consumer identification, comparative reporting, and factual automotive information under Canadian fair dealing principles.
+          </p>
+        </div>
+
+        <!-- Section 7 -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-rose-400 font-mono">07.</span> Data Corrections & Editorial Inquiries
+          </h2>
+          <p>
+            Our automotive data team strives to maintain 100% precision across all Canadian vehicle specifications, MSRP listings, and recall notices. If you identify a data discrepancy, missing trim package, or outdated provincial tariff, please notify our editorial compliance department:
+          </p>
+          <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.06] text-xs font-mono space-y-1">
+            <div class="text-white font-bold">RangeAndFuel.ca Editorial Compliance</div>
+            <div class="text-slate-400">Data Methodology & Standards Bureau</div>
+            <div class="text-rose-400">Email: methodology@rangeandfuel.ca</div>
+            <div class="text-slate-500">Website: https://rangeandfuel.ca</div>
+            <div class="text-slate-500">Jurisdiction: Ontario, Canada</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+</BaseLayout>
+

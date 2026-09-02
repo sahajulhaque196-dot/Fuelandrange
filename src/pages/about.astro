@@ -1,0 +1,151 @@
+---
+// src/pages/about.astro
+// About Us, Editorial Mission & Contact — Google AdSense Trust & Authority Standard
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { breadcrumbSchema } from '../lib/schema.ts';
+
+const jsonLd = [
+  breadcrumbSchema([
+    { name: 'Home', url: '/' },
+    { name: 'About & Editorial Standards', url: '/about' },
+  ]),
+];
+---
+
+<BaseLayout
+  title="About Us & Editorial Mission | RangeAndFuel.ca"
+  description="Learn about RangeAndFuel.ca, Canada's premier independent automotive fuel economy, electric vehicle range, and Transport Canada safety intelligence platform."
+  canonical="/about"
+  jsonLd={jsonLd}
+>
+  <!-- Breadcrumb Bar -->
+  <div class="border-b border-white/[0.06] bg-[#07090E]/80 backdrop-blur-md">
+    <div class="container-site py-3">
+      <nav aria-label="Breadcrumb">
+        <ol class="flex items-center gap-2 text-xs text-slate-400 font-mono">
+          <li><a href="/" class="hover:text-neon-cyan transition-colors">Home</a></li>
+          <li class="text-slate-600">/</li>
+          <li class="text-slate-200 font-medium">About Us</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <section class="py-16 md:py-20 bg-[#06080C] relative overflow-hidden">
+    <!-- Ambient Background Glow -->
+    <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-b from-neon-cyan/15 via-emerald-500/5 to-transparent blur-3xl pointer-events-none rounded-full"></div>
+
+    <div class="container-site max-w-4xl relative z-10">
+      
+      <!-- Page Header -->
+      <div class="mb-12 border-b border-white/[0.08] pb-8">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-neon-cyan text-xs font-mono mb-4">
+          <span>🍁</span> Independent Canadian Automotive Intelligence
+        </div>
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-display font-black text-white tracking-tight">
+          About <span class="text-gradient-cyan">RangeAndFuel.ca</span>
+        </h1>
+        <p class="text-base text-slate-300 mt-4 leading-relaxed">
+          We are Canada’s premier independent automotive data platform dedicated to empowering drivers across all 10 provinces and 3 territories with unbiased, metric-first fuel consumption ratings, electric vehicle range modeling, and Transport Canada safety intelligence.
+        </p>
+      </div>
+
+      <!-- Content Stream -->
+      <div class="space-y-8 text-slate-300 text-sm leading-relaxed">
+        
+        <!-- Mission Section -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-neon-cyan font-mono">01.</span> Why We Built RangeAndFuel.ca
+          </h2>
+          <p>
+            For decades, Canadian car buyers and vehicle owners have been underserved by American automotive media websites. US platforms quote fuel economy in Miles Per Gallon (MPG), calculate budgets in US Dollars (USD), use US EPA test numbers that differ from Canadian ratings, and cite US NHTSA recalls while ignoring federal Canadian vehicle safety mandates.
+          </p>
+          <p>
+            Canadian drivers operate in a unique environment:
+          </p>
+          <ul class="list-disc pl-5 space-y-2 text-slate-400">
+            <li>We measure fuel efficiency in <strong>Litres per 100 Kilometres (L/100km)</strong> and electricity in <strong>kWh/100km</strong> according to Natural Resources Canada (NRCan) EnerGuide standards.</li>
+            <li>Our energy costs vary widely by province—from hydro-rich Quebec to carbon-taxed Ontario and market-rate Alberta petroleum.</li>
+            <li>Our winter climate reaches sustained <strong>-15°C to -30°C</strong> temperatures, inflicting severe battery range penalties and cold-start fuel consumption spikes that American test cycles overlook.</li>
+            <li>Our vehicle safety compliance is governed by <strong>Transport Canada</strong> under the <em>Motor Vehicle Safety Act (MVSA)</em> and Canadian Motor Vehicle Safety Standards (CMVSS).</li>
+          </ul>
+          <p>
+            RangeAndFuel.ca was founded to bridge this gap—providing a clean, high-performance, 100% Canadian-tailored automotive resource.
+          </p>
+        </div>
+
+        <!-- Editorial Standards Section -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-neon-cyan font-mono">02.</span> Editorial Independence & Fact-Checking Policy
+          </h2>
+          <p>
+            Editorial objectivity is the cornerstone of our platform. Our data team adheres to strict verification principles:
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+            <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.04]">
+              <div class="font-bold text-white text-xs mb-1">🏛️ Government Verified Data</div>
+              <p class="text-xs text-slate-400">Every fuel economy and power consumption rating is validated against official Natural Resources Canada EnerGuide laboratory test files.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.04]">
+              <div class="font-bold text-white text-xs mb-1">🛡️ Transport Canada Verification</div>
+              <p class="text-xs text-slate-400">Safety recall bulletins are synchronized with Transport Canada’s public MVSR database to ensure accurate CMVSS defect tracking.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.04]">
+              <div class="font-bold text-white text-xs mb-1">📈 Weekly Provincial Fuel Sync</div>
+              <p class="text-xs text-slate-400">Pump prices and hydro rates are monitored weekly across all 10 provinces using Statistics Canada petroleum data and public utility tariff schedules.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.04]">
+              <div class="font-bold text-white text-xs mb-1">✍️ 100% Human Automotive Journalism</div>
+              <p class="text-xs text-slate-400">Our vehicle assessments and buyer guides are written by experienced Canadian automotive analysts, free from automated AI buzzwords or manufacturer marketing spin.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- How We Are Funded Section -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-neon-cyan font-mono">03.</span> How We Are Funded (Transparency Disclosure)
+          </h2>
+          <p>
+            RangeAndFuel.ca is free for all Canadian consumers. We maintain operations through two transparent revenue streams:
+          </p>
+          <ul class="list-disc pl-5 space-y-2 text-slate-400">
+            <li><strong>Contextual Display Advertising:</strong> We partner with trusted advertising networks such as Google AdSense to serve relevant automotive advertisements.</li>
+            <li><strong>Affiliate Partnerships:</strong> When users choose to compare insurance quotes or trade-in valuations through our widgets, we may receive a referral fee from licensed Canadian partners at zero additional cost to the user.</li>
+          </ul>
+          <p class="text-xs text-slate-400">
+            Commercial relationships never influence our vehicle ratings, winter penalty calculations, or editorial recommendations.
+          </p>
+        </div>
+
+        <!-- Contact & Corporate Information -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4" id="contact">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-neon-cyan font-mono">04.</span> Contact & Editorial Office
+          </h2>
+          <p>
+            We welcome inquiries from Canadian drivers, automotive journalists, researchers, and vehicle manufacturers:
+          </p>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 text-xs font-mono">
+            <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.06] space-y-1">
+              <div class="text-white font-bold">General & Editorial Inquiries</div>
+              <div class="text-slate-400">Email: <span class="text-neon-cyan">editorial@rangeandfuel.ca</span></div>
+              <div class="text-slate-500">Response Time: Within 24-48 business hours</div>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.06] space-y-1">
+              <div class="text-white font-bold">Privacy & Legal Compliance</div>
+              <div class="text-slate-400">Email: <span class="text-emerald-400">privacy@rangeandfuel.ca</span></div>
+              <div class="text-slate-500">Governing Law: Ontario, Canada</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+</BaseLayout>

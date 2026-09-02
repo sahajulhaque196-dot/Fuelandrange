@@ -1,0 +1,51 @@
+---
+// src/components/common/AdSlot.astro
+// CLS-Safe Google AdSense / Programmatic Display Ad Unit Container
+// Prevents Cumulative Layout Shift (CLS) by enforcing reserved min-heights
+
+interface Props {
+  slotId?: string;
+  adClient?: string;
+  format?: 'auto' | 'rectangle' | 'horizontal' | 'fluid';
+  label?: string;
+  className?: string;
+  minHeight?: string;
+}
+
+// Global Monetization Switch: Set to true once approved by Google AdSense
+const ADSENSE_ENABLED = false; 
+
+const {
+  slotId = '1234567890',
+  adClient = 'ca-pub-XXXXXXXXXXXXXXXX',
+  format = 'auto',
+  label = 'Advertisement',
+  className = '',
+  minHeight = '120px',
+} = Astro.props;
+
+const isLive = ADSENSE_ENABLED && adClient !== 'ca-pub-XXXXXXXXXXXXXXXX';
+---
+
+{isLive ? (
+  <div class={`w-full my-8 text-center ad-container ${className}`} style={`min-height: ${minHeight};`}>
+    <span class="text-[10px] font-mono tracking-wider uppercase text-slate-400 block mb-1.5">
+      {label}
+    </span>
+    
+    <div 
+      class="w-full rounded-2xl bg-[#0D1117]/60 border border-white/[0.06] p-4 flex flex-col items-center justify-center relative overflow-hidden"
+      style={`min-height: ${minHeight};`}
+    >
+      <ins class="adsbygoogle"
+           style="display:block; width:100%; height:100%;"
+           data-ad-client={adClient}
+           data-ad-slot={slotId}
+           data-ad-format={format}
+           data-full-width-responsive="true"></ins>
+      <script is:inline>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+) : null}

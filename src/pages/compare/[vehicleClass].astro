@@ -1,0 +1,298 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AdSlot from '../../components/common/AdSlot.astro';
+import vehicles from '../../data/vehicles.json';
+import { toSlug, formatCAD, classSlug as getClassSlug } from '../../lib/calculations.ts';
+import { breadcrumbSchema } from '../../lib/schema.ts';
+
+export async function getStaticPaths() {
+  const allV = vehicles as any[];
+  const classes = [...new Set(allV.map((v: any) => v.vehicleClass))];
+  return classes.map(cls => {
+    const slug = getClassSlug(cls);
+    return {
+      params: { vehicleClass: slug },
+      props: { vehicleClass: cls, classVehicles: allV.filter((v: any) => v.vehicleClass === cls) },
+    };
+  });
+}
+
+const { vehicleClass, classVehicles } = Astro.props as { vehicleClass: string; classVehicles: any[] };
+const classSlug = Astro.params.vehicleClass as string;
+
+const sortedVehicles = [...classVehicles].sort((a: any, b: any) => {
+  const ae = a.combinedL100km ?? (a.kwhPer100km ? a.kwhPer100km * 0.34 : 999);
+  const be = b.combinedL100km ?? (b.kwhPer100km ? b.kwhPer100km * 0.34 : 999);
+  return ae - be;
+});
+
+const champion = sortedVehicles[0];
+const ON_GAS = 1.545;
+const ON_KWH = 0.148;
+const KM = 20000;
+
+function annualCostON(v: any): number | null {
+  if (v.combinedL100km !== null) return Math.round(v.combinedL100km / 100 * KM * ON_GAS);
+  if (v.kwhPer100km !== null) return Math.round(v.kwhPer100km / 100 * KM * ON_KWH);
+  return null;
+}
+
+function fuelPillClass(ft: string): string {
+  if (ft === 'BEV') return 'pill-bev';
+  if (ft === 'HEV') return 'pill-hev';
+  if (ft === 'PHEV') return 'pill-phev';
+  if (ft === 'Z') return 'pill-premium';
+  if (ft === 'D') return 'pill-diesel';
+  return 'pill-gas';
+}
+
+function fuelLabel(ft: string): string {
+  if (ft === 'BEV') return 'Electric';
+  if (ft === 'HEV') return 'Hybrid';
+  if (ft === 'PHEV') return 'Plug-in Hybrid';
+  if (ft === 'Z') return 'Premium';
+  if (ft === 'D') return 'Diesel';
+  return 'Gasoline';
+}
+
+function avgCostByType(ft: string): string {
+  const g = classVehicles.filter((v: any) => v.fuelType === ft);
+  if (!g.length) return 'N/A';
+  const costs = g.map(annualCostON).filter((c): c is number => c !== null);
+  if (!costs.length) return 'N/A';
+  return formatCAD(Math.round(costs.reduce((a, b) => a + b, 0) / costs.length));
+}
+
+const uniqueMakes = [...new Set(classVehicles.map((v: any) => v.make))].length;
+const hasBEV = classVehicles.some((v: any) => v.fuelType === 'BEV');
+const hasHEV = classVehicles.some((v: any) => v.fuelType === 'HEV');
+const hasPHEV = classVehicles.some((v: any) => v.fuelType === 'PHEV');
+const gasVehicles = classVehicles.filter((v: any) => v.combinedL100km !== null);
+const avgGasL100 = gasVehicles.length
+  ? (gasVehicles.reduce((s: number, v: any) => s + v.combinedL100km, 0) / gasVehicles.length).toFixed(1)
+  : null;
+
+const championCost = champion ? annualCostON(champion) : null;
+const champEff = champion
+  ? (champion.combinedL100km ? champion.combinedL100km + ' L/100km' : champion.kwhPer100km + ' kWh/100km')
+  : '';
+
+const jsonLd = [
+  breadcrumbSchema([
+    { name: 'Home', url: '/' },
+    { name: 'Vehicle Comparisons', url: '/compare' },
+    { name: vehicleClass, url: '/compare/' + classSlug },
+  ]),
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Best ' + vehicleClass + ' Fuel Economy in Canada',
+    numberOfItems: sortedVehicles.length,
+    itemListElement: sortedVehicles.slice(0, 10).map((v, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: v.year + ' ' + v.make + ' ' + v.model + ' ' + v.trim,
+      url: 'https://rangeandfuel.ca/makes/' + toSlug(v.make) + '/' + toSlug(v.model) + '/' + v.year,
+    })),
+  },
+];
+---
+
+<BaseLayout
+  title={'Best ' + vehicleClass + ' Fuel Economy Canada 2024 — NRCan Ratings | RangeAndFuel.ca'}
+  description={'Compare all ' + vehicleClass + ' vehicles in Canada. ' + sortedVehicles.length + ' vehicles from ' + uniqueMakes + ' brands ranked by NRCan L/100km.'}
+  canonical={'/compare/' + classSlug}
+  jsonLd={jsonLd}
+>
+<style>
+  .pill-bev { @apply text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 text-xs font-mono font-bold px-2 py-0.5 rounded; }
+  .pill-hev { @apply text-blue-400 bg-blue-500/10 border border-blue-500/25 text-xs font-mono font-bold px-2 py-0.5 rounded; }
+  .pill-phev { @apply text-violet-400 bg-violet-500/10 border border-violet-500/25 text-xs font-mono font-bold px-2 py-0.5 rounded; }
+  .pill-premium { @apply text-amber-400 bg-amber-500/10 border border-amber-500/25 text-xs font-mono font-bold px-2 py-0.5 rounded; }
+  .pill-diesel { @apply text-orange-400 bg-orange-500/10 border border-orange-500/25 text-xs font-mono font-bold px-2 py-0.5 rounded; }
+  .pill-gas { @apply text-slate-400 bg-slate-500/10 border border-slate-500/25 text-xs font-mono font-bold px-2 py-0.5 rounded; }
+</style>
+
+  <div class="border-b border-white/[0.06] bg-[#07090E]/60 backdrop-blur-md">
+    <div class="container-site py-3">
+      <nav aria-label="Breadcrumb">
+        <ol class="flex items-center gap-2 text-xs text-slate-400 font-mono">
+          <li><a href="/" class="hover:text-neon-cyan transition-colors">Home</a></li>
+          <li class="text-slate-600">/</li>
+          <li><a href="/compare" class="hover:text-neon-cyan transition-colors">Vehicle Comparisons</a></li>
+          <li class="text-slate-600">/</li>
+          <li class="text-slate-200 font-medium">{vehicleClass}</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <section class="relative py-14 bg-[#06080C] overflow-hidden">
+    <div class="absolute -top-20 left-1/2 -translate-x-1/2 w-[600px] h-[260px] bg-gradient-to-b from-neon-cyan/8 to-transparent blur-3xl pointer-events-none rounded-full"></div>
+    <div class="container-site relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <div class="lg:col-span-2">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neon-cyan/10 border border-neon-cyan/25 mb-4">
+            <span class="text-neon-cyan text-xs font-mono">NRCan Official 5-Cycle Data</span>
+          </div>
+          <h1 class="text-3xl md:text-4xl font-display font-black text-white leading-tight mb-3">
+            Best {vehicleClass} Fuel Economy in Canada 2024
+          </h1>
+          <p class="text-slate-400 mb-4">
+            Ranked by NRCan combined L/100km — {sortedVehicles.length} vehicles from {uniqueMakes} brands.
+          </p>
+          <div class="flex flex-wrap gap-2 text-xs font-mono">
+            <span class="px-2.5 py-1 rounded bg-white/[0.05] border border-white/[0.08] text-slate-400">{sortedVehicles.length} vehicles</span>
+            {hasBEV && <span class="px-2.5 py-1 rounded bg-emerald-500/10 border border-emerald-500/25 text-emerald-400">Includes BEV</span>}
+            {hasHEV && <span class="px-2.5 py-1 rounded bg-blue-500/10 border border-blue-500/25 text-blue-400">Includes Hybrid</span>}
+            {hasPHEV && <span class="px-2.5 py-1 rounded bg-violet-500/10 border border-violet-500/25 text-violet-400">Includes PHEV</span>}
+          </div>
+        </div>
+        {champion && (
+          <div class="p-5 rounded-2xl bg-amber-500/5 border border-amber-500/25">
+            <div class="text-xs font-mono text-amber-400 font-bold uppercase tracking-widest mb-3">Segment Champion</div>
+            <a href={'/makes/' + toSlug(champion.make) + '/' + toSlug(champion.model) + '/' + champion.year}
+              class="text-lg font-bold text-white hover:text-neon-cyan transition-colors">
+              {champion.year} {champion.make} {champion.model}
+            </a>
+            <div class="text-xs text-slate-400 mt-0.5 mb-3">{champion.trim}</div>
+            <div class="text-2xl font-bold font-mono text-neon-cyan">{champEff}</div>
+            {championCost !== null && (
+              <div class="text-xs text-slate-400 mt-1">~{formatCAD(championCost)} /yr Ontario</div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-10 bg-cyber-slate-2">
+    <div class="container-site">
+      <h2 class="text-lg font-display font-bold text-white mb-4">Annual Fuel Cost by Powertrain — Ontario (20,000 km/yr)</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {(['X', 'HEV', 'PHEV', 'BEV'] as string[]).filter(ft => classVehicles.some((v: any) => v.fuelType === ft)).map(ft => (
+          <div class="p-4 rounded-xl bg-[#0D1117] border border-white/[0.08] text-center">
+            <span class={fuelPillClass(ft)}>{fuelLabel(ft)}</span>
+            <div class="text-xl font-bold font-mono text-white mt-3">{avgCostByType(ft)}</div>
+            <div class="text-xs text-slate-500 mt-1">avg/year</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-14 bg-[#06080C]">
+    <div class="container-site">
+      <h2 class="text-2xl font-display font-bold text-white mb-6">
+        All {vehicleClass} Vehicles — Ranked by Fuel Efficiency
+      </h2>
+      <div class="card p-0 overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-white/[0.08]">
+              <th class="px-4 py-3 text-left text-xs font-mono text-slate-500">#</th>
+              <th class="px-4 py-3 text-left text-xs font-mono text-slate-500">Vehicle</th>
+              <th class="px-4 py-3 text-center text-xs font-mono text-slate-500">Type</th>
+              <th class="px-4 py-3 text-right text-xs font-mono text-slate-500">City</th>
+              <th class="px-4 py-3 text-right text-xs font-mono text-slate-500">Hwy</th>
+              <th class="px-4 py-3 text-right text-xs font-mono text-neon-cyan">Combined</th>
+              <th class="px-4 py-3 text-right text-xs font-mono text-slate-500 hidden lg:table-cell">ON Cost/yr</th>
+              <th class="px-4 py-3 text-right text-xs font-mono text-slate-500 hidden lg:table-cell">MSRP</th>
+              <th class="px-4 py-3"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedVehicles.map((v: any, i: number) => {
+              const cost = annualCostON(v);
+              const eff = v.combinedL100km ? v.combinedL100km + ' L' : v.kwhPer100km ? v.kwhPer100km + ' kWh' : '—';
+              const makeUrl = '/makes/' + toSlug(v.make) + '/' + toSlug(v.model) + '/' + v.year;
+              return (
+                <tr class={'border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors' + (i === 0 ? ' bg-amber-500/5' : '')}>
+                  <td class="px-4 py-3 text-xs font-mono text-slate-500">{i === 0 ? '★' : i + 1}</td>
+                  <td class="px-4 py-3">
+                    <a href={makeUrl} class="text-white hover:text-neon-cyan transition-colors font-medium text-sm">
+                      {v.year} {v.make} {v.model}
+                    </a>
+                    <div class="text-xs text-slate-500 mt-0.5">{v.trim}</div>
+                  </td>
+                  <td class="px-4 py-3 text-center">
+                    <span class={fuelPillClass(v.fuelType)}>{fuelLabel(v.fuelType)}</span>
+                  </td>
+                  <td class="px-4 py-3 text-right text-xs font-mono text-slate-400">{v.cityL100km ?? v.cityLe100km ?? '—'}</td>
+                  <td class="px-4 py-3 text-right text-xs font-mono text-slate-400">{v.hwyL100km ?? v.hwyLe100km ?? '—'}</td>
+                  <td class="px-4 py-3 text-right font-mono font-bold text-neon-cyan text-sm">{eff}</td>
+                  <td class="px-4 py-3 text-right text-xs font-mono text-slate-300 hidden lg:table-cell">
+                    {cost !== null ? formatCAD(cost) : '—'}
+                  </td>
+                  <td class="px-4 py-3 text-right text-xs font-mono text-slate-400 hidden lg:table-cell">
+                    {v.msrpCAD ? '$' + Math.round(v.msrpCAD / 1000) + 'k' : '—'}
+                  </td>
+                  <td class="px-4 py-3">
+                    <a href={makeUrl} class="text-xs text-neon-cyan hover:underline">Details</a>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-12 bg-cyber-slate-2">
+    <div class="container-site max-w-3xl">
+      <!-- Strategic CLS-safe Ad Placement (Activates automatically upon AdSense approval) -->
+      <AdSlot slotId="5689102431" minHeight="120px" className="mb-8" />
+
+      <h2 class="text-xl font-display font-bold text-white mb-5">FAQ — {vehicleClass} in Canada</h2>
+      <div class="space-y-3">
+        <details class="group rounded-xl border border-slate-border/50 hover:border-neon-cyan/20 overflow-hidden">
+          <summary class="flex justify-between items-center gap-3 p-4 cursor-pointer list-none">
+            <span class="font-medium text-white text-sm">What is the most fuel-efficient {vehicleClass} in Canada?</span>
+            <svg class="w-4 h-4 shrink-0 text-slate-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          {champion && (
+            <div class="px-4 pb-4 text-sm text-slate-400 leading-relaxed border-t border-slate-border/30 pt-3">
+              The {champion.year} {champion.make} {champion.model} {champion.trim} leads this segment with a combined {champEff}, based on NRCan official testing.
+            </div>
+          )}
+        </details>
+        <details class="group rounded-xl border border-slate-border/50 hover:border-neon-cyan/20 overflow-hidden">
+          <summary class="flex justify-between items-center gap-3 p-4 cursor-pointer list-none">
+            <span class="font-medium text-white text-sm">How much does a {vehicleClass} cost per year in Ontario?</span>
+            <svg class="w-4 h-4 shrink-0 text-slate-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-4 pb-4 text-sm text-slate-400 leading-relaxed border-t border-slate-border/30 pt-3">
+            At 154.5 cents/L and 14.8 cents/kWh, driving 20,000 km/yr: gasoline models average {avgCostByType('X')} — hybrids {avgCostByType('HEV')} — EVs {avgCostByType('BEV')} per year.
+          </div>
+        </details>
+        {avgGasL100 && (
+          <details class="group rounded-xl border border-slate-border/50 hover:border-neon-cyan/20 overflow-hidden">
+            <summary class="flex justify-between items-center gap-3 p-4 cursor-pointer list-none">
+              <span class="font-medium text-white text-sm">What is the average {vehicleClass} fuel consumption in Canada?</span>
+              <svg class="w-4 h-4 shrink-0 text-slate-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="px-4 pb-4 text-sm text-slate-400 leading-relaxed border-t border-slate-border/30 pt-3">
+              Across {gasVehicles.length} gasoline {vehicleClass} vehicles, the segment average is {avgGasL100} L/100km combined (NRCan 5-cycle).
+            </div>
+          </details>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-10 bg-[#06080C]">
+    <div class="container-site">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 p-5 rounded-2xl bg-[#0D1117] border border-neon-cyan/15">
+        <div>
+          <div class="font-bold text-white text-sm mb-1">Explore More Vehicle Classes</div>
+          <div class="text-xs text-slate-400">Compare all segments sold in Canada.</div>
+        </div>
+        <div class="flex gap-3 shrink-0">
+          <a href="/compare" class="px-4 py-2 rounded-xl bg-white/[0.06] border border-white/[0.12] text-white text-sm font-semibold hover:border-neon-cyan/40 transition-all">All Classes</a>
+          <a href="/search" class="px-4 py-2 rounded-xl bg-neon-cyan/10 border border-neon-cyan/30 text-neon-cyan text-sm font-bold hover:bg-neon-cyan/20 transition-all">Search Vehicles</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

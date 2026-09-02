@@ -1,0 +1,69 @@
+---
+// src/pages/search.astro
+// High-grade Canadian Vehicle Search & Discovery Directory
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SmartVehicleDirectory from '../components/widgets/SmartVehicleDirectory.tsx';
+import vehicles from '../data/vehicles.json';
+import { breadcrumbSchema } from '../lib/schema.ts';
+import type { Vehicle } from '../lib/calculations.ts';
+
+const allVehicles = vehicles as unknown as Vehicle[];
+
+const jsonLd = [
+  breadcrumbSchema([
+    { name: 'Home', url: '/' },
+    { name: 'Vehicle Catalog', url: '/search' },
+  ]),
+];
+---
+
+<BaseLayout
+  title="Canadian Vehicle Search Catalog — Fuel Economy & EV Range Directory | RangeAndFuel.ca"
+  description="Search and filter 320+ Canadian vehicles by fuel efficiency (L/100km), EV electric range (km), -15°C winter loss, MSRP, and brand."
+  canonical="/search"
+  noIndex={false}
+  jsonLd={jsonLd}
+>
+  <!-- Top Breadcrumb -->
+  <div class="border-b border-white/[0.06] bg-[#07090E]/60 backdrop-blur-md">
+    <div class="container-site py-3">
+      <nav aria-label="Breadcrumb">
+        <ol class="flex items-center gap-2 text-xs text-slate-400 font-mono">
+          <li><a href="/" class="hover:text-neon-cyan transition-colors">Home</a></li>
+          <li class="text-slate-600">/</li>
+          <li class="text-slate-200 font-medium">Canadian Vehicle Catalog</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Hero Header -->
+  <section class="relative py-14 md:py-16 overflow-hidden bg-[#06080C]">
+    <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-[700px] h-[300px] bg-gradient-to-b from-neon-cyan/15 via-emerald-500/5 to-transparent blur-3xl pointer-events-none rounded-full"></div>
+    <div class="absolute inset-0 bg-cyber-grid bg-[size:32px_32px] opacity-10 pointer-events-none"></div>
+
+    <div class="container-site relative z-10 text-center max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-5 bg-cyan-500/10 border border-cyan-500/25">
+        <span class="w-2 h-2 rounded-full bg-neon-cyan animate-pulse" />
+        <span class="text-xs font-bold uppercase tracking-wider text-neon-cyan font-mono">NRCan EnerGuide Intelligence</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-display font-black text-white tracking-tight leading-tight mb-4">
+        Discover & Compare <br />
+        <span class="text-gradient-cyan">Canadian Vehicles</span>
+      </h1>
+
+      <p class="text-sm sm:text-base text-slate-300 leading-relaxed max-w-xl mx-auto">
+        Filter through 320+ Canadian-spec models by L/100km fuel consumption, pure electric range, -15°C winter degradation, and MSRP CAD.
+      </p>
+    </div>
+  </section>
+
+  <!-- Interactive Smart Directory Island -->
+  <section class="py-12 bg-[#07090E] min-h-screen" id="catalog-top">
+    <div class="container-site">
+      <SmartVehicleDirectory vehicles={allVehicles} client:load />
+    </div>
+  </section>
+</BaseLayout>
+

@@ -1,0 +1,779 @@
+---
+// src/pages/makes/[make]/[model]/[year]/index.astro
+// PRIMARY VEHICLE PAGE — The core pSEO money page
+// Contains: Hero HUD, Fuel Cost Calculator, Winter Meter, Recall Module, Competitor Matrix, JSON-LD
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import FuelCostCalculator from '../../../../../components/calculators/FuelCostCalculator.tsx';
+import WinterPenaltyMeter from '../../../../../components/calculators/WinterPenaltyMeter.tsx';
+import CompetitorMatrix from '../../../../../components/calculators/CompetitorMatrix.tsx';
+import LeadGenWidget from '../../../../../components/widgets/LeadGenWidget.tsx';
+import AdSlot from '../../../../../components/common/AdSlot.astro';
+import vehicles from '../../../../../data/vehicles.json';
+import fuelPrices from '../../../../../data/fuel-prices.json';
+import recallData from '../../../../../data/recalls.json';
+import { vehicleSchema, faqSchema, breadcrumbSchema } from '../../../../../lib/schema.ts';
+import {
+  toSlug, calcHwyRange, calcWinterPenalty, fuelTypePill, fuelTypeLabel,
+  co2Label, findCompetitors, formatCAD, isBEV, isPHEV, isHEV
+} from '../../../../../lib/calculations.ts';
+import type { Vehicle } from '../../../../../lib/calculations.ts';
+
+export async function getStaticPaths() {
+  const all = vehicles as unknown as Vehicle[];
+  // Deduplicate by make, model, and year
+  const uniqueCombos = [...new Set(all.map(v => `${toSlug(v.make)}|${toSlug(v.model)}|${v.year}`))];
+  
+  return uniqueCombos.map(combo => {
+    const [make, model, yearStr] = combo.split('|');
+    const yr = parseInt(yearStr, 10);
+    const yearVehicles = all.filter(v => toSlug(v.make) === make && toSlug(v.model) === model && v.year === yr);
+    const primaryVehicle = yearVehicles.sort((a, b) => (a.combinedL100km ?? a.kwhPer100km ?? 99) - (b.combinedL100km ?? b.kwhPer100km ?? 99))[0];
+    
+    return {
+      params: { make, model, year: yearStr },
+      props: { vehicleId: primaryVehicle.id },
+    };
+  });
+}
+
+const { make, model, year } = Astro.params;
+const { vehicleId } = Astro.props;
+
+const all        = vehicles as unknown as Vehicle[];
+const vehicle    = all.find(v => v.id === vehicleId) as Vehicle;
+const competitors = findCompetitors(vehicle, all, 3);
+const provinces  = (fuelPrices as any).provinces;
+
+// Recalls for this vehicle
+const recalls = (recallData as any).recalls.filter((r: any) =>
+  toSlug(r.make) === make &&
+  toSlug(r.model) === model &&
+  r.years.includes(vehicle.year)
+);
+
+const hwyRange      = calcHwyRange(vehicle);
+const winterPenalty = calcWinterPenalty(vehicle);
+const co2           = co2Label(vehicle.co2GPerKm);
+const isEV          = isBEV(vehicle);
+const isPlugin      = isPHEV(vehicle);
+
+const yearVehicles = all.filter(v => toSlug(v.make) === make && toSlug(v.model) === model && v.year === vehicle.year);
+
+const jsonLd = [
+  vehicleSchema(vehicle, `/makes/${make}/${model}/${year}`),
+  faqSchema(vehicle, 'Ontario'),
+  breadcrumbSchema([
+    { name: 'Home', url: '/' },
+    { name: vehicle.make, url: `/makes/${make}` },
+    { name: vehicle.model, url: `/makes/${make}/${model}` },
+    { name: String(vehicle.year), url: `/makes/${make}/${model}/${year}` },
+  ]),
+];
+
+const title = `${vehicle.year} ${vehicle.make} ${vehicle.model} Fuel Consumption Canada (L/100km & Costs) — All Trims | RangeAndFuel.ca`;
+const description = `Official NRCan ${vehicle.year} ${vehicle.make} ${vehicle.model} fuel consumption ratings (L/100km & kWh/100km), provincial CAD operating costs, -15°C winter range degradation, and Transport Canada safety recalls across all Canadian trims.`;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={`/makes/${make}/${model}/${year}`}
+  jsonLd={jsonLd}
+>
+  <!-- Breadcrumb -->
+  <div class="bg-cyber-slate-2 border-b border-slate-border/50">
+    <div class="container-site py-3">
+      <nav aria-label="Breadcrumb">
+        <ol class="flex items-center gap-2 text-xs text-slate-500 flex-wrap">
+          <li><a href="/" class="hover:text-neon-cyan">Home</a></li>
+          <li class="text-slate-700">/</li>
+          <li><a href={`/makes/${make}`} class="hover:text-neon-cyan">{vehicle.make}</a></li>
+          <li class="text-slate-700">/</li>
+          <li><a href={`/makes/${make}/${model}`} class="hover:text-neon-cyan">{vehicle.model}</a></li>
+          <li class="text-slate-700">/</li>
+          <li class="text-slate-300 font-medium">{vehicle.year} Lineup</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- ╔════════════════════════════════════════════╗ -->
+  <!-- ║         HERO HUD SECTION                   ║ -->
+  <!-- ╚════════════════════════════════════════════╝ -->
+  <section class="py-14"
+    style="background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,240,255,0.08), transparent), #0D1117;">
+    <div class="container-site">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 items-start">
+
+        <!-- Left: Title + HUD badges -->
+        <div class="lg:col-span-2">
+          <!-- Fuel type + class -->
+          <div class="flex flex-wrap items-center gap-2 mb-4">
+            <span class={fuelTypePill(vehicle.fuelType)}>{fuelTypeLabel(vehicle.fuelType)}</span>
+            <span class="text-xs text-slate-500 px-2 py-0.5 rounded border border-slate-border">{vehicle.vehicleClass}</span>
+            <span class="text-xs font-mono px-2 py-0.5 rounded border border-cyan-500/30 bg-cyan-500/10 text-cyan-400">
+              {yearVehicles.length} Canadian Trim{yearVehicles.length > 1 ? 's' : ''}
+            </span>
+            {recalls.length > 0 && (
+              <span class="text-xs px-2 py-0.5 rounded border font-semibold animate-pulse-slow"
+                style="color:#FF2E4D; border-color:rgba(255,46,77,0.4); background:rgba(255,46,77,0.08);">
+                ⚠️ {recalls.length} Active Recall{recalls.length > 1 ? 's' : ''}
+              </span>
+            )}
+          </div>
+
+          <h1 class="text-3xl md:text-5xl font-display font-black text-white leading-tight mb-2">
+            {vehicle.year} {vehicle.make} {vehicle.model} Fuel Consumption Canada
+          </h1>
+          <p class="text-sm sm:text-base text-slate-400 mb-8 font-mono">
+            NRCan EnerGuide Ratings &amp; Real CAD Fuel Costs · Featuring {vehicle.trim}
+          </p>
+
+          <!-- Hero HUD Grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+            <!-- Combined L/100km -->
+            {vehicle.combinedL100km ? (
+              <div class="hud-badge col-span-2 sm:col-span-1" style="box-shadow: 0 0 30px rgba(0,240,255,0.1);">
+                <div class="hud-value text-4xl">{vehicle.combinedL100km}</div>
+                <div class="hud-label">L/100km Combined</div>
+              </div>
+            ) : vehicle.kwhPer100km ? (
+              <div class="hud-badge col-span-2 sm:col-span-1" style="box-shadow: 0 0 30px rgba(139,92,246,0.15);">
+                <div class="hud-value text-4xl" style="color:#8B5CF6;">{vehicle.kwhPer100km}</div>
+                <div class="hud-label">kWh/100km</div>
+              </div>
+            ) : null}
+
+            {/* City */}
+            <div class="hud-badge">
+              <div class="hud-value text-amber-fuel">{vehicle.cityL100km ?? '—'}</div>
+              <div class="hud-label">City L/100km</div>
+            </div>
+
+            {/* Highway */}
+            <div class="hud-badge">
+              <div class="hud-value text-efficiency-green">{vehicle.hwyL100km ?? '—'}</div>
+              <div class="hud-label">Hwy L/100km</div>
+            </div>
+
+            {/* Range or tank */}
+            {isEV ? (
+              <div class="hud-badge">
+                <div class="hud-value" style="color:#8B5CF6;">{vehicle.electricRangeKm}</div>
+                <div class="hud-label">km EV Range</div>
+              </div>
+            ) : hwyRange ? (
+              <div class="hud-badge">
+                <div class="hud-value text-neon-cyan">{hwyRange}</div>
+                <div class="hud-label">km Hwy Range</div>
+              </div>
+            ) : null}
+          </div>
+
+          <!-- Secondary specs row -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {vehicle.fuelTankLitres && (
+              <div class="rounded-lg p-3 text-center" style="background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.15);">
+                <div class="font-mono font-bold text-amber-fuel">{vehicle.fuelTankLitres}L</div>
+                <div class="text-xs text-slate-500 mt-0.5">Fuel Tank</div>
+              </div>
+            )}
+            {vehicle.co2GPerKm !== null && (
+              <div class="rounded-lg p-3 text-center" style={`background:${co2.color}10; border:1px solid ${co2.color}30;`}>
+                <div class="font-mono font-bold" style={`color:${co2.color};`}>{vehicle.co2GPerKm === 0 ? '0' : vehicle.co2GPerKm}</div>
+                <div class="text-xs text-slate-500 mt-0.5">g CO₂/km · {co2.label}</div>
+              </div>
+            )}
+            <div class="rounded-lg p-3 text-center" style="background:rgba(0,240,255,0.05); border:1px solid rgba(0,240,255,0.15);">
+              <div class="font-mono font-bold text-neon-cyan">{vehicle.driveType}</div>
+              <div class="text-xs text-slate-500 mt-0.5">Drive Type</div>
+            </div>
+            <div class="rounded-lg p-3 text-center" style="background:rgba(16,185,129,0.05); border:1px solid rgba(16,185,129,0.15);">
+              <div class="font-mono font-bold text-efficiency-green text-xs">{vehicle.transmission}</div>
+              <div class="text-xs text-slate-500 mt-0.5">Transmission</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Lead-gen widget -->
+        <div class="lg:col-span-1">
+          <LeadGenWidget
+            client:visible
+            vehicleMake={vehicle.make}
+            vehicleModel={vehicle.model}
+            vehicleYear={vehicle.year}
+            isEV={isEV || isPlugin}
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔════════════════════════════════════════════╗ -->
+  <!-- ║      CANADIAN DRIVER'S REAL VERDICT       ║ -->
+  <!-- ╚════════════════════════════════════════════╝ -->
+  <section class="py-12 bg-cyber-slate-2 border-y border-white/[0.06]">
+    <div class="container-site max-w-4xl">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider">🍁 Canadian Road Test Summary</span>
+      </div>
+      <h2 class="text-2xl sm:text-3xl font-display font-bold text-white mb-4">
+        What Canadian Drivers Need to Know About the {vehicle.year} {vehicle.make} {vehicle.model}
+      </h2>
+      
+      <div class="space-y-4 text-slate-300 text-sm leading-relaxed">
+        <p>
+          The <strong>{vehicle.year} {vehicle.make} {vehicle.model} {vehicle.trim}</strong> is officially rated by Natural Resources Canada (NRCan) at 
+          {vehicle.combinedL100km ? (
+            <span><strong>{vehicle.combinedL100km} L/100km combined</strong> ({vehicle.cityL100km} city / {vehicle.hwyL100km} highway). Under typical Canadian driving conditions with 55% city and 45% highway use, this vehicle consumes approximately <strong>{((vehicle.combinedL100km * 200)).toFixed(0)} Litres of fuel</strong> per 20,000 km driven annually.</span>
+          ) : (
+            <span><strong>{vehicle.kwhPer100km} kWh/100km</strong> with an official NRCan range of <strong>{vehicle.electricRangeKm} km</strong> per full charge. On an annual 20,000 km commute, it uses approximately <strong>{Math.round(((vehicle.kwhPer100km || 18) * 200))} kWh of electricity</strong>.</span>
+          )}
+        </p>
+
+        <p>
+          Equipped with a <strong>{vehicle.driveType}</strong> drivetrain and <strong>{vehicle.transmission}</strong> transmission, this {vehicle.vehicleClass.toLowerCase()} is designed for Canadian roads. 
+          {isEV ? (
+            <span>For city commuters in Toronto, Vancouver, or Montreal, the instant electric torque and home charging offer substantial savings over gasoline. However, for long winter highway trips across northern Ontario or the Prairies, planning charging stops around DC fast chargers is essential.</span>
+          ) : isPlugin ? (
+            <span>With an electric-only range of {vehicle.electricRangeKm} km, most daily Canadian grocery runs and short work commutes can be done on battery power alone, while the 2.5L gas engine provides worry-free long distance road trips.</span>
+          ) : isHEV(vehicle) ? (
+            <span>The hybrid powertrain recovers energy during frequent city braking, making it exceptionally efficient in heavy stop-and-go GTA or Vancouver traffic without ever needing to plug into a charger.</span>
+          ) : (
+            <span>The traditional gasoline engine paired with a {vehicle.fuelTankLitres}L fuel tank delivers reliable highway cruising power and instant refueling at any Canadian gas station from coast to coast.</span>
+          )}
+        </p>
+      </div>
+
+      <!-- Highway Range / Tank Endurance Card -->
+      <div class="mt-8 p-5 rounded-2xl bg-[#07090E] border border-cyan-500/20 grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="p-3 rounded-xl bg-[#0D1117] border border-white/[0.04]">
+          <span class="text-[11px] font-mono text-slate-400 block mb-1">Highway Tank Range</span>
+          <span class="text-lg font-bold font-mono text-cyan-400">
+            {hwyRange ? `~${hwyRange} km` : vehicle.electricRangeKm ? `~${vehicle.electricRangeKm} km` : 'N/A'}
+          </span>
+          <span class="text-[10px] text-slate-500 block mt-0.5">Full highway cruise</span>
+        </div>
+
+        <div class="p-3 rounded-xl bg-[#0D1117] border border-white/[0.04]">
+          <span class="text-[11px] font-mono text-slate-400 block mb-1">Winter Cold Range (-15°C)</span>
+          <span class="text-lg font-bold font-mono text-rose-400">
+            {isEV ? `~${Math.round((vehicle.electricRangeKm || 400) * 0.68)} km` : `~${winterPenalty.winterConsumption || ((vehicle.combinedL100km || 8) * 1.15).toFixed(1)} L/100km`}
+          </span>
+          <span class="text-[10px] text-slate-500 block mt-0.5">{isEV ? '-32% cold loss' : '+15% fuel burn'}</span>
+        </div>
+
+        <div class="p-3 rounded-xl bg-[#0D1117] border border-white/[0.04]">
+          <span class="text-[11px] font-mono text-slate-400 block mb-1">Full Tank Fill-up (ON Avg)</span>
+          <span class="text-lg font-bold font-mono text-emerald-400">
+            {vehicle.fuelTankLitres ? `$${((vehicle.fuelTankLitres * 1.545)).toFixed(2)} CAD` : isEV ? `~$${(((vehicle.electricRangeKm || 400) / 100 * (vehicle.kwhPer100km || 18) * 0.148)).toFixed(2)} CAD` : 'N/A'}
+          </span>
+          <span class="text-[10px] text-slate-500 block mt-0.5">{vehicle.fuelTankLitres ? `${vehicle.fuelTankLitres}L at 154.5¢/L` : 'Full home charge'}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔════════════════════════════════════════════╗ -->
+  <!-- ║   AVAILABLE TRIMS LINEUP & COMPARISON      ║ -->
+  <!-- ╚════════════════════════════════════════════╝ -->
+  {yearVehicles.length > 1 && (
+    <section class="py-12 bg-[#06080C] border-b border-white/[0.06]">
+      <div class="container-site max-w-5xl">
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+          <div>
+            <div class="text-xs font-mono font-bold text-neon-cyan uppercase tracking-wider mb-1">
+              🍁 Complete {vehicle.year} {vehicle.make} {vehicle.model} Lineup
+            </div>
+            <h2 class="text-xl sm:text-2xl font-display font-bold text-white">
+              All Available Trims &amp; NRCan Fuel Ratings
+            </h2>
+          </div>
+          <span class="text-xs font-mono text-slate-400 bg-white/[0.04] px-3 py-1 rounded-full border border-white/[0.08]">
+            {yearVehicles.length} Configurations in Canada
+          </span>
+        </div>
+
+        <div class="card p-0 overflow-hidden border border-white/[0.08]">
+          <div class="overflow-x-auto">
+            <table class="data-table w-full text-xs font-mono">
+              <thead>
+                <tr class="bg-[#07090E] text-left text-slate-400 border-b border-white/[0.06]">
+                  <th class="p-3.5">Trim Level</th>
+                  <th class="p-3.5">Powertrain</th>
+                  <th class="p-3.5">Drivetrain</th>
+                  <th class="p-3.5">NRCan Rating</th>
+                  <th class="p-3.5">MSRP CAD</th>
+                  <th class="p-3.5 text-right">Detailed Report</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/[0.04]">
+                {yearVehicles.map(t => {
+                  const isPrimary = t.id === vehicle.id;
+                  const isElectric = t.fuelType === 'BEV';
+                  
+                  return (
+                    <tr class={`hover:bg-white/[0.02] transition-colors ${isPrimary ? 'bg-cyan-500/[0.04]' : ''}`}>
+                      <td class="p-3.5">
+                        <div class="flex items-center gap-2">
+                          <span class="font-bold text-white">{t.trim}</span>
+                          {isPrimary && (
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                              Selected
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td class="p-3.5">
+                        <span class={fuelTypePill(t.fuelType)}>
+                          {fuelTypeLabel(t.fuelType).split(' ')[0]}
+                        </span>
+                      </td>
+                      <td class="p-3.5 text-slate-300">{t.driveType}</td>
+                      <td class="p-3.5">
+                        <span class="font-bold text-emerald-400">
+                          {isElectric ? `${t.kwhPer100km} kWh` : `${t.combinedL100km} L/100km`}
+                        </span>
+                      </td>
+                      <td class="p-3.5 text-slate-300 font-bold">
+                        {t.msrpCAD ? `$${t.msrpCAD.toLocaleString()}` : '—'}
+                      </td>
+                      <td class="p-3.5 text-right">
+                        <a 
+                          href={`/makes/${make}/${model}/${year}/${toSlug(t.trim)}`}
+                          class="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-[#07090E] border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 font-bold text-[11px] transition-colors"
+                        >
+                          <span>Full Trim Specs</span>
+                          <span>→</span>
+                        </a>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- ╔════════════════════════════════════════════╗ -->
+  <!-- ║      PROVINCIAL ANNUAL COST BREAKDOWN      ║ -->
+  <!-- ╚════════════════════════════════════════════╝ -->
+  <section class="py-16 bg-cyber-slate">
+    <div class="container-site max-w-4xl">
+      <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-display font-bold text-white flex items-center gap-2">
+            <span>🇨🇦</span>
+            Annual Fuel & Energy Costs by Province
+          </h2>
+          <p class="text-sm text-slate-400 mt-1">
+            Estimated annual cost based on standard Canadian commute of 20,000 km per year.
+          </p>
+        </div>
+      </div>
+
+      <div class="card p-0 overflow-hidden border border-white/[0.08]">
+        <div class="overflow-x-auto">
+          <table class="data-table w-full">
+            <thead>
+              <tr class="bg-[#07090E] text-left text-xs font-mono text-slate-400 border-b border-white/[0.06]">
+                <th class="p-4">Province</th>
+                <th class="p-4">Pump / Hydro Rate</th>
+                <th class="p-4">Cost per 100 km</th>
+                <th class="p-4">Annual Cost (20,000 km)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-white/[0.04] text-xs font-mono">
+              {provinces.map((p: any) => {
+                let costPer100 = 0;
+                let annualCost = 0;
+                if (isEV) {
+                  const kwh100 = vehicle.kwhPer100km || 18.0;
+                  costPer100 = (kwh100 * (p.electricityCentsPerKwh / 100));
+                  annualCost = Math.round(costPer100 * 200);
+                } else {
+                  const litres100 = vehicle.combinedL100km || 8.0;
+                  costPer100 = (litres100 * (p.gasolineCentsPerL / 100));
+                  annualCost = Math.round(costPer100 * 200);
+                }
+
+                return (
+                  <tr class="hover:bg-white/[0.02] transition-colors">
+                    <td class="p-4 font-bold text-white flex items-center gap-2">
+                      <span class="text-cyan-400">{p.code}</span>
+                      <span>{p.name}</span>
+                    </td>
+                    <td class="p-4 text-slate-300">
+                      {isEV ? `${p.electricityCentsPerKwh.toFixed(1)}¢ / kWh` : `${p.gasolineCentsPerL.toFixed(1)}¢ / Litre`}
+                    </td>
+                    <td class="p-4 text-emerald-400 font-bold">
+                      ${costPer100.toFixed(2)} CAD
+                    </td>
+                    <td class="p-4 text-cyan-400 font-bold text-sm">
+                      ${annualCost.toLocaleString()} CAD / yr
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p class="text-xs text-slate-500 mt-3 font-mono">
+        * Rates based on Statistics Canada monthly retail fuel averages and provincial utility electricity tariffs.
+      </p>
+    </div>
+  </section>
+
+  <!-- ╔════════════════════════════════════════════╗ -->
+  <!-- ║      CALCULATORS SECTION                   ║ -->
+  <!-- ╚════════════════════════════════════════════╝ -->
+  <section class="py-16 bg-cyber-slate-2 border-t border-white/[0.06]">
+    <div class="container-site">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+        <!-- Fuel Cost Calculator -->
+        <div>
+          <h2 class="text-2xl font-display font-bold text-white mb-6 flex items-center gap-2">
+            <span class="text-2xl">💰</span>
+            Custom Fuel Cost Calculator
+          </h2>
+          <FuelCostCalculator
+            client:visible
+            vehicle={vehicle}
+            provinces={provinces}
+            defaultProvinceCode="ON"
+          />
+        </div>
+
+        <!-- Winter Penalty Meter -->
+        <div>
+          <h2 class="text-2xl font-display font-bold text-white mb-6 flex items-center gap-2">
+            <span class="text-2xl">🌨️</span>
+            Canadian Winter Performance
+          </h2>
+          <WinterPenaltyMeter
+            client:visible
+            vehicle={vehicle}
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔════════════════════════════════════════════╗ -->
+  <!-- ║      RECALL MODULE                         ║ -->
+  <!-- ╚════════════════════════════════════════════╝ -->
+  <section class="py-16 bg-cyber-slate-2">
+    <div class="container-site max-w-4xl">
+      <h2 class="text-2xl font-display font-bold text-white mb-8 flex items-center gap-2">
+        <span class="text-2xl">⚠️</span>
+        Transport Canada Safety Recalls
+        {recalls.length > 0 && (
+          <span class="text-sm px-2 py-0.5 rounded-full font-normal"
+            style="color:#FF2E4D; background:rgba(255,46,77,0.1); border:1px solid rgba(255,46,77,0.25);">
+            {recalls.length} Active
+          </span>
+        )}
+      </h2>
+
+      {recalls.length === 0 ? (
+        <div class="card text-center py-10">
+          <div class="text-4xl mb-3">✅</div>
+          <div class="font-display font-bold text-white text-xl mb-2">No Active TC Recalls Found</div>
+          <p class="text-slate-400 text-sm max-w-md mx-auto">
+            Our database shows no current Transport Canada Motor Vehicle Safety Recalls for this specific {vehicle.year} {vehicle.make} {vehicle.model} trim. 
+            Always verify with your VIN at the official Transport Canada recall search.
+          </p>
+          <a
+            href="https://tc.canada.ca/en/road-transportation/vehicle-safety/defect-investigations-recalls/recalls-searchable-database"
+            target="_blank"
+            rel="noopener"
+            class="btn-neon mt-5 text-sm inline-flex"
+          >
+            Verify VIN at Transport Canada ↗
+          </a>
+        </div>
+      ) : (
+        <div class="space-y-5">
+          {recalls.map((recall: any) => (
+            <div class="recall-alert flex-col sm:flex-row">
+              <div class="shrink-0">
+                <div class="w-10 h-10 rounded-lg flex items-center justify-center text-xl"
+                  style="background:rgba(255,46,77,0.15); border:1px solid rgba(255,46,77,0.3);">
+                  ⚠️
+                </div>
+              </div>
+              <div class="flex-1">
+                <div class="flex flex-wrap items-center gap-2 mb-2">
+                  <span class="font-mono font-bold text-canadian-crimson text-sm">TC #{recall.cmvssNumber}</span>
+                  <span class="text-xs px-2 py-0.5 rounded font-semibold"
+                    style={`color:${recall.safetyRisk === 'CRITICAL' ? '#FF2E4D' : recall.safetyRisk === 'HIGH' ? '#F97316' : '#F59E0B'}; background:rgba(255,46,77,0.08); border:1px solid rgba(255,46,77,0.2);`}>
+                    {recall.safetyRisk} RISK
+                  </span>
+                  <span class="text-xs text-slate-500">{recall.recallDate}</span>
+                </div>
+                <div class="font-semibold text-white mb-1">{recall.system} — {recall.component}</div>
+                <p class="text-sm text-slate-400 mb-2 leading-relaxed">{recall.defectSummary}</p>
+                <div class="text-xs text-slate-500 mb-3">
+                  Affects {recall.affectedUnits.toLocaleString()} Canadian units · Years: {recall.years.join(', ')}
+                </div>
+                <div class="text-sm" style="color:#10B981;">
+                  <strong>Fix:</strong> {recall.correctiveAction}
+                </div>
+              </div>
+            </div>
+          ))}
+
+          <a
+            href="https://tc.canada.ca/en/road-transportation/vehicle-safety/defect-investigations-recalls/recalls-searchable-database"
+            target="_blank"
+            rel="noopener"
+            class="btn-neon text-sm inline-flex mt-2"
+          >
+            Verify Your VIN at Transport Canada ↗
+          </a>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- ╔════════════════════════════════════════════╗ -->
+  <!-- ║      COMPETITOR MATRIX                     ║ -->
+  <!-- ╚════════════════════════════════════════════╝ -->
+  {competitors.length > 0 && (
+    <section class="py-16 bg-cyber-slate">
+      <div class="container-site">
+        <h2 class="text-2xl font-display font-bold text-white mb-6 flex items-center gap-2">
+          <span class="text-2xl">⚖️</span>
+          Head-to-Head: {vehicle.make} {vehicle.model} vs Competitors
+        </h2>
+        <CompetitorMatrix
+          client:visible
+          vehicle={vehicle}
+          competitors={competitors}
+          defaultProvinceCode="ON"
+          gasPriceForProvince={provinces.find((p: any) => p.code === 'ON')?.gasolineCentsPerL || 154.5}
+          electricityPriceForProvince={provinces.find((p: any) => p.code === 'ON')?.electricityCentsPerKwh || 14.8}
+        />
+      </div>
+    </section>
+  )}
+
+  <!-- ╔════════════════════════════════════════════╗ -->
+  <!-- ║      CANADIAN ROAD TEST & BUYER'S GUIDE    ║ -->
+  <!-- ╚════════════════════════════════════════════╝ -->
+  <section class="py-16 bg-cyber-slate">
+    <div class="container-site max-w-4xl space-y-8">
+      <div class="card p-6 sm:p-8 space-y-6">
+        <div>
+          <span class="text-xs font-mono text-neon-cyan uppercase tracking-widest font-semibold block mb-1">🍁 Real-World Canadian Driving</span>
+          <h2 class="text-2xl sm:text-3xl font-display font-black text-white">
+            {vehicle.year} {vehicle.make} {vehicle.model} Road Test & Commuter Assessment
+          </h2>
+        </div>
+
+        <div class="space-y-4 text-sm text-slate-300 leading-relaxed">
+          <p>
+            The <strong>{vehicle.year} {vehicle.make} {vehicle.model}</strong> delivers an official Natural Resources Canada (NRCan) combined fuel consumption rating of 
+            <strong>{vehicle.combinedL100km ? `${vehicle.combinedL100km} L/100km` : `${vehicle.kwhPer100km} kWh/100km`}</strong>. 
+            On daily Canadian commutes—from GTA stop-and-go congestion on the Gardiner Expressway to open stretches of the Trans-Canada Highway—this vehicle offers a predictable balance of efficiency, comfort, and handling.
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+            <div class="p-4 rounded-xl bg-[#06080C] border border-white/[0.06]">
+              <h3 class="text-white font-bold mb-1 flex items-center gap-1.5">
+                <span>🛣️</span> Highway Performance (100–120 km/h)
+              </h3>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                With a highway consumption rating of {vehicle.hwyL100km ? `${vehicle.hwyL100km} L/100km` : `${vehicle.hwyLe100km || 20} Le/100km`}, 
+                long-distance cruising is efficient. Cruising range reaches an estimated {hwyRange ? `~${hwyRange} km` : `${vehicle.electricRangeKm} km`} between fill-ups.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-xl bg-[#06080C] border border-white/[0.06]">
+              <h3 class="text-white font-bold mb-1 flex items-center gap-1.5">
+                <span>🏙️</span> City Driving & Rush Hour
+              </h3>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                City fuel consumption is rated at {vehicle.cityL100km ? `${vehicle.cityL100km} L/100km` : `${vehicle.cityLe100km || 18} Le/100km`}. 
+                Tight turning radiuses and responsive steering make parking in underground condominium garages straightforward.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Canadian Buyer's Recommendation -->
+      <div class="card p-6 sm:p-8 space-y-6">
+        <div>
+          <span class="text-xs font-mono text-emerald-400 uppercase tracking-widest font-semibold block mb-1">💡 Canadian Buyer's Recommendation</span>
+          <h2 class="text-2xl font-display font-black text-white">
+            Is the {vehicle.year} {vehicle.make} {vehicle.model} Right for You?
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+          <div class="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
+            <div class="text-emerald-400 font-bold text-sm mb-2 flex items-center gap-1.5">
+              <span>✓</span> Best Suited For:
+            </div>
+            <ul class="space-y-2 text-slate-300">
+              <li class="flex items-start gap-1.5">
+                <span class="text-emerald-400 font-bold">•</span>
+                <span>Commuters driving 15,000 to 25,000 km annually wanting to control monthly Canadian fuel budgets.</span>
+              </li>
+              <li class="flex items-start gap-1.5">
+                <span class="text-emerald-400 font-bold">•</span>
+                <span>Drivers who prioritize proven reliability and strong resale values across the Canadian pre-owned market.</span>
+              </li>
+              <li class="flex items-start gap-1.5">
+                <span class="text-emerald-400 font-bold">•</span>
+                <span>Families seeking comprehensive active safety features and modern infotainment connectivity.</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
+            <div class="text-amber-400 font-bold text-sm mb-2 flex items-center gap-1.5">
+              <span>⚠️</span> Consider Alternatives If:
+            </div>
+            <ul class="space-y-2 text-slate-300">
+              <li class="flex items-start gap-1.5">
+                <span class="text-amber-400 font-bold">•</span>
+                <span>You require heavy continuous towing capabilities for large recreational trailers or boats.</span>
+              </li>
+              <li class="flex items-start gap-1.5">
+                <span class="text-amber-400 font-bold">•</span>
+                <span>You frequently travel unpaved logging roads requiring extreme ground clearance.</span>
+              </li>
+              <li class="flex items-start gap-1.5">
+                <span class="text-amber-400 font-bold">•</span>
+                <span>You are looking for track-focused performance rather than efficient day-to-day transportation.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="py-16 bg-cyber-slate-2">
+    <div class="container-site max-w-3xl">
+      <h2 class="text-2xl font-display font-bold text-white mb-8">
+        Complete Specifications — {vehicle.year} {vehicle.make} {vehicle.model}
+      </h2>
+
+      <div class="card p-0 overflow-hidden">
+        <table class="data-table">
+          <tbody>
+            {[
+              ['Make',            vehicle.make],
+              ['Model',           vehicle.model],
+              ['Year',            vehicle.year],
+              ['Trim',            vehicle.trim],
+              ['Vehicle Class',   vehicle.vehicleClass],
+              ['Engine',          vehicle.engineSize > 0 ? `${vehicle.engineSize}L ${vehicle.cylinders}-cylinder` : 'Electric Motor(s)'],
+              ['Transmission',    vehicle.transmission],
+              ['Drive Type',      vehicle.driveType],
+              ['Fuel Type',       fuelTypeLabel(vehicle.fuelType)],
+              ['City L/100km',    vehicle.cityL100km ? `${vehicle.cityL100km} L/100km` : '—'],
+              ['Hwy L/100km',     vehicle.hwyL100km ? `${vehicle.hwyL100km} L/100km` : '—'],
+              ['Combined L/100km',vehicle.combinedL100km ? `${vehicle.combinedL100km} L/100km` : '—'],
+              ['kWh/100km',       vehicle.kwhPer100km ? `${vehicle.kwhPer100km} kWh/100km` : '—'],
+              ['Electric Range',  vehicle.electricRangeKm ? `${vehicle.electricRangeKm} km` : '—'],
+              ['Fuel Tank',       vehicle.fuelTankLitres ? `${vehicle.fuelTankLitres} L` : '—'],
+              ['Hwy Cruising Range', hwyRange ? `~${hwyRange} km` : vehicle.electricRangeKm ? `${vehicle.electricRangeKm} km (EV)` : '—'],
+              ['CO₂ Emissions',   vehicle.co2GPerKm === 0 ? '0 g/km (Zero Emission)' : `${vehicle.co2GPerKm} g/km`],
+              ['Base MSRP (CAD)', vehicle.msrpCAD ? formatCAD(vehicle.msrpCAD) : '—'],
+              ['Winter Consumption', winterPenalty.winterConsumption ? `~${winterPenalty.winterConsumption} L/100km at -15°C` : winterPenalty.winterRange ? `~${winterPenalty.winterRange} km at -15°C` : '—'],
+            ].map(([label, value]) => (
+              <tr>
+                <td class="text-slate-400 font-medium w-48">{label}</td>
+                <td class="font-mono text-white">{value}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <p class="text-xs text-slate-600 mt-4">
+        Source: Natural Resources Canada (NRCan) Fuel Consumption Guide. All figures represent official Canadian ratings under standardized test conditions. Real-world consumption varies.
+      </p>
+    </div>
+  </section>
+
+  <!-- ╔════════════════════════════════════════════╗ -->
+  <!-- ║      FAQ SECTION (Position-0 Targeting)    ║ -->
+  <!-- ╚════════════════════════════════════════════╝ -->
+  <section class="py-16 bg-cyber-slate">
+    <div class="container-site max-w-3xl">
+      <!-- Strategic CLS-safe Ad Placement (Activates automatically upon AdSense approval) -->
+      <AdSlot slotId="3489102345" minHeight="120px" className="max-w-3xl mx-auto mb-10" />
+
+      <h2 class="text-2xl font-display font-bold text-white mb-8">
+        Frequently Asked Questions — {vehicle.year} {vehicle.make} {vehicle.model}
+      </h2>
+
+      <div class="space-y-4">
+        {[
+          {
+            q: `What is the fuel consumption rating for the ${vehicle.year} ${vehicle.make} ${vehicle.model}?`,
+            a: vehicle.combinedL100km
+              ? `The ${vehicle.year} ${vehicle.make} ${vehicle.model} ${vehicle.trim} has a combined fuel consumption rating of ${vehicle.combinedL100km} L/100km according to Natural Resources Canada (NRCan). City: ${vehicle.cityL100km} L/100km, Highway: ${vehicle.hwyL100km} L/100km.`
+              : `The ${vehicle.year} ${vehicle.make} ${vehicle.model} is a battery electric vehicle (BEV) with an energy consumption of ${vehicle.kwhPer100km} kWh/100km and a rated range of ${vehicle.electricRangeKm} km per the NRCan standard.`,
+          },
+          {
+            q: `How much does it cost annually to fuel a ${vehicle.year} ${vehicle.make} ${vehicle.model} in Ontario?`,
+            a: `At Ontario's current gasoline price (~151¢/L) and 20,000 km/yr, the ${vehicle.year} ${vehicle.make} ${vehicle.model} costs approximately ${vehicle.combinedL100km ? formatCAD(Math.round(vehicle.combinedL100km / 100 * 20000 * 1.512)) : vehicle.kwhPer100km ? formatCAD(Math.round(vehicle.kwhPer100km / 100 * 20000 * 0.142)) : '$1,500–$2,500 CAD'} per year. Use our Provincial Fuel Cost Calculator to get an exact estimate for your province and driving habits.`,
+          },
+          {
+            q: `What is the winter range of the ${vehicle.year} ${vehicle.make} ${vehicle.model} in Canadian cold?`,
+            a: isEV
+              ? `In Canadian winter at -15°C, the ${vehicle.make} ${vehicle.model}'s rated ${vehicle.electricRangeKm} km range drops by approximately 32% due to cabin heating demand and battery chemistry effects in cold temperatures, giving a realistic winter range of ~${Math.round((vehicle.electricRangeKm ?? 400) * 0.68)} km. Pre-conditioning while plugged in substantially reduces this loss.`
+              : `Gasoline and hybrid vehicles see approximately a 12–15% increase in fuel consumption at -15°C due to cold engine warm-up cycles, cabin heating loads, and increased rolling resistance from winter tires. For the ${vehicle.make} ${vehicle.model}, that means ~${winterPenalty.winterConsumption ?? 'N/A'} L/100km in severe winter conditions.`,
+          },
+          {
+            q: `Does the ${vehicle.year} ${vehicle.make} ${vehicle.model} have any Transport Canada recalls?`,
+            a: recalls.length > 0
+              ? `Yes. Our database shows ${recalls.length} Transport Canada recall bulletin${recalls.length > 1 ? 's' : ''} for the ${vehicle.year} ${vehicle.make} ${vehicle.model}. See the Recalls section above for full details including CMVSS numbers and corrective dealer actions. Always verify with your VIN at tc.canada.ca.`
+              : `Our database shows no current Transport Canada safety recalls for the ${vehicle.year} ${vehicle.make} ${vehicle.model}. You can verify with your specific VIN at the Transport Canada official recall search database at tc.canada.ca.`,
+          },
+          {
+            q: `How does the ${vehicle.year} ${vehicle.make} ${vehicle.model} compare to similar vehicles in fuel economy?`,
+            a: `The ${vehicle.make} ${vehicle.model} competes in the ${vehicle.vehicleClass} segment. See the competitor comparison table above for a direct NRCan-rated comparison against ${competitors.map(c => `${c.year} ${c.make} ${c.model}`).join(', ')}. All figures use Canadian L/100km or kWh/100km ratings.`,
+          },
+        ].map(({ q, a }) => (
+          <details class="group rounded-xl overflow-hidden border border-slate-border/50 hover:border-neon-cyan/20 transition-colors">
+            <summary class="flex justify-between items-center gap-3 p-5 cursor-pointer list-none">
+              <span class="font-medium text-white group-open:text-neon-cyan transition-colors text-sm">{q}</span>
+              <svg class="w-4 h-4 shrink-0 text-slate-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <div class="px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-slate-border/30">
+              <div class="pt-4">{a}</div>
+            </div>
+          </details>
+        ))}
+      </div>
+
+      <!-- Search Cross-Link CTA -->
+      <div class="mt-10 p-5 rounded-2xl bg-[#0D1117] border border-neon-cyan/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          <div class="text-sm font-bold text-white mb-1">🔍 Find a Similar Vehicle</div>
+          <div class="text-xs text-slate-400">Browse all {vehicle.vehicleClass} vehicles and compare fuel costs side-by-side.</div>
+        </div>
+        <a
+          href={`/search?class=${encodeURIComponent(vehicle.vehicleClass)}`}
+          class="shrink-0 px-5 py-2.5 rounded-xl bg-neon-cyan/10 border border-neon-cyan/30 text-neon-cyan font-bold text-sm hover:bg-neon-cyan/20 transition-all"
+        >
+          Compare {vehicle.vehicleClass} Vehicles →
+        </a>
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>

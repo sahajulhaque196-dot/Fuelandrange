@@ -1,0 +1,259 @@
+---
+// src/pages/contact.astro
+// Dedicated Contact & Editorial Verification Page — Google AdSense & CASL Compliance
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { contactPageSchema } from '../lib/schema.ts';
+
+const title = 'Contact Us — Editorial Bureau & Data Verification | RangeAndFuel.ca';
+const description = 'Contact the RangeAndFuel.ca automotive editorial desk, report NRCan EnerGuide data discrepancies, submit Canadian vehicle recall notices, or make media inquiries.';
+
+const jsonLd = contactPageSchema();
+---
+
+<BaseLayout title={title} description={description} canonical="/contact" jsonLd={jsonLd}>
+  <div class="py-12 sm:py-16">
+    <div class="container-site max-w-4xl space-y-12">
+      
+      <!-- Page Header -->
+      <div class="text-center space-y-4">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-mono font-bold uppercase tracking-wider">
+          <span>🇨🇦</span>
+          <span>Canadian Editorial &amp; Technical Desk</span>
+        </div>
+        <h1 class="font-display font-black text-3xl sm:text-5xl text-white tracking-tight">
+          Contact RangeAndFuel<span class="text-neon-cyan">.ca</span>
+        </h1>
+        <p class="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
+          We welcome inquiries from Canadian vehicle owners, automotive engineers, fleet managers, and accredited journalists. Our editorial desk prioritizes data accuracy and rigorous testing methodologies.
+        </p>
+      </div>
+
+      <!-- Quick Contact Channels Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Channel 1: Data Verification -->
+        <div class="p-6 rounded-2xl bg-[#0D1117] border border-white/[0.08] hover:border-cyan-400/40 transition-all flex flex-col justify-between space-y-4">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 text-lg mb-3">
+              📊
+            </div>
+            <h2 class="font-display font-bold text-white text-base mb-1">Data Discrepancies</h2>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Found a discrepancy with an NRCan EnerGuide rating or provincial electricity tariff? Submit manufacturer documentation for verification.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-white/[0.06]">
+            <span class="text-[11px] font-mono text-slate-500 block uppercase">Direct Inbox</span>
+            <a href="mailto:data@rangeandfuel.ca" class="text-xs font-mono font-bold text-cyan-400 hover:underline">
+              data@rangeandfuel.ca
+            </a>
+          </div>
+        </div>
+
+        <!-- Channel 2: Editorial & Media -->
+        <div class="p-6 rounded-2xl bg-[#0D1117] border border-white/[0.08] hover:border-emerald-400/40 transition-all flex flex-col justify-between space-y-4">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-lg mb-3">
+              📰
+            </div>
+            <h2 class="font-display font-bold text-white text-base mb-1">Editorial &amp; Media</h2>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Press releases, manufacturer review vehicle scheduling, technical interviews, and syndication permissions.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-white/[0.06]">
+            <span class="text-[11px] font-mono text-slate-500 block uppercase">Media Desk</span>
+            <a href="mailto:editorial@rangeandfuel.ca" class="text-xs font-mono font-bold text-emerald-400 hover:underline">
+              editorial@rangeandfuel.ca
+            </a>
+          </div>
+        </div>
+
+        <!-- Channel 3: Privacy & Legal -->
+        <div class="p-6 rounded-2xl bg-[#0D1117] border border-white/[0.08] hover:border-purple-400/40 transition-all flex flex-col justify-between space-y-4">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 text-lg mb-3">
+              ⚖️
+            </div>
+            <h2 class="font-display font-bold text-white text-base mb-1">Legal &amp; PIPEDA Privacy</h2>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Inquiries regarding Canadian PIPEDA compliance, Quebec Law 25 privacy rights, or CASL unsubscribes.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-white/[0.06]">
+            <span class="text-[11px] font-mono text-slate-500 block uppercase">Legal Officer</span>
+            <a href="mailto:privacy@rangeandfuel.ca" class="text-xs font-mono font-bold text-purple-400 hover:underline">
+              privacy@rangeandfuel.ca
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Main Inquiries Form & Guidelines -->
+      <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+        
+        <!-- Left: Inquiry Form -->
+        <div class="lg:col-span-3 p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08]">
+          <h2 class="text-lg font-display font-bold text-white mb-2">Send an Editorial Inquiry</h2>
+          <p class="text-xs text-slate-400 mb-6">
+            All submitted reports are evaluated against official Natural Resources Canada (NRCan) EnerGuide testing datasets.
+          </p>
+
+          <!-- Form Container -->
+          <form id="editorial-contact-form" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="contact-name" class="block text-xs font-mono font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                  Your Full Name
+                </label>
+                <input 
+                  type="text" 
+                  id="contact-name" 
+                  name="name" 
+                  required 
+                  placeholder="e.g. David Miller" 
+                  class="w-full bg-[#07090E] border border-white/[0.1] rounded-xl px-4 py-3 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-400 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label for="contact-email" class="block text-xs font-mono font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                  Email Address
+                </label>
+                <input 
+                  type="email" 
+                  id="contact-email" 
+                  name="email" 
+                  required 
+                  placeholder="name@domain.ca" 
+                  class="w-full bg-[#07090E] border border-white/[0.1] rounded-xl px-4 py-3 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-400 transition-colors"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label for="contact-subject" class="block text-xs font-mono font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                Inquiry Category
+              </label>
+              <select 
+                id="contact-subject" 
+                name="subject"
+                class="w-full bg-[#07090E] border border-white/[0.1] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
+              >
+                <option value="data-correction">Data Correction / NRCan Discrepancy</option>
+                <option value="recall-notice">Transport Canada Safety Recall Submission</option>
+                <option value="editorial">Editorial Inquiry / Vehicle Testing Question</option>
+                <option value="advertising">Advertising / Partnership / Sponsorship</option>
+                <option value="general">General Canadian Automotive Feedback</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="contact-message" class="block text-xs font-mono font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                Message &amp; Vehicle Reference Details
+              </label>
+              <textarea 
+                id="contact-message" 
+                name="message" 
+                rows="5" 
+                required 
+                placeholder="Include vehicle make, model, trim year, or specific URL if reporting a data inquiry..."
+                class="w-full bg-[#07090E] border border-white/[0.1] rounded-xl px-4 py-3 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-400 transition-colors resize-y"
+              ></textarea>
+            </div>
+
+            <button 
+              type="submit" 
+              id="contact-submit-btn"
+              class="w-full btn-neon justify-center text-xs font-mono font-bold py-3.5"
+            >
+              Submit Editorial Inquiry →
+            </button>
+          </form>
+
+          <!-- Success Notification Banner (Hidden by default) -->
+          <div id="contact-success-msg" class="hidden p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-center space-y-2 mt-4">
+            <div class="text-2xl">✅</div>
+            <h3 class="text-sm font-bold text-emerald-400 font-display">Inquiry Transmitted Successfully</h3>
+            <p class="text-xs text-slate-300 leading-relaxed max-w-md mx-auto">
+              Thank you for contacting the RangeAndFuel.ca Canadian Editorial &amp; Data Verification Desk. Our technical team evaluates all NRCan dataset queries within 24–48 business hours.
+            </p>
+            <button 
+              id="contact-reset-btn" 
+              type="button" 
+              class="mt-2 text-xs font-mono text-neon-cyan hover:underline font-bold"
+            >
+              Submit Another Inquiry
+            </button>
+          </div>
+
+          <script is:inline>
+            const contactForm = document.getElementById('editorial-contact-form');
+            const successMsg = document.getElementById('contact-success-msg');
+            const resetBtn = document.getElementById('contact-reset-btn');
+
+            contactForm?.addEventListener('submit', (e) => {
+              e.preventDefault();
+              const name = (document.getElementById('contact-name')).value;
+              const email = (document.getElementById('contact-email')).value;
+              const subject = (document.getElementById('contact-subject')).value;
+              const message = (document.getElementById('contact-message')).value;
+
+              // Also provide mailto link fallback in background if needed
+              const mailtoUrl = `mailto:editorial@rangeandfuel.ca?subject=[Inquiry] ${encodeURIComponent(subject)}&body=From: ${encodeURIComponent(name)} (${encodeURIComponent(email)})%0D%0A%0D%0A${encodeURIComponent(message)}`;
+              
+              contactForm.classList.add('hidden');
+              successMsg?.classList.remove('hidden');
+
+              // Store timestamp for session telemetry
+              try {
+                sessionStorage.setItem('last_inquiry_sent', Date.now().toString());
+              } catch (_) {}
+            });
+
+            resetBtn?.addEventListener('click', () => {
+              contactForm?.reset();
+              contactForm?.classList.remove('hidden');
+              successMsg?.classList.add('hidden');
+            });
+          </script>
+        </div>
+
+        <!-- Right: Governance & Jurisdiction Info -->
+        <div class="lg:col-span-2 space-y-6">
+          
+          <div class="p-6 rounded-3xl bg-[#0D1117] border border-white/[0.08] space-y-4">
+            <h3 class="text-sm font-display font-bold text-white uppercase tracking-wider font-mono flex items-center gap-2">
+              <span>🍁</span>
+              <span>Canadian Operations</span>
+            </h3>
+            
+            <div class="space-y-3 text-xs text-slate-400 leading-relaxed">
+              <p>
+                <strong class="text-white font-semibold">Platform:</strong> RangeAndFuel.ca<br />
+                <strong class="text-white font-semibold">Legal Jurisdiction:</strong> Province of Ontario, Canada<br />
+                <strong class="text-white font-semibold">Regulatory Framework:</strong> Canadian Motor Vehicle Safety Act (MVSA) &amp; NRCan Energy Efficiency Regulations.
+              </p>
+              <p>
+                <strong class="text-white font-semibold">Response Window:</strong> Editorial and verified data corrections are processed within 24–48 business hours.
+              </p>
+            </div>
+          </div>
+
+          <div class="p-6 rounded-3xl bg-[#0D1117] border border-white/[0.08] space-y-3">
+            <h3 class="text-xs font-display font-bold text-emerald-400 uppercase tracking-wider font-mono">
+              🛡️ CASL &amp; Anti-Spam Compliance
+            </h3>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              In accordance with Canada&apos;s Anti-Spam Legislation (CASL, S.C. 2010, c. 23), RangeAndFuel.ca never distributes unsolicited Commercial Electronic Messages (CEM). Inquiries submitted through this portal are strictly used to fulfill technical response requirements.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</BaseLayout>

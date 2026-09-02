@@ -1,0 +1,96 @@
+{
+  "updated": "2026-09-02",
+  "source": "Natural Resources Canada (NRCan) / Statistics Canada Retail Petroleum Averages",
+  "provinces": [
+    {
+      "code": "ON",
+      "name": "Ontario",
+      "gasolineCentsPerL": 154.5,
+      "premiumCentsPerL": 176.2,
+      "dieselCentsPerL": 161.4,
+      "electricityCentsPerKwh": 14.8,
+      "carbonTax": true
+    },
+    {
+      "code": "BC",
+      "name": "British Columbia",
+      "gasolineCentsPerL": 184.2,
+      "premiumCentsPerL": 204.5,
+      "dieselCentsPerL": 198.1,
+      "electricityCentsPerKwh": 13.1,
+      "carbonTax": true
+    },
+    {
+      "code": "AB",
+      "name": "Alberta",
+      "gasolineCentsPerL": 141.9,
+      "premiumCentsPerL": 162.5,
+      "dieselCentsPerL": 151.8,
+      "electricityCentsPerKwh": 16.9,
+      "carbonTax": true
+    },
+    {
+      "code": "QC",
+      "name": "Quebec",
+      "gasolineCentsPerL": 159.4,
+      "premiumCentsPerL": 181.1,
+      "dieselCentsPerL": 171.2,
+      "electricityCentsPerKwh": 7.8,
+      "carbonTax": false
+    },
+    {
+      "code": "MB",
+      "name": "Manitoba",
+      "gasolineCentsPerL": 139.9,
+      "premiumCentsPerL": 159.9,
+      "dieselCentsPerL": 154.5,
+      "electricityCentsPerKwh": 9.6,
+      "carbonTax": true
+    },
+    {
+      "code": "SK",
+      "name": "Saskatchewan",
+      "gasolineCentsPerL": 148.5,
+      "premiumCentsPerL": 168.9,
+      "dieselCentsPerL": 159.2,
+      "electricityCentsPerKwh": 18.2,
+      "carbonTax": true
+    },
+    {
+      "code": "NS",
+      "name": "Nova Scotia",
+      "gasolineCentsPerL": 168.4,
+      "premiumCentsPerL": 189.2,
+      "dieselCentsPerL": 174.6,
+      "electricityCentsPerKwh": 17.5,
+      "carbonTax": true
+    },
+    {
+      "code": "NB",
+      "name": "New Brunswick",
+      "gasolineCentsPerL": 164.2,
+      "premiumCentsPerL": 185,
+      "dieselCentsPerL": 171.8,
+      "electricityCentsPerKwh": 14.1,
+      "carbonTax": true
+    },
+    {
+      "code": "NL",
+      "name": "Newfoundland & Labrador",
+      "gasolineCentsPerL": 175.6,
+      "premiumCentsPerL": 196.4,
+      "dieselCentsPerL": 186.2,
+      "electricityCentsPerKwh": 14.9,
+      "carbonTax": true
+    },
+    {
+      "code": "PE",
+      "name": "Prince Edward Island",
+      "gasolineCentsPerL": 166.8,
+      "premiumCentsPerL": 187.5,
+      "dieselCentsPerL": 173.9,
+      "electricityCentsPerKwh": 17.8,
+      "carbonTax": true
+    }
+  ]
+}

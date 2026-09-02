@@ -1,0 +1,278 @@
+---
+// src/pages/provinces/index.astro
+// Hub page — all 10 Canadian provinces with gas & EV prices
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import fuelPricesData from '../../data/fuel-prices.json';
+import { breadcrumbSchema } from '../../lib/schema.ts';
+import type { Province } from '../../lib/calculations.ts';
+
+const provinces = fuelPricesData.provinces as Province[];
+
+// Cheapest and most expensive gas
+const sortedByGas = [...provinces].sort((a, b) => a.gasolineCentsPerL - b.gasolineCentsPerL);
+const cheapestGas = sortedByGas[0];
+const expensiveGas = sortedByGas[sortedByGas.length - 1];
+
+// Cheapest electricity
+const sortedByElec = [...provinces].sort((a, b) => a.electricityCentsPerKwh - b.electricityCentsPerKwh);
+const cheapestElec = sortedByElec[0];
+
+const nationAvgGas = +(provinces.reduce((s, p) => s + p.gasolineCentsPerL, 0) / provinces.length).toFixed(1);
+const nationAvgElec = +(provinces.reduce((s, p) => s + p.electricityCentsPerKwh, 0) / provinces.length).toFixed(1);
+
+const provinceEmoji: Record<string, string> = {
+  ON: '🏙️', BC: '🏔️', AB: '🛢️', QC: '⚜️', MB: '🌾',
+  SK: '🌻', NS: '🦞', NB: '🌊', NL: '🐋', PE: '🥔',
+};
+
+const jsonLd = [
+  breadcrumbSchema([
+    { name: 'Home',                 url: '/' },
+    { name: 'Province Fuel Guides', url: '/provinces' },
+  ]),
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Canadian Province Fuel Prices 2024',
+    description: 'Gas, diesel, and electricity fuel prices for all 10 Canadian provinces. Compare annual vehicle fuel costs by province.',
+    url: 'https://rangeandfuel.ca/provinces',
+    mainEntity: {
+      '@type': 'ItemList',
+      name: 'Canadian Provincial Fuel & Electricity Tariffs',
+      numberOfItems: provinces.length,
+      itemListElement: provinces.map((p, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: `${p.name} Fuel Cost Guide 2024`,
+        url: `https://rangeandfuel.ca/provinces/${p.code.toLowerCase()}`,
+      })),
+    },
+  },
+];
+---
+
+<BaseLayout
+  title="Canadian Province Fuel Prices 2024 — Gas, Diesel & EV Rates | RangeAndFuel.ca"
+  description="Current fuel prices across all 10 Canadian provinces: gas, diesel, and electricity ¢/kWh. Find the cheapest province for EV charging and compare annual vehicle fuel costs."
+  canonical="/provinces"
+  jsonLd={jsonLd}
+>
+
+  <!-- Breadcrumb -->
+  <div class="border-b border-white/[0.06] bg-[#07090E]/80 backdrop-blur-md">
+    <div class="container-site py-3">
+      <nav aria-label="Breadcrumb">
+        <ol class="flex items-center gap-2 text-xs text-slate-400 font-mono">
+          <li><a href="/" class="hover:text-neon-cyan transition-colors">Home</a></li>
+          <li class="text-slate-600">/</li>
+          <li class="text-slate-200 font-medium">Province Fuel Guides</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Hero Header -->
+  <header class="relative py-12 md:py-16 bg-[#06080C] border-b border-white/[0.08] overflow-hidden">
+    <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[900px] h-[350px] bg-gradient-to-b from-neon-cyan/12 via-emerald-500/5 to-transparent blur-3xl pointer-events-none rounded-full"></div>
+    <div class="absolute inset-0 bg-cyber-grid bg-[size:32px_32px] opacity-10 pointer-events-none"></div>
+
+    <div class="container-site relative z-10">
+
+      <div class="flex flex-wrap items-center gap-2 mb-4">
+        <span class="text-xs font-mono font-bold px-3 py-1 rounded-full text-neon-cyan bg-cyan-500/10 border border-cyan-500/20">
+          🍁 10 Provinces
+        </span>
+        <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+          NRCan EnerGuide Data
+        </span>
+        <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-md bg-slate-500/10 border border-slate-500/20 text-slate-400">
+          Updated September 2026
+        </span>
+      </div>
+
+      <div class="mb-8">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-display font-black text-white tracking-tight leading-tight">
+          Canadian Fuel Prices by Province 2024
+        </h1>
+        <p class="text-base sm:text-lg text-slate-400 mt-3 max-w-2xl leading-relaxed">
+          Regular gas, diesel, and electricity rates across all 10 provinces. Compare annual vehicle fuel costs to find the best powertrain for your province.
+        </p>
+      </div>
+
+      <!-- National Summary Pillars -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="p-5 rounded-2xl bg-[#0D1117] border border-amber-500/20">
+          <div class="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-1">National Avg Gas</div>
+          <div class="text-3xl font-mono font-black text-amber-400">{nationAvgGas}¢</div>
+          <div class="text-xs font-mono text-slate-400 mt-1">per litre</div>
+        </div>
+        <div class="p-5 rounded-2xl bg-[#0D1117] border border-neon-cyan/20">
+          <div class="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-1">National Avg Elec</div>
+          <div class="text-3xl font-mono font-black text-neon-cyan">{nationAvgElec}¢</div>
+          <div class="text-xs font-mono text-slate-400 mt-1">per kWh</div>
+        </div>
+        <div class="p-5 rounded-2xl bg-[#0D1117] border border-emerald-500/20">
+          <div class="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-1">Cheapest Gas</div>
+          <div class="text-3xl font-mono font-black text-emerald-400">{cheapestGas.gasolineCentsPerL}¢</div>
+          <div class="text-xs font-mono text-slate-400 mt-1">{cheapestGas.name}</div>
+        </div>
+        <div class="p-5 rounded-2xl bg-[#0D1117] border border-cyan-500/20">
+          <div class="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-1">Cheapest EV Rate</div>
+          <div class="text-3xl font-mono font-black text-cyan-400">{cheapestElec.electricityCentsPerKwh}¢</div>
+          <div class="text-xs font-mono text-slate-400 mt-1">{cheapestElec.name}</div>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Province Grid -->
+  <section class="py-12 md:py-16 bg-[#07090E]">
+    <div class="container-site">
+
+      <div class="mb-8">
+        <span class="text-xs font-mono text-neon-cyan uppercase tracking-widest font-semibold block mb-1">⛽ All Provinces</span>
+        <h2 class="text-2xl sm:text-3xl font-display font-black text-white">Current Fuel Prices by Province</h2>
+        <p class="text-sm text-slate-400 mt-1">Select a province to see the full fuel cost guide with vehicle rankings.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        {provinces.map((p) => {
+          const slug = p.code.toLowerCase();
+          const em = provinceEmoji[p.code] ?? '🍁';
+          const isCheapGas = p.code === cheapestGas.code;
+          const isExpensiveGas = p.code === expensiveGas.code;
+          const isCheapElec = p.code === cheapestElec.code;
+          const borderClass = isCheapGas
+            ? 'border-emerald-500/40 shadow-lg shadow-emerald-500/5'
+            : isCheapElec
+            ? 'border-neon-cyan/30'
+            : 'border-white/[0.08]';
+
+          return (
+            <a
+              href={`/provinces/${slug}`}
+              class={`p-6 rounded-3xl bg-[#0D1117] border ${borderClass} hover:border-cyan-500/50 hover:shadow-xl hover:shadow-cyan-500/5 transition-all duration-300 group flex flex-col justify-between`}
+              style="text-decoration: none;"
+            >
+              <div>
+                <!-- Province header -->
+                <div class="flex items-start justify-between mb-4">
+                  <div>
+                    <div class="text-2xl mb-1">{em}</div>
+                    <h3 class="font-display font-bold text-white text-lg group-hover:text-neon-cyan transition-colors leading-tight">
+                      {p.name}
+                    </h3>
+                  </div>
+                  <div class="flex flex-col items-end gap-1">
+                    <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-[#06080C] border border-white/[0.06] text-slate-400">
+                      {p.code}
+                    </span>
+                    {isCheapGas && (
+                      <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                        Cheapest Gas
+                      </span>
+                    )}
+                    {isCheapElec && (
+                      <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-neon-cyan">
+                        Lowest EV Rate
+                      </span>
+                    )}
+                    {isExpensiveGas && (
+                      <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 text-rose-400">
+                        Highest Gas
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <!-- Price rows -->
+                <div class="space-y-2.5 mb-4">
+                  <div class="flex items-center justify-between text-xs font-mono">
+                    <span class="text-slate-400 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Regular Gas</span>
+                    <span class="text-amber-400 font-bold">{p.gasolineCentsPerL}¢/L</span>
+                  </div>
+                  <div class="flex items-center justify-between text-xs font-mono">
+                    <span class="text-slate-400 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span> Diesel</span>
+                    <span class="text-orange-400 font-bold">{p.dieselCentsPerL}¢/L</span>
+                  </div>
+                  <div class="flex items-center justify-between text-xs font-mono">
+                    <span class="text-slate-400 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-neon-cyan"></span> Electricity</span>
+                    <span class="text-neon-cyan font-bold">{p.electricityCentsPerKwh}¢/kWh</span>
+                  </div>
+                  <div class="flex items-center justify-between text-xs font-mono pt-2 border-t border-white/[0.04]">
+                    <span class="text-slate-400">Carbon Tax</span>
+                    <span class={`font-bold ${p.carbonTax ? 'text-amber-400' : 'text-slate-500'}`}>
+                      {p.carbonTax ? 'Federal' : 'Provincial'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CTA row -->
+              <div class="flex items-center justify-between text-xs font-mono text-slate-500 pt-3 border-t border-white/[0.06]">
+                <span>Vehicle cost rankings</span>
+                <span class="text-neon-cyan font-bold group-hover:translate-x-1 transition-transform">View Guide →</span>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+
+      <!-- Comparative note -->
+      <div class="mt-10 p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl">
+        <div class="mb-5">
+          <span class="text-xs font-mono text-neon-cyan uppercase tracking-widest font-semibold block mb-1">📊 National Comparison</span>
+          <h2 class="text-2xl font-display font-black text-white">How Province Fuel Prices Affect Your Annual Costs</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-slate-300 leading-relaxed">
+          <div>
+            <h3 class="text-white font-bold mb-2 flex items-center gap-2"><span>⛽</span> Gasoline Spread</h3>
+            <p class="text-xs text-slate-400">
+              The difference between {cheapestGas.name} ({cheapestGas.gasolineCentsPerL}¢/L) and {expensiveGas.name} ({expensiveGas.gasolineCentsPerL}¢/L) is {(expensiveGas.gasolineCentsPerL - cheapestGas.gasolineCentsPerL).toFixed(1)}¢/L. For a driver doing 20,000 km/yr at 9 L/100km, that's a difference of ~${Math.round((expensiveGas.gasolineCentsPerL - cheapestGas.gasolineCentsPerL) / 100 * (9 / 100) * 20000)} CAD/yr in fuel costs alone.
+            </p>
+          </div>
+          <div>
+            <h3 class="text-white font-bold mb-2 flex items-center gap-2"><span>⚡</span> EV Electricity Rates</h3>
+            <p class="text-xs text-slate-400">
+              {cheapestElec.name} has the lowest electricity rate at {cheapestElec.electricityCentsPerKwh}¢/kWh, making it one of the best provinces for BEV ownership. Provinces with high gas prices and low electricity rates offer the strongest economic case for switching to electric.
+            </p>
+          </div>
+          <div>
+            <h3 class="text-white font-bold mb-2 flex items-center gap-2"><span>🍁</span> Carbon Pricing Impact</h3>
+            <p class="text-xs text-slate-400">
+              {provinces.filter(p => p.carbonTax).length} of 10 provinces are subject to the federal carbon tax backstop, which adds to pump prices and increases the relative cost advantage of EVs and hybrids year over year as rates increase.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Bottom CTA -->
+  <section class="py-12 md:py-16 bg-[#06080C] border-t border-white/[0.08]">
+    <div class="container-site text-center">
+      <div class="max-w-2xl mx-auto">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-neon-cyan/10 border border-neon-cyan/20 text-xs font-mono text-neon-cyan mb-4">
+          <span class="w-1.5 h-1.5 rounded-full bg-neon-cyan animate-pulse"></span>
+          Live NRCan EnerGuide Data
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-display font-black text-white mb-3">
+          Find the Best Vehicle for Your Province
+        </h2>
+        <p class="text-sm text-slate-400 mb-6 leading-relaxed">
+          Compare fuel costs for any make and model using real provincial pump prices. See NRCan efficiency ratings, winter range analysis, and CO₂ data in one place.
+        </p>
+        <a
+          href="/search"
+          class="inline-block px-8 py-3.5 rounded-xl font-mono font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+          style="background: linear-gradient(135deg, #00F0FF, #10B981); color: #07090E;"
+        >
+          🔍 Search All Canadian Vehicles
+        </a>
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>

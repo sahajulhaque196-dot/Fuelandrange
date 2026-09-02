@@ -1,0 +1,73 @@
+---
+// src/pages/404.astro
+// Cyber-Carbon 404 Error Page — Canadian Automotive Directory Fallback
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SearchBar from '../components/widgets/SearchBar.tsx';
+import vehicles from '../data/vehicles.json';
+import type { Vehicle } from '../lib/calculations.ts';
+
+const allVehicles = vehicles as unknown as Vehicle[];
+
+const title = '404 — Telemetry Signal Lost | RangeAndFuel.ca';
+const description = 'The Canadian vehicle data page or fuel rating guide you requested could not be located on RangeAndFuel.ca. Search our complete NRCan catalog of 800+ models.';
+---
+
+<BaseLayout title={title} description={description} noIndex={true}>
+  <div class="min-h-[75vh] flex items-center justify-center py-16">
+    <div class="container-site max-w-3xl text-center space-y-8">
+      
+      <!-- Glitch / Telemetry Loss Badge -->
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-rose-500/30 bg-rose-500/10 text-rose-400 font-mono text-xs font-bold uppercase tracking-wider">
+        <span class="w-2 h-2 rounded-full bg-canadian-crimson animate-ping" aria-hidden="true"></span>
+        <span>ERROR 404 · TELEMETRY COORDINATES UNRESOLVED</span>
+      </div>
+
+      <!-- Main Display Code & Heading -->
+      <div>
+        <h1 class="font-display font-black text-6xl sm:text-8xl tracking-tight text-white mb-2">
+          4<span class="text-neon-cyan">0</span>4
+        </h1>
+        <p class="text-lg sm:text-xl font-display font-bold text-slate-200">
+          Canadian Vehicle Record Not Found
+        </p>
+        <p class="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto mt-2 leading-relaxed">
+          The vehicle model year, provincial tariff table, or recall bulletin you are trying to access may have moved or been updated in our latest NRCan sync.
+        </p>
+      </div>
+
+      <!-- Instant Search Bar Widget -->
+      <div class="pt-2 pb-4">
+        <SearchBar vehicles={allVehicles} placeholder="Search make, model, or year (e.g. RAV4, F-150, Tesla)..." client:load />
+      </div>
+
+      <!-- Quick Action Directory Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left pt-4">
+        <a href="/search" class="p-5 rounded-2xl bg-[#0D1117] border border-white/[0.08] hover:border-cyan-400/50 transition-all group">
+          <div class="text-2xl mb-2">🔍</div>
+          <h2 class="text-sm font-bold text-white group-hover:text-neon-cyan transition-colors">Complete Catalog</h2>
+          <p class="text-xs text-slate-400 mt-1">Filter 800+ Canadian vehicles by L/100km, MSRP, and fuel type.</p>
+        </a>
+
+        <a href="/provinces" class="p-5 rounded-2xl bg-[#0D1117] border border-white/[0.08] hover:border-emerald-400/50 transition-all group">
+          <div class="text-2xl mb-2">🍁</div>
+          <h2 class="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors">Provincial Fuel Rates</h2>
+          <p class="text-xs text-slate-400 mt-1">Gas, diesel, and hydro electricity pricing across all 10 provinces.</p>
+        </a>
+
+        <a href="/recalls" class="p-5 rounded-2xl bg-[#0D1117] border border-white/[0.08] hover:border-rose-400/50 transition-all group">
+          <div class="text-2xl mb-2">⚠️</div>
+          <h2 class="text-sm font-bold text-white group-hover:text-rose-400 transition-colors">Transport Canada Recalls</h2>
+          <p class="text-xs text-slate-400 mt-1">Active CMVSS safety notices, defect investigations, and bulletins.</p>
+        </a>
+      </div>
+
+      <!-- Return Button -->
+      <div class="pt-4">
+        <a href="/" class="btn-neon inline-flex items-center gap-2 text-sm px-6 py-3">
+          <span>← Return to Canadian Intelligence Hub</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</BaseLayout>

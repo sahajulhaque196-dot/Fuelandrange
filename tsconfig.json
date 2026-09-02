@@ -1,0 +1,22 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "strictNullChecks": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "moduleResolution": "bundler",
+    "target": "ES2022",
+    "module": "ESNext",
+    "resolveJsonModule": true
+  },
+  "include": [
+    ".astro/types.d.ts",
+    "**/*"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules"
+  ]
+}

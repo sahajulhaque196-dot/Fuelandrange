@@ -1,0 +1,409 @@
+---
+// src/layouts/BaseLayout.astro
+// Master layout for all pages — SEO meta, fonts, global styles
+import '../styles/global.css';
+import AuthorBox from '../components/common/AuthorBox.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  ogImage?: string;
+  jsonLd?: object | object[];
+  noIndex?: boolean;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  ogImage = 'https://rangeandfuel.ca/og-default.png',
+  jsonLd,
+  noIndex = false,
+} = Astro.props;
+
+const siteUrl  = 'https://rangeandfuel.ca';
+const fullCanonical = canonical ? `${siteUrl}${canonical}` : `${siteUrl}${Astro.url.pathname}`;
+const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+---
+
+<!doctype html>
+<html lang="en-CA" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <!-- Primary Meta -->
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  {noIndex ? <meta name="robots" content="noindex, nofollow" /> : <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />}
+  <link rel="canonical" href={fullCanonical} />
+  <meta name="geo.region" content="CA" />
+  <meta name="language" content="en-CA" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={fullCanonical} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:locale" content="en_CA" />
+  <meta property="og:site_name" content="RangeAndFuel.ca" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImage} />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <meta name="theme-color" content="#00F0FF" />
+
+  <!-- High-Performance Preconnect & Font Links (Eliminates Render-Blocking Waterfall) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" />
+
+  <!-- Sitemap -->
+  <link rel="sitemap" href="/sitemap-index.xml" />
+
+  <!-- JSON-LD Structured Data -->
+  {ldArray.map(schema => (
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
+  ))}
+</head>
+
+<body>
+  <!-- Skip to content for a11y -->
+  <a href="#main-content"
+    class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-neon-cyan focus:text-cyber-slate focus:rounded-lg focus:font-semibold">
+    Skip to content
+  </a>
+
+  <!-- Navigation with Theme Gradient Light Accent -->
+  <header class="fixed top-0 left-0 right-0 z-40" style="backdrop-filter: blur(20px); background: rgba(7,9,14,0.88);">
+    <div class="container-site flex items-center justify-between h-16 gap-4">
+      <!-- Logo (Left) -->
+      <a href="/" class="flex items-center gap-2.5 group" aria-label="RangeAndFuel.ca Home">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center font-mono font-black text-sm shadow-md shadow-neon-cyan/10 group-hover:scale-105 transition-transform"
+          style="background: linear-gradient(135deg, #00F0FF, #10B981); color: #07090E;">
+          RF
+        </div>
+        <div>
+          <div class="font-display font-bold text-white text-sm leading-none">RangeAndFuel<span style="color:#00F0FF;">.ca</span></div>
+          <div class="text-[11px] text-slate-500 leading-none mt-1">Canada's Fuel Economy Authority</div>
+        </div>
+      </a>
+
+      <!-- Right-Aligned Clean Navigation Links -->
+      <div class="flex items-center gap-6">
+        <nav class="hidden md:flex items-center gap-6 font-medium text-sm" aria-label="Primary navigation">
+          <a href="/" class="text-slate-300 hover:text-neon-cyan transition-colors">
+            Home
+          </a>
+          <a href="/search" class="text-slate-400 hover:text-neon-cyan transition-colors flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            Search
+          </a>
+          <a href="/provinces" class="text-slate-400 hover:text-neon-cyan transition-colors">
+            Provinces
+          </a>
+          <a href="/compare" class="text-slate-400 hover:text-neon-cyan transition-colors">
+            Compare Classes
+          </a>
+          <a href="/recalls" class="text-slate-400 hover:text-canadian-crimson transition-colors flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-500/10 border border-red-500/20">
+            <span class="w-1.5 h-1.5 rounded-full bg-canadian-crimson animate-pulse-slow" aria-hidden="true"></span>
+            <span class="text-rose-400 text-xs font-mono font-bold uppercase">Recalls</span>
+          </a>
+          <a href="/about" class="text-slate-400 hover:text-neon-cyan transition-colors">
+            About
+          </a>
+          <a href="/contact" class="text-slate-400 hover:text-neon-cyan transition-colors">
+            Contact
+          </a>
+        </nav>
+
+        <!-- Mobile menu trigger -->
+        <button class="md:hidden p-2 rounded-lg hover:bg-white/5 text-slate-400" aria-label="Menu" id="mobile-menu-btn">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- 🌟 Glowing Theme Gradient Light Beam under Header -->
+    <div class="relative w-full h-[1px] overflow-visible">
+      <!-- Razor Gradient Line -->
+      <div class="w-full h-[1px]"
+        style="background: linear-gradient(90deg, transparent 0%, rgba(0,240,255,0.7) 20%, rgba(16,185,129,0.8) 50%, rgba(255,46,77,0.6) 80%, transparent 100%);">
+      </div>
+      <!-- Soft Ambient Light Glow Halo -->
+      <div class="absolute -top-[1px] left-1/4 right-1/4 h-[3px] blur-[3px] pointer-events-none opacity-80"
+        style="background: linear-gradient(90deg, rgba(0,240,255,0.8) 0%, rgba(16,185,129,0.9) 50%, rgba(255,46,77,0.7) 100%);">
+      </div>
+    </div>
+
+    <!-- Mobile menu (hidden by default) -->
+    <div id="mobile-menu" class="hidden md:hidden px-4 pb-5 space-y-2 border-t border-slate-border/30 bg-[#07090E]/95 backdrop-blur-xl">
+      <a href="/" class="block py-2.5 px-3 rounded-lg text-sm text-slate-200 font-medium hover:bg-white/5 hover:text-neon-cyan transition-colors">
+        🏠 Home
+      </a>
+      <a href="/search" class="block py-2.5 px-3 rounded-lg text-sm text-slate-300 hover:bg-white/5 hover:text-neon-cyan transition-colors">
+        🔍 Vehicle Search Hub
+      </a>
+      <a href="/provinces" class="block py-2.5 px-3 rounded-lg text-sm text-slate-300 hover:bg-white/5 hover:text-neon-cyan transition-colors">
+        🍁 Province Fuel & EV Guides
+      </a>
+      <a href="/compare" class="block py-2.5 px-3 rounded-lg text-sm text-slate-300 hover:bg-white/5 hover:text-neon-cyan transition-colors">
+        📊 Class Fuel Rankings
+      </a>
+      <a href="/recalls" class="block py-2.5 px-3 rounded-lg text-sm text-canadian-crimson font-medium hover:bg-red-500/10 transition-colors">
+        ⚠️ Transport Canada Recalls Directory
+      </a>
+      <a href="/about" class="block py-2.5 px-3 rounded-lg text-sm text-slate-300 hover:bg-white/5 hover:text-neon-cyan transition-colors">
+        🍁 About Us & Editorial Standards
+      </a>
+      <a href="/contact" class="block py-2.5 px-3 rounded-lg text-sm text-slate-300 hover:bg-white/5 hover:text-neon-cyan transition-colors">
+        ✉️ Contact & Data Inquiries
+      </a>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main id="main-content" class="pt-16">
+    <slot />
+  </main>
+
+  <!-- Global E-E-A-T Editorial Authority Card (Sahajul) -->
+  <AuthorBox />
+
+  <!-- Enhanced Symmetrical Canadian Footer -->
+  <footer class="border-t border-white/[0.08] bg-[#06080C] relative overflow-hidden" aria-labelledby="footer-heading">
+    <!-- Subtle Ambient Top Glow -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-px bg-gradient-to-r from-transparent via-neon-cyan/40 to-transparent"></div>
+
+    <h2 id="footer-heading" class="sr-only">Footer</h2>
+
+    <div class="container-site py-16">
+      <!-- 4 Balanced Columns with Exact Same Line Heights & Baselines -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
+        
+        <!-- Column 1: Brand & Canadian Platform Authority -->
+        <div class="flex flex-col justify-between">
+          <div>
+            <a href="/" class="inline-flex items-center gap-2.5 group mb-4" aria-label="RangeAndFuel.ca Home">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center font-mono font-black text-sm shadow-lg shadow-neon-cyan/10 transition-transform group-hover:scale-105"
+                style="background: linear-gradient(135deg, #00F0FF, #10B981); color: #07090E;">
+                RF
+              </div>
+              <div>
+                <div class="font-display font-black text-white text-base tracking-tight leading-none">
+                  RangeAndFuel<span class="text-neon-cyan">.ca</span>
+                </div>
+                <div class="text-[11px] font-mono text-slate-400 tracking-wider uppercase mt-1">Canada's Auto Authority</div>
+              </div>
+            </a>
+            
+            <p class="text-xs text-slate-400 leading-relaxed mb-5">
+              Comprehensive Canadian automotive intelligence platform. Real-world NRCan EnerGuide ratings (L/100km), -15°C winter EV battery range modeling, and Transport Canada safety recall bulletins.
+            </p>
+          </div>
+
+          <!-- Official Standard Badges -->
+          <div class="flex flex-wrap gap-1.5 pt-2">
+            <span class="text-[11px] font-mono px-2.5 py-1 rounded-md bg-neon-cyan/10 text-neon-cyan border border-neon-cyan/20">L/100km Metric</span>
+            <span class="text-[11px] font-mono px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">CAD $ Standard</span>
+            <span class="text-[11px] font-mono px-2.5 py-1 rounded-md bg-canadian-crimson/10 text-red-400 border border-canadian-crimson/20">TC CMVSS</span>
+          </div>
+        </div>
+
+        <!-- Column 2: Popular Gas & Hybrid Makes (5 items) -->
+        <div>
+          <div class="flex items-center gap-2 mb-4 pb-2 border-b border-white/[0.06]">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-mono">Popular Hybrids & ICE</h3>
+          </div>
+          <ul class="space-y-3">
+            <li>
+              <a href="/makes/toyota" class="text-xs text-slate-400 hover:text-neon-cyan transition-all flex items-center justify-between group">
+                <span class="group-hover:translate-x-1 transition-transform">Toyota (RAV4, Camry, Tundra)</span>
+                <span class="text-slate-600 group-hover:text-neon-cyan text-[10px]">→</span>
+              </a>
+            </li>
+            <li>
+              <a href="/makes/ford" class="text-xs text-slate-400 hover:text-neon-cyan transition-all flex items-center justify-between group">
+                <span class="group-hover:translate-x-1 transition-transform">Ford (F-150, Escape, Maverick)</span>
+                <span class="text-slate-600 group-hover:text-neon-cyan text-[10px]">→</span>
+              </a>
+            </li>
+            <li>
+              <a href="/makes/honda" class="text-xs text-slate-400 hover:text-neon-cyan transition-all flex items-center justify-between group">
+                <span class="group-hover:translate-x-1 transition-transform">Honda (CR-V, Civic, Accord)</span>
+                <span class="text-slate-600 group-hover:text-neon-cyan text-[10px]">→</span>
+              </a>
+            </li>
+            <li>
+              <a href="/makes/hyundai" class="text-xs text-slate-400 hover:text-neon-cyan transition-all flex items-center justify-between group">
+                <span class="group-hover:translate-x-1 transition-transform">Hyundai (Tucson, Elantra)</span>
+                <span class="text-slate-600 group-hover:text-neon-cyan text-[10px]">→</span>
+              </a>
+            </li>
+            <li>
+              <a href="/makes/chevrolet" class="text-xs text-slate-400 hover:text-neon-cyan transition-all flex items-center justify-between group">
+                <span class="group-hover:translate-x-1 transition-transform">Chevrolet (Silverado, Equinox)</span>
+                <span class="text-slate-600 group-hover:text-neon-cyan text-[10px]">→</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Column 3: Electric Vehicles & Pure BEVs (5 items) -->
+        <div>
+          <div class="flex items-center gap-2 mb-4 pb-2 border-b border-white/[0.06]">
+            <span class="w-2 h-2 rounded-full bg-neon-cyan"></span>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-mono">Electric Vehicles (BEV)</h3>
+          </div>
+          <ul class="space-y-3">
+            <li>
+              <a href="/makes/tesla" class="text-xs text-slate-400 hover:text-neon-cyan transition-all flex items-center justify-between group">
+                <span class="group-hover:translate-x-1 transition-transform">Tesla (Model Y, Model 3, Cybertruck)</span>
+                <span class="text-slate-600 group-hover:text-neon-cyan text-[10px]">→</span>
+              </a>
+            </li>
+            <li>
+              <a href="/makes/hyundai" class="text-xs text-slate-400 hover:text-neon-cyan transition-all flex items-center justify-between group">
+                <span class="group-hover:translate-x-1 transition-transform">Hyundai Electric (IONIQ 5, IONIQ 6)</span>
+                <span class="text-slate-600 group-hover:text-neon-cyan text-[10px]">→</span>
+              </a>
+            </li>
+            <li>
+              <a href="/makes/kia" class="text-xs text-slate-400 hover:text-neon-cyan transition-all flex items-center justify-between group">
+                <span class="group-hover:translate-x-1 transition-transform">Kia Electric (EV6, EV9)</span>
+                <span class="text-slate-600 group-hover:text-neon-cyan text-[10px]">→</span>
+              </a>
+            </li>
+            <li>
+              <a href="/makes/rivian" class="text-xs text-slate-400 hover:text-neon-cyan transition-all flex items-center justify-between group">
+                <span class="group-hover:translate-x-1 transition-transform">Rivian (R1T, R1S Quad-Motor)</span>
+                <span class="text-slate-600 group-hover:text-neon-cyan text-[10px]">→</span>
+              </a>
+            </li>
+            <li>
+              <a href="/makes/polestar" class="text-xs text-slate-400 hover:text-neon-cyan transition-all flex items-center justify-between group">
+                <span class="group-hover:translate-x-1 transition-transform">Polestar & Lucid Motors</span>
+                <span class="text-slate-600 group-hover:text-neon-cyan text-[10px]">→</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Column 4: Intelligence Tools & Official Resources (5 items) -->
+        <div>
+          <div class="flex items-center gap-2 mb-4 pb-2 border-b border-white/[0.06]">
+            <span class="w-2 h-2 rounded-full bg-canadian-crimson"></span>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-mono">Tools & Governance</h3>
+          </div>
+          <ul class="space-y-3">
+            <li>
+              <a href="/recalls" class="text-xs text-slate-400 hover:text-canadian-crimson transition-all flex items-center justify-between group">
+                <span class="group-hover:translate-x-1 transition-transform flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-canadian-crimson"></span>
+                  Transport Canada Recalls
+                </span>
+                <span class="text-slate-600 group-hover:text-canadian-crimson text-[10px]">→</span>
+              </a>
+            </li>
+            <li>
+              <a href="/search" class="text-xs text-slate-400 hover:text-neon-cyan transition-all flex items-center justify-between group">
+                <span class="group-hover:translate-x-1 transition-transform">Instant Vehicle Search Hub</span>
+                <span class="text-slate-600 group-hover:text-neon-cyan text-[10px]">→</span>
+              </a>
+            </li>
+            <li>
+              <a href="/provinces" class="text-xs text-slate-400 hover:text-neon-cyan transition-all flex items-center justify-between group">
+                <span class="group-hover:translate-x-1 transition-transform">10 Province Fuel Price Guides</span>
+                <span class="text-slate-600 group-hover:text-neon-cyan text-[10px]">→</span>
+              </a>
+            </li>
+            <li>
+              <a href="/compare" class="text-xs text-slate-400 hover:text-neon-cyan transition-all flex items-center justify-between group">
+                <span class="group-hover:translate-x-1 transition-transform">Rankings by Vehicle Class</span>
+                <span class="text-slate-600 group-hover:text-neon-cyan text-[10px]">→</span>
+              </a>
+            </li>
+            <li>
+              <a href="/#cockpit" class="text-xs text-slate-400 hover:text-neon-cyan transition-all flex items-center justify-between group">
+                <span class="group-hover:translate-x-1 transition-transform">-15°C Winter Range Simulator</span>
+                <span class="text-slate-600 group-hover:text-neon-cyan text-[10px]">→</span>
+              </a>
+            </li>
+            <li>
+              <a href="/privacy" class="text-xs text-slate-400 hover:text-neon-cyan transition-all flex items-center justify-between group">
+                <span class="group-hover:translate-x-1 transition-transform">Canadian PIPEDA Privacy</span>
+                <span class="text-slate-600 group-hover:text-neon-cyan text-[10px]">→</span>
+              </a>
+            </li>
+            <li>
+              <a href="/terms" class="text-xs text-slate-400 hover:text-neon-cyan transition-all flex items-center justify-between group">
+                <span class="group-hover:translate-x-1 transition-transform">Terms of Service</span>
+                <span class="text-slate-600 group-hover:text-neon-cyan text-[10px]">→</span>
+              </a>
+            </li>
+            <li>
+              <a href="/disclaimer" class="text-xs text-slate-400 hover:text-neon-cyan transition-all flex items-center justify-between group">
+                <span class="group-hover:translate-x-1 transition-transform">Data & Legal Disclaimer</span>
+                <span class="text-slate-600 group-hover:text-neon-cyan text-[10px]">→</span>
+              </a>
+            </li>
+            <li>
+              <a href="/contact" class="text-xs text-slate-400 hover:text-neon-cyan transition-all flex items-center justify-between group">
+                <span class="group-hover:translate-x-1 transition-transform">Editorial & Data Inquiries</span>
+                <span class="text-slate-600 group-hover:text-neon-cyan text-[10px]">→</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Symmetrical Divider -->
+      <div class="my-10 h-px bg-white/[0.06] w-full"></div>
+
+      <!-- Bottom Horizontal Bar: Perfectly Aligned -->
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+        <div class="flex items-center gap-2">
+          <span>🍁</span>
+          <span>© {new Date().getFullYear()} <strong>RangeAndFuel.ca</strong> — Sourced from Natural Resources Canada (NRCan) & Transport Canada MVSR bulletins.</span>
+        </div>
+
+        <div class="flex items-center gap-6 font-mono text-[11px]">
+          <a href="/about" class="text-slate-400 hover:text-neon-cyan transition-colors">About</a>
+          <a href="/contact" class="text-slate-400 hover:text-neon-cyan transition-colors">Contact</a>
+          <a href="/privacy" class="text-slate-400 hover:text-neon-cyan transition-colors">Privacy</a>
+          <a href="/terms" class="text-slate-400 hover:text-neon-cyan transition-colors">Terms</a>
+          <a href="/disclaimer" class="text-slate-400 hover:text-neon-cyan transition-colors">Disclaimer</a>
+          <a href="/sitemap-index.xml" target="_blank" class="text-slate-400 hover:text-neon-cyan transition-colors">XML Sitemaps</a>
+          <a href="#main-content" class="text-neon-cyan hover:underline flex items-center gap-1">
+            Top ↑
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- Mobile menu toggle -->
+  <script>
+    const btn = document.getElementById('mobile-menu-btn');
+    const menu = document.getElementById('mobile-menu');
+    btn?.addEventListener('click', () => menu?.classList.toggle('hidden'));
+  </script>
+</body>
+</html>
+

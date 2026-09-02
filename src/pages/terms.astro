@@ -1,0 +1,229 @@
+---
+// src/pages/terms.astro
+// Comprehensive Terms of Service — Google AdSense & Canadian Compliance Standards
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { breadcrumbSchema } from '../lib/schema.ts';
+
+const jsonLd = [
+  breadcrumbSchema([
+    { name: 'Home', url: '/' },
+    { name: 'Terms of Service', url: '/terms' },
+  ]),
+];
+---
+
+<BaseLayout
+  title="Terms of Service & User Agreement | RangeAndFuel.ca"
+  description="Terms of Service, acceptable use policies, calculation disclaimers, and legal agreement governing the use of RangeAndFuel.ca automotive intelligence platform."
+  canonical="/terms"
+  jsonLd={jsonLd}
+>
+  <!-- Breadcrumb Bar -->
+  <div class="border-b border-white/[0.06] bg-[#07090E]/80 backdrop-blur-md">
+    <div class="container-site py-3">
+      <nav aria-label="Breadcrumb">
+        <ol class="flex items-center gap-2 text-xs text-slate-400 font-mono">
+          <li><a href="/" class="hover:text-neon-cyan transition-colors">Home</a></li>
+          <li class="text-slate-600">/</li>
+          <li class="text-slate-200 font-medium">Terms of Service</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <section class="py-16 md:py-20 bg-[#06080C] relative overflow-hidden">
+    <!-- Ambient Background Glow -->
+    <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-b from-neon-cyan/15 via-emerald-500/5 to-transparent blur-3xl pointer-events-none rounded-full"></div>
+
+    <div class="container-site max-w-4xl relative z-10">
+      
+      <!-- Page Header -->
+      <div class="mb-12 border-b border-white/[0.08] pb-8">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-neon-cyan text-xs font-mono mb-4">
+          <span>⚖️</span> Canadian Legal Governance
+        </div>
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-display font-black text-white tracking-tight">
+          Terms of <span class="text-gradient-cyan">Service</span>
+        </h1>
+        <p class="text-xs font-mono text-slate-400 mt-3">
+          Effective Date: September 2, 2026 · Governing Law: Ontario, Canada & Federal Laws of Canada
+        </p>
+      </div>
+
+      <!-- Legal Document Stream -->
+      <div class="space-y-8 text-slate-300 text-sm leading-relaxed">
+        
+        <!-- Section 1 -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-neon-cyan font-mono">01.</span> Acceptance of Agreement & Terms
+          </h2>
+          <p>
+            Welcome to <strong>RangeAndFuel.ca</strong> ("the Platform," "we," "us," or "our"). By accessing, browsing, scraping, linking to, or otherwise utilizing any feature, calculation engine, database query, or informational resource hosted on RangeAndFuel.ca, you ("the User," "Visitor," or "Licensee") explicitly acknowledge that you have read, understood, and agreed to be legally bound by these Terms of Service ("Terms") in conjunction with our <a href="/privacy" class="text-neon-cyan hover:underline">Privacy Policy</a> and <a href="/disclaimer" class="text-neon-cyan hover:underline">Data Methodology Disclaimer</a>.
+          </p>
+          <p>
+            If you do not agree unconditionally with every term, covenant, and condition outlined within this agreement, you must immediately cease all access and use of RangeAndFuel.ca. We reserve the absolute right to update, modify, amend, or replace any portion of these Terms at our sole discretion. Any changes will become effective immediately upon posting to this page with an updated "Effective Date." Your continued use of the platform following the posting of modifications constitutes legal acceptance of those revisions.
+          </p>
+        </div>
+
+        <!-- Section 2 -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-neon-cyan font-mono">02.</span> Scope of Services & Informational Nature
+          </h2>
+          <p>
+            RangeAndFuel.ca is an independent Canadian digital publication and automotive data analytics engine. Our primary service consists of compiling, computing, modeling, and presenting automotive fuel consumption statistics (Litres per 100 Kilometres, or L/100km), electric vehicle power consumption figures (kilowatt-hours per 100 kilometres, or kWh/100km), estimated provincial operating expenditures in Canadian Dollars (CAD $), sub-zero cold-weather winter range degradation projections (-15°C baseline), and Transport Canada Motor Vehicle Safety Recalls (MVSR) bulletins.
+          </p>
+          <p>
+            All information, computational algorithms, and data published across our website are offered solely for general informational, educational, and consumer comparison purposes. Nothing published on this website constitutes professional financial advice, certified automotive mechanical engineering counsel, vehicle warranty representation, or legally binding retail vehicle pricing from original equipment manufacturers (OEMs).
+          </p>
+        </div>
+
+        <!-- Section 3 -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-neon-cyan font-mono">03.</span> Calculation Engines & No Warranty on Real-World Results
+          </h2>
+          <p>
+            The automotive calculations displayed across our platform (including annual fuel cost projections, monthly fuel budgets, 5-year total expenditure modeling, winter battery loss estimates, and vehicle-to-vehicle head-to-head comparisons) are mathematical simulations based on official Natural Resources Canada (NRCan) EnerGuide laboratory baseline ratings, Statistics Canada regional petroleum surveys, and provincial public utility hydro tariffs.
+          </p>
+          <p>
+            You acknowledge that real-world automotive efficiency is inherently variable and subject to factors beyond our computational modeling, including:
+          </p>
+          <ul class="list-disc pl-5 space-y-2 text-slate-400">
+            <li><strong>Driver Aggression & Speed Profiles:</strong> Rapid acceleration, driving in excess of posted highway speed limits (e.g., 120 km/h vs. 100 km/h), and frequent harsh braking significantly elevate fuel and electricity consumption.</li>
+            <li><strong>Severe Climate Conditions:</strong> Ambient temperatures below 0°C, cabin climate control usage, aerodynamic resistance from blizzard snow, and rolling resistance from heavy slush increase energy consumption beyond laboratory figures.</li>
+            <li><strong>Vehicle Payload & Aerodynamics:</strong> Carrying roof cargo boxes, bicycle racks, heavy cargo, or towing recreational trailers drastically degrades cruising range.</li>
+            <li><strong>Mechanical Maintenance:</strong> Improper tire inflation pressure, non-winter compound tires, neglected engine oil change intervals, and unaligned suspensions will degrade fuel economy.</li>
+          </ul>
+          <p class="text-xs text-slate-400">
+            Accordingly, RangeAndFuel.ca provides no warranty, express or implied, that your personal vehicle operating expenses or battery cruising range will match the mathematical calculations generated by our interactive widgets.
+          </p>
+        </div>
+
+        <!-- Section 4 -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-neon-cyan font-mono">04.</span> Intellectual Property & Proprietary Rights
+          </h2>
+          <p>
+            All content published on RangeAndFuel.ca—including but not limited to proprietary mathematical formulas, computational calculators, user interface designs, custom CSS styling, typography, software source code, graphics, interactive widgets, editorial reviews, buyer guides, and structured JSON-LD schemas—is the intellectual property of RangeAndFuel.ca and is protected under Canadian and international copyright, trademark, and database protection legislation.
+          </p>
+          <p>
+            Automotive brand names, model trademarks, logos, vehicle badge insignias, and recall notices (such as Toyota, Ford, Honda, Tesla, Chevrolet, Hyundai, Transport Canada, NRCan) referenced throughout this website are the registered trademarks of their respective corporate entities or government bodies. Their mention on this platform is strictly for accurate nominative fair-use identification and comparative editorial reporting under Canadian law.
+          </p>
+        </div>
+
+        <!-- Section 5 -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-neon-cyan font-mono">05.</span> Prohibited Uses & Platform Integrity
+          </h2>
+          <p>
+            You agree to use RangeAndFuel.ca solely for lawful personal, consumer research, or non-commercial editorial purposes. When utilizing the platform, you agree that you shall NOT:
+          </p>
+          <ul class="list-disc pl-5 space-y-2 text-slate-400">
+            <li>Engage in unauthorized automated data extraction, high-frequency web scraping, screen scraping, or database harvesting of our vehicle specifications without prior written authorization.</li>
+            <li>Deploy automated bots, spiders, crawlers, or scripts designed to impair, overload, flood, or disrupt server infrastructure or Core Web Vitals performance.</li>
+            <li>Circumvent, disable, or tamper with security protocols, rate-limiting tokens, or firewall protections.</li>
+            <li>Frame, mirror, or embed our interactive calculators or comparison tools on third-party commercial platforms without express written licensing agreements.</li>
+            <li>Use the platform to transmit malware, phishing links, intrusive scripts, or unauthorized commercial solicitations.</li>
+          </ul>
+        </div>
+
+        <!-- Section 6 -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-neon-cyan font-mono">06.</span> Advertising, Affiliate Links & Commercial Disclosures
+          </h2>
+          <p>
+            To maintain RangeAndFuel.ca as a free public automotive intelligence resource for all Canadian motorists, our platform displays third-party advertising networks (including Google AdSense) and includes commercial affiliate referral partnerships (e.g., auto insurance comparison services, vehicle trade-in valuation partners, and Level 2 residential EV charging hardware suppliers).
+          </p>
+          <p>
+            When you interact with third-party advertisements or click sponsored affiliate links, you may be redirected to independent commercial platforms governed by their own distinct terms of service and privacy practices. RangeAndFuel.ca does not underwrite, warrant, guarantee, or assume legal liability for any third-party products, services, quotations, financing agreements, or insurance policies purchased through external vendor referrals.
+          </p>
+        </div>
+
+        <!-- Section 7 -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-neon-cyan font-mono">07.</span> Transport Canada Safety Recalls Disclaimer
+          </h2>
+          <p>
+            While RangeAndFuel.ca actively compiles and categorizes public safety recall bulletins issued by Transport Canada under the <em>Motor Vehicle Safety Act (MVSA)</em>, our recall database is provided as a secondary informational reference. Recall remedies, affected production build dates, and open recall status are tied directly to an individual vehicle's unique 17-digit Vehicle Identification Number (VIN).
+          </p>
+          <p>
+            RangeAndFuel.ca does NOT maintain a real-time connection to individual manufacturer warranty databases. Vehicle owners must verify their individual VIN directly with an authorized Canadian franchise dealership or through the official Transport Canada Motor Vehicle Safety Recalls portal at <a href="https://tc.canada.ca" target="_blank" rel="noopener noreferrer" class="text-neon-cyan underline">tc.canada.ca</a> before making safety decisions.
+          </p>
+        </div>
+
+        <!-- Section 8 -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-neon-cyan font-mono">08.</span> Limitation of Legal Liability
+          </h2>
+          <p class="uppercase text-xs font-mono text-slate-400 font-bold">
+            Please Read This Section Carefully As It Limits The Legal Liability Of RangeAndFuel.ca
+          </p>
+          <p>
+            TO THE MAXIMUM EXTENT PERMITTED UNDER APPLICABLE CANADIAN FEDERAL AND PROVINCIAL LAWS, RANGEANDFUEL.CA, ITS DIRECTORS, OFFICERS, EMPLOYEES, AFFILIATES, AGENTS, AND LICENSORS SHALL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, CONSEQUENTIAL, SPECIAL, PUNITIVE, OR EXEMPLARY DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR LOSS OF FINANCIAL PROFITS, VEHICLE REPAIR EXPENDITURES, INACCURATE FUEL BUDGET PLANNING, ELECTRICITY EXPENSES, UNEXPECTED WINTER TOWING COSTS, DATA CORRUPTION, OR BUSINESS INTERRUPTION) ARISING OUT OF OR IN CONNECTION WITH YOUR ACCESS TO, RELIANCE UPON, OR INABILITY TO USE OUR WEBSITE, CALCULATORS, OR PUBLISHED RATINGS.
+          </p>
+          <p>
+            OUR ENTIRE AGGREGATE LIABILITY TO YOU FOR ANY AND ALL CLAIMS ARISING FROM THESE TERMS OR YOUR USE OF THE WEBSITE SHALL BE LIMITED TO THE GREATER OF: (A) THE TOTAL AMOUNT PAID BY YOU TO RANGEANDFUEL.CA FOR USE OF THE PLATFORM IN THE PAST TWELVE MONTHS (WHICH IS ZERO DOLLARS / $0.00 CAD), OR (B) ONE HUNDRED CANADIAN DOLLARS ($100.00 CAD).
+          </p>
+        </div>
+
+        <!-- Section 9 -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-neon-cyan font-mono">09.</span> Indemnification
+          </h2>
+          <p>
+            You agree to defend, indemnify, and hold harmless RangeAndFuel.ca, its corporate parents, subsidiaries, affiliates, officers, directors, contractors, agents, and licensors from and against any and all claims, damages, obligations, losses, liabilities, costs, debts, and expenses (including reasonable legal and accounting fees) arising from: (i) your access to and use of the platform; (ii) your violation of any provision of these Terms; or (iii) your violation of any third-party rights, including intellectual property or privacy rights.
+          </p>
+        </div>
+
+        <!-- Section 10 -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-neon-cyan font-mono">10.</span> Governing Law, Jurisdiction & Dispute Resolution
+          </h2>
+          <p>
+            These Terms, your access to RangeAndFuel.ca, and any legal disputes or claims arising out of or related to this website shall be governed exclusively by and construed in accordance with the domestic laws of the <strong>Province of Ontario</strong> and the federal laws of <strong>Canada</strong> applicable therein, without giving effect to any principles of conflicts of law.
+          </p>
+          <p>
+            You irrevocably submit and attorn to the exclusive jurisdiction of the provincial and federal courts located within the City of Toronto, Ontario, Canada, for the resolution of any action, claim, or proceeding arising under or in connection with these Terms.
+          </p>
+        </div>
+
+        <!-- Section 11 -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-neon-cyan font-mono">11.</span> Severability & Entire Agreement
+          </h2>
+          <p>
+            If any provision of these Terms is deemed unlawful, void, or for any reason unenforceable by a court of competent jurisdiction, that provision shall be deemed severable from these Terms and shall not affect the validity and enforceability of any remaining provisions. These Terms, alongside our Privacy Policy and Legal Disclaimer, constitute the entire agreement between you and RangeAndFuel.ca regarding your use of the website.
+          </p>
+        </div>
+
+        <!-- Section 12 -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-neon-cyan font-mono">12.</span> Legal Contact & Inquiries
+          </h2>
+          <p>
+            If you have questions, feedback, or legal inquiries regarding these Terms of Service, please contact our legal administration team:
+          </p>
+          <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.06] text-xs font-mono space-y-1">
+            <div class="text-white font-bold">RangeAndFuel.ca Legal Administration</div>
+            <div class="text-slate-400">Governance & Compliance Department</div>
+            <div class="text-neon-cyan">Email: legal@rangeandfuel.ca</div>
+            <div class="text-slate-500">Website: https://rangeandfuel.ca</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,496 @@
+---
+// src/pages/makes/[make]/[model]/index.astro
+// Model hub page — all years/trims for a given Make + Model
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import LeadGenWidget from '../../../../components/widgets/LeadGenWidget.tsx';
+import vehicles from '../../../../data/vehicles.json';
+import recallData from '../../../../data/recalls.json';
+import { breadcrumbSchema } from '../../../../lib/schema.ts';
+import { toSlug, fuelTypePill, fuelTypeLabel, calcHwyRange, isBEV, isPHEV } from '../../../../lib/calculations.ts';
+import type { Vehicle } from '../../../../lib/calculations.ts';
+
+export async function getStaticPaths() {
+  const all = vehicles as unknown as Vehicle[];
+  const combos = [...new Set(all.map(v => `${toSlug(v.make)}|${toSlug(v.model)}`))]
+    .map(key => {
+      const [make, model] = key.split('|');
+      const sample = all.find(v => toSlug(v.make) === make && toSlug(v.model) === model)!;
+      return {
+        params: { make, model },
+        props: { makeDisplay: sample.make, modelDisplay: sample.model },
+      };
+    });
+  return combos;
+}
+
+const { make, model } = Astro.params;
+const { makeDisplay, modelDisplay } = Astro.props;
+
+const all = vehicles as unknown as Vehicle[];
+const modelVehicles = all
+  .filter(v => toSlug(v.make) === make && toSlug(v.model) === model)
+  .sort((a, b) => b.year - a.year || a.trim.localeCompare(b.trim));
+
+const years = [...new Set(modelVehicles.map(v => v.year))].sort((a, b) => b - a);
+const vehicleClass = modelVehicles[0]?.vehicleClass ?? '';
+const hasEV = modelVehicles.some(v => v.fuelType === 'BEV' || v.fuelType === 'PHEV');
+const hasHybrid = modelVehicles.some(v => v.fuelType === 'HEV' || v.fuelType === 'PHEV');
+
+// Best efficiency in model lineup
+const bestFuelTrims = [...modelVehicles].sort((a, b) => {
+  const aVal = a.combinedL100km ?? a.kwhPer100km ?? 99;
+  const bVal = b.combinedL100km ?? b.kwhPer100km ?? 99;
+  return aVal - bVal;
+});
+const championTrim = bestFuelTrims[0];
+
+const msrps = modelVehicles.map(v => v.msrpCAD).filter(Boolean);
+const minMsrp = Math.min(...msrps);
+const maxMsrp = Math.max(...msrps);
+const maxRange = Math.max(...modelVehicles.map(v => (isBEV(v) ? (v.electricRangeKm || 0) : (calcHwyRange(v) || 0))));
+
+// Active recalls for this model
+const modelRecalls = (recallData as any).recalls.filter((r: any) =>
+  toSlug(r.make) === make && toSlug(r.model) === model
+);
+
+// Segment competitors for internal linking
+const relatedCompetitors = [...new Set(
+  all
+    .filter(v => v.vehicleClass === vehicleClass && toSlug(v.make) !== make)
+    .map(v => `${v.make}|${v.model}`)
+)].slice(0, 4).map(item => {
+  const [rMake, rModel] = item.split('|');
+  const rSample = all.find(v => v.make === rMake && v.model === rModel)!;
+  return {
+    make: rMake,
+    model: rModel,
+    makeSlug: toSlug(rMake),
+    modelSlug: toSlug(rModel),
+    eff: rSample.combinedL100km ? `${rSample.combinedL100km} L/100km` : `${rSample.kwhPer100km} kWh`,
+    fuelType: rSample.fuelType,
+  };
+});
+
+const trimItemsSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: `${makeDisplay} ${modelDisplay} Trims & Fuel Ratings — Canada`,
+  description: `Official NRCan fuel consumption ratings and specifications for ${modelVehicles.length} Canadian trims of the ${makeDisplay} ${modelDisplay}.`,
+  numberOfItems: modelVehicles.length,
+  itemListElement: modelVehicles.map((v, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: `${v.year} ${v.make} ${v.model} ${v.trim}`,
+    url: `https://rangeandfuel.ca/makes/${make}/${model}/${v.year}/${toSlug(v.trim)}`,
+  })),
+};
+
+const jsonLd = [
+  trimItemsSchema,
+  breadcrumbSchema([
+    { name: 'Home', url: '/' },
+    { name: makeDisplay, url: `/makes/${make}` },
+    { name: `${modelDisplay} Fuel Economy`, url: `/makes/${make}/${model}` },
+  ]),
+];
+---
+
+<BaseLayout
+  title={`${makeDisplay} ${modelDisplay} Fuel Consumption Canada — All Years & Trims | L/100km`}
+  description={`Official Natural Resources Canada (NRCan) fuel consumption ratings (L/100km), CAD fuel costs, winter range, and Transport Canada safety recalls for all ${makeDisplay} ${modelDisplay} model years and trims.`}
+  canonical={`/makes/${make}/${model}`}
+  jsonLd={jsonLd}
+>
+  <!-- Breadcrumb Bar -->
+  <div class="border-b border-white/[0.06] bg-[#07090E]/80 backdrop-blur-md">
+    <div class="container-site py-3">
+      <nav aria-label="Breadcrumb">
+        <ol class="flex items-center gap-2 text-xs text-slate-400 font-mono">
+          <li><a href="/" class="hover:text-neon-cyan transition-colors">Home</a></li>
+          <li class="text-slate-600">/</li>
+          <li><a href={`/makes/${make}`} class="hover:text-neon-cyan transition-colors">{makeDisplay}</a></li>
+          <li class="text-slate-600">/</li>
+          <li class="text-slate-200 font-medium">{modelDisplay}</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- ── Cockpit Hero Header (Full-Width Symmetrical Standard) ────── -->
+  <header class="relative py-12 md:py-16 bg-[#06080C] border-b border-white/[0.08] overflow-hidden">
+    <!-- Ambient glowing backgrounds -->
+    <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-b from-neon-cyan/15 via-emerald-500/5 to-transparent blur-3xl pointer-events-none rounded-full"></div>
+    <div class="absolute inset-0 bg-cyber-grid bg-[size:32px_32px] opacity-10 pointer-events-none"></div>
+
+    <div class="container-site relative z-10">
+      
+      <!-- Badges Row -->
+      <div class="flex flex-wrap items-center gap-2 mb-4">
+        <span class="text-xs font-mono px-2.5 py-1 rounded-md bg-white/[0.04] border border-white/[0.08] text-slate-300">
+          {vehicleClass}
+        </span>
+        {hasEV && <span class="fuel-pill-bev">⚡ EV / PHEV Available</span>}
+        {hasHybrid && <span class="fuel-pill-hybrid">🌿 Hybrid Options</span>}
+        <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+          NRCan EnerGuide Certified
+        </span>
+        {modelRecalls.length > 0 && (
+          <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-md bg-red-500/10 border border-red-500/20 text-rose-400">
+            ⚠️ {modelRecalls.length} Active Recall{modelRecalls.length > 1 ? 's' : ''}
+          </span>
+        )}
+      </div>
+
+      <!-- Title & Subtitle with Integrated Price -->
+      <div class="mb-8">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-display font-black text-white tracking-tight leading-tight">
+          {makeDisplay} {modelDisplay}
+        </h1>
+        <div class="flex flex-wrap items-center gap-3 sm:gap-4 mt-2">
+          <span class="text-lg sm:text-xl text-neon-cyan font-bold tracking-tight">
+            Canadian Fuel Consumption & Range Guide
+          </span>
+          <span class="text-slate-700 font-mono hidden sm:inline">/</span>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs sm:text-sm font-mono font-bold">
+            <span class="text-[11px] text-slate-400 font-normal uppercase">Starting MSRP:</span>
+            ${minMsrp.toLocaleString()} – ${maxMsrp.toLocaleString()} CAD
+          </span>
+          <span class="text-slate-700 font-mono hidden sm:inline">/</span>
+          <span class="text-xs font-mono text-slate-400 hidden sm:inline">
+            {modelVehicles.length} Canadian Trims Available
+          </span>
+        </div>
+      </div>
+
+      <!-- 4 Prominent Stat Pillars -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        
+        <!-- Pillar 1: Best Efficiency -->
+        <div class="p-5 rounded-2xl bg-[#0D1117] border border-emerald-500/30 shadow-lg shadow-emerald-500/5 relative overflow-hidden group">
+          <div class="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-1">Lowest Consumption</div>
+          <div class="text-3xl font-mono font-black text-emerald-400">
+            {championTrim.combinedL100km ? `${championTrim.combinedL100km}` : `${championTrim.kwhPer100km}`}
+          </div>
+          <div class="text-xs font-mono text-slate-400 mt-1">
+            {championTrim.combinedL100km ? 'L / 100 km' : 'kWh / 100 km'} · {championTrim.trim}
+          </div>
+        </div>
+
+        <!-- Pillar 2: Max Range -->
+        <div class="p-5 rounded-2xl bg-[#0D1117] border border-white/[0.08]">
+          <div class="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-1">Max Highway Range</div>
+          <div class="text-3xl font-mono font-black text-cyan-400">
+            ~{maxRange}
+          </div>
+          <div class="text-xs font-mono text-slate-400 mt-1">Kilometers (km)</div>
+        </div>
+
+        <!-- Pillar 3: Canadian Price Spread -->
+        <div class="p-5 rounded-2xl bg-[#0D1117] border border-white/[0.08]">
+          <div class="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-1">Canadian Price Range</div>
+          <div class="text-2xl font-mono font-black text-white mt-0.5">
+            ${(minMsrp / 1000).toFixed(0)}k–${(maxMsrp / 1000).toFixed(0)}k
+          </div>
+          <div class="text-xs font-mono text-slate-400 mt-1">CAD MSRP Range</div>
+        </div>
+
+        <!-- Pillar 4: Model Lineup -->
+        <div class="p-5 rounded-2xl bg-[#0D1117] border border-white/[0.08]">
+          <div class="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-1">Lineup Breadth</div>
+          <div class="text-3xl font-mono font-black text-purple-400">
+            {years.length} Years
+          </div>
+          <div class="text-xs font-mono text-slate-400 mt-1">{years.join(', ')} Model Years</div>
+        </div>
+
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ── Main 2-Column Body Stream with Persistent Sticky Sidebar ── -->
+  <section class="py-12 md:py-16 bg-[#07090E]">
+    <div class="container-site">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+        
+        <!-- ── Left Column: Primary Content (8 Cols) ────────────────── -->
+        <div class="lg:col-span-8 space-y-12">
+          
+          <!-- 1. Trims Directory Grouped by Year -->
+          <div>
+            <div class="mb-8">
+              <span class="text-xs font-mono text-neon-cyan uppercase tracking-widest font-semibold block mb-1">🔍 Canadian Lineup</span>
+              <h2 class="text-2xl sm:text-3xl font-display font-black text-white">
+                All {makeDisplay} {modelDisplay} Model Years & Trims
+              </h2>
+              <p class="text-sm text-slate-400 mt-1">
+                Official NRCan EnerGuide fuel ratings, provincial CAD cost estimates, and winter range analysis for every Canadian trim package.
+              </p>
+            </div>
+
+            {years.map(year => {
+              const yearVehicles = modelVehicles.filter(v => v.year === year);
+              return (
+                <div class="mb-12" id={`year-${year}`}>
+                  <div class="flex items-center gap-4 mb-6">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#0D1117] border border-white/[0.08]">
+                      <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                      <h3 class="text-base font-display font-bold text-white">
+                        {year} {makeDisplay} {modelDisplay}
+                      </h3>
+                    </div>
+                    <div class="h-px flex-1 bg-white/[0.06]" />
+                    <a href={`/makes/${make}/${model}/${year}`} class="text-xs font-mono text-slate-400 hover:text-neon-cyan transition-colors">
+                      View {year} Page →
+                    </a>
+                  </div>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    {yearVehicles.map(v => {
+                      const hwyRange = calcHwyRange(v);
+                      const isEV = isBEV(v);
+                      const isPHEVType = isPHEV(v);
+                      return (
+                        <a
+                          href={`/makes/${make}/${model}/${year}/${toSlug(v.trim)}`}
+                          class="p-5 sm:p-6 rounded-3xl bg-[#0D1117] border border-white/[0.08] hover:border-cyan-500/40 hover:shadow-xl hover:shadow-cyan-500/5 transition-all duration-300 group flex flex-col justify-between"
+                          style="text-decoration: none;"
+                        >
+                          <div>
+                            <div class="flex items-start justify-between gap-2 mb-3">
+                              <span class={fuelTypePill(v.fuelType)}>{fuelTypeLabel(v.fuelType).split(' ')[0]}</span>
+                              <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded-lg bg-[#06080C] border border-white/[0.08] text-neon-cyan">
+                                {v.driveType}
+                              </span>
+                            </div>
+
+                            <h4 class="font-bold text-white text-base sm:text-lg mb-1 group-hover:text-neon-cyan transition-colors">
+                              {v.year} {v.trim}
+                            </h4>
+
+                            <div class="text-xs text-slate-400 mb-4 font-mono">
+                              {v.engineSize > 0 ? `${v.engineSize}L ${v.cylinders}-Cyl · ${v.transmission}` : 'Electric Motor · Direct Drive'}
+                            </div>
+
+                            <!-- 3-Col HUD -->
+                            <div class="grid grid-cols-3 gap-2 p-3 rounded-2xl bg-[#06080C] border border-white/[0.04] text-center text-xs mb-3">
+                              <div>
+                                <div class="font-mono font-bold text-amber-fuel">{v.cityL100km ?? v.kwhPer100km ?? '—'}</div>
+                                <div class="text-[10px] text-slate-500 uppercase mt-0.5">City</div>
+                              </div>
+                              <div>
+                                <div class="font-mono font-bold text-emerald-400">{v.hwyL100km ?? '—'}</div>
+                                <div class="text-[10px] text-slate-500 uppercase mt-0.5">Hwy</div>
+                              </div>
+                              <div>
+                                <div class="font-mono font-bold text-cyan-400">{v.combinedL100km ?? v.kwhPer100km ?? '—'}</div>
+                                <div class="text-[10px] text-slate-500 uppercase mt-0.5">Comb</div>
+                              </div>
+                            </div>
+
+                            <div class="flex items-center justify-between text-[11px] font-mono text-slate-400 mb-4 px-1">
+                              <span>{isEV ? '⚡ Electric Range:' : isPHEVType ? '🔋 EV Range:' : '🛣️ Hwy Cruising:'}</span>
+                              <span class="font-bold text-slate-200">
+                                {isEV && v.electricRangeKm ? `${v.electricRangeKm} km` : isPHEVType && v.electricRangeKm ? `${v.electricRangeKm} km` : hwyRange ? `~${hwyRange} km` : '—'}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div class="flex items-center justify-between text-xs font-mono text-slate-400 pt-3 border-t border-white/[0.06]">
+                            <span class="text-white font-bold">${v.msrpCAD.toLocaleString()} CAD</span>
+                            <span class="text-neon-cyan group-hover:translate-x-1 transition-transform font-bold">
+                              View Specs →
+                            </span>
+                          </div>
+                        </a>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <!-- 2. 🍁 Canadian Market Guide & Ownership Reality -->
+          <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-6" id="buyer-guide">
+            <div>
+              <span class="text-xs font-mono text-neon-cyan uppercase tracking-widest font-semibold block mb-1">🍁 Real-World Canadian Driving</span>
+              <h2 class="text-2xl font-display font-black text-white">
+                {makeDisplay} {modelDisplay} Canadian Market & Commuter Overview
+              </h2>
+            </div>
+
+            <div class="space-y-4 text-sm text-slate-300 leading-relaxed">
+              <p>
+                The <strong>{makeDisplay} {modelDisplay}</strong> has established itself as a benchmark vehicle in the Canadian {vehicleClass} landscape. 
+                Whether navigating winter snow squalls on the Ontario 401, driving the daily commute on Montreal's Décarie Expressway, or crossing mountain passes in British Columbia, 
+                the {modelDisplay} lineup is engineered for real-world Canadian driving demands.
+              </p>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.06]">
+                  <h3 class="text-white font-bold mb-1.5 flex items-center gap-1.5">
+                    <span>❄️</span> Winter Performance & -15°C Impact
+                  </h3>
+                  <p class="text-xs text-slate-400 leading-relaxed">
+                    During cold Canadian winters, sub-zero temperatures increase fuel consumption by roughly 12% to 18% on gas and hybrid models due to extended warm-up cycles and cabin heating. 
+                    All-wheel-drive (AWD) trims provide essential winter traction on icy morning commutes.
+                  </p>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.06]">
+                  <h3 class="text-white font-bold mb-1.5 flex items-center gap-1.5">
+                    <span>💰</span> Provincial Fuel Cost Planning
+                  </h3>
+                  <p class="text-xs text-slate-400 leading-relaxed">
+                    At an average Canadian driving distance of 20,000 km per year, choosing between front-wheel drive and all-wheel drive, or between hybrid and standard gas trims, 
+                    can alter your annual fuel expenditure by $400 to $1,200 CAD depending on provincial fuel prices.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Transport Canada Safety Recalls Module -->
+          {modelRecalls.length > 0 && (
+            <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-6" id="recalls">
+              <div class="flex items-center justify-between flex-wrap gap-4">
+                <div>
+                  <span class="text-xs font-mono text-rose-400 uppercase tracking-widest font-semibold block mb-1">⚠️ Transport Canada Safety Alert</span>
+                  <h2 class="text-2xl font-display font-black text-white flex items-center gap-2">
+                    Active Safety Recalls for {makeDisplay} {modelDisplay}
+                  </h2>
+                </div>
+                <a href="/recalls" class="text-xs font-mono font-bold text-rose-400 hover:text-rose-300 transition-colors">
+                  View All TC Recalls →
+                </a>
+              </div>
+              
+              <div class="space-y-4">
+                {modelRecalls.map((recall: any) => (
+                  <div class="p-5 rounded-2xl bg-[#06080C] border border-red-500/20 flex flex-col sm:flex-row gap-4">
+                    <div class="shrink-0">
+                      <div class="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-lg text-rose-400">
+                        ⚠️
+                      </div>
+                    </div>
+                    <div class="flex-1">
+                      <div class="flex flex-wrap items-center gap-2 mb-2">
+                        <span class="font-mono font-bold text-rose-400 text-sm">TC #{recall.cmvssNumber}</span>
+                        <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-red-500/10 border border-red-500/20 text-rose-400">
+                          {recall.safetyRisk} RISK
+                        </span>
+                        <span class="text-xs text-slate-500 font-mono">{recall.recallDate}</span>
+                      </div>
+                      <div class="font-bold text-white text-sm mb-1">{recall.system} — {recall.component}</div>
+                      <p class="text-xs text-slate-400 mb-3 leading-relaxed">{recall.defectSummary}</p>
+                      <div class="p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-xs text-emerald-400 font-mono">
+                        <strong>Authorized Dealer Action (Free):</strong> {recall.correctiveAction}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+        </div>
+
+        <!-- ── Right Column: Sticky Rail (4 Cols) ───────────────────── -->
+        <aside class="lg:col-span-4 relative h-full">
+          <div class="sticky top-24 space-y-6">
+            
+            <!-- 1. Executive Quick Overview Card -->
+            <div class="p-6 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl">
+              <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/[0.06]">
+                <span class="text-xs font-mono font-bold text-white uppercase tracking-wider">Model Lineup Specs</span>
+                <span class="text-xs font-mono text-neon-cyan font-bold">{makeDisplay}</span>
+              </div>
+
+              <div class="space-y-3 text-xs font-mono">
+                <div class="flex justify-between items-center text-slate-300">
+                  <span class="text-slate-400">Starting MSRP:</span>
+                  <span class="font-bold text-white">${minMsrp.toLocaleString()} CAD</span>
+                </div>
+                <div class="flex justify-between items-center text-slate-300">
+                  <span class="text-slate-400">Top Trim MSRP:</span>
+                  <span class="font-bold text-slate-200">${maxMsrp.toLocaleString()} CAD</span>
+                </div>
+                <div class="flex justify-between items-center text-slate-300">
+                  <span class="text-slate-400">Best Efficiency:</span>
+                  <span class="font-bold text-emerald-400">
+                    {championTrim.combinedL100km ? `${championTrim.combinedL100km} L/100km` : `${championTrim.kwhPer100km} kWh`}
+                  </span>
+                </div>
+                <div class="flex justify-between items-center text-slate-300">
+                  <span class="text-slate-400">Max Range:</span>
+                  <span class="font-bold text-neon-cyan">~{maxRange} km</span>
+                </div>
+                <div class="flex justify-between items-center text-slate-300 pt-2 border-t border-white/[0.04]">
+                  <span class="text-slate-400">Safety Status:</span>
+                  <span class="text-emerald-400 font-bold flex items-center gap-1">
+                    <span>✓</span> Transport Canada Verified
+                  </span>
+                </div>
+              </div>
+
+              {modelRecalls.length > 0 && (
+                <a 
+                  href="#recalls" 
+                  class="mt-5 w-full py-2.5 px-3 rounded-xl bg-red-500/10 border border-red-500/20 text-rose-400 hover:bg-red-500/15 text-xs font-mono font-bold text-center block transition-colors"
+                >
+                  ⚠️ Check {modelRecalls.length} Active Safety Recalls →
+                </a>
+              )}
+            </div>
+
+            <!-- 2. Related Segment Competitors (Internal Linking) -->
+            {relatedCompetitors.length > 0 && (
+              <div class="p-6 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl">
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/[0.06]">
+                  <span class="text-xs font-mono font-bold text-white uppercase tracking-wider">Similar {vehicleClass}</span>
+                  <span class="text-xs font-mono text-slate-500">Compare</span>
+                </div>
+
+                <div class="space-y-3">
+                  {relatedCompetitors.map(comp => (
+                    <a
+                      href={`/makes/${comp.makeSlug}/${comp.modelSlug}`}
+                      class="p-3 rounded-2xl bg-[#06080C] border border-white/[0.06] hover:border-cyan-500/30 transition-all flex items-center justify-between group"
+                    >
+                      <div>
+                        <div class="text-xs font-bold text-white group-hover:text-neon-cyan transition-colors">
+                          {comp.make} {comp.model}
+                        </div>
+                        <div class="text-[10px] font-mono text-slate-400">
+                          {comp.eff} · {fuelTypeLabel(comp.fuelType).split(' ')[0]}
+                        </div>
+                      </div>
+                      <span class="text-xs text-slate-500 group-hover:text-neon-cyan group-hover:translate-x-1 transition-transform">
+                        →
+                      </span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <!-- 3. Lead Generation Widget -->
+            <LeadGenWidget
+              client:visible
+              vehicleMake={makeDisplay}
+              vehicleModel={modelDisplay}
+              vehicleYear={years[0]}
+              isEV={hasEV}
+            />
+
+          </div>
+        </aside>
+
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>
+

@@ -1,0 +1,145 @@
+---
+// src/pages/compare/index.astro
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import vehicles from '../../data/vehicles.json';
+import { toSlug, classSlug } from '../../lib/calculations.ts';
+import { breadcrumbSchema } from '../../lib/schema.ts';
+
+const allVehicles = vehicles as any[];
+const vehicleClasses = [...new Set(allVehicles.map((v: any) => v.vehicleClass))].sort();
+
+function classIcon(cls: string): string {
+  if (cls.includes('Pickup')) return '🛻';
+  if (cls.includes('Van')) return '🚐';
+  if (cls.includes('Two')) return '🏎️';
+  if (cls.includes('Station')) return '🚗';
+  if (cls.includes('Standard')) return '🏔️';
+  if (cls.includes('Mid-size') && cls.includes('SUV')) return '🚙';
+  if (cls.includes('Small') && cls.includes('SUV')) return '🚗';
+  if (cls.includes('Compact')) return '🚗';
+  return '🚘';
+}
+
+const classStats = vehicleClasses.map(cls => {
+  const cv = allVehicles.filter((v: any) => v.vehicleClass === cls);
+  const gasoline = cv.filter((v: any) => v.combinedL100km !== null);
+  const electric = cv.filter((v: any) => v.kwhPer100km !== null && v.combinedL100km === null);
+  const champion = [...gasoline].sort((a: any, b: any) => a.combinedL100km - b.combinedL100km)[0]
+    || [...electric].sort((a: any, b: any) => a.kwhPer100km - b.kwhPer100km)[0];
+  const avgGas = gasoline.length > 0
+    ? (gasoline.reduce((s: number, v: any) => s + v.combinedL100km, 0) / gasoline.length).toFixed(1)
+    : null;
+  return { cls, slug: classSlug(cls), count: cv.length, champion, avgGas, icon: classIcon(cls) };
+});
+
+const jsonLd = [
+  breadcrumbSchema([{ name: 'Home', url: '/' }, { name: 'Vehicle Comparisons', url: '/compare' }]),
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Canadian Vehicle Fuel Economy Rankings by Class',
+    description: 'Compare fuel consumption across all Canadian vehicle classes — SUVs, sedans, trucks, EVs.',
+    url: 'https://rangeandfuel.ca/compare',
+    mainEntity: {
+      '@type': 'ItemList',
+      name: 'Canadian Light-Duty Vehicle Classes',
+      numberOfItems: vehicleClasses.length,
+      itemListElement: vehicleClasses.map((cls, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: `Best ${cls} Fuel Economy Canada`,
+        url: `https://rangeandfuel.ca/compare/${classSlug(cls)}`,
+      })),
+    },
+  },
+];
+---
+
+<BaseLayout
+  title="Compare Vehicles by Class — Canadian Fuel Economy Rankings 2024 | RangeAndFuel.ca"
+  description="Compare fuel consumption across all Canadian vehicle classes. Find the most fuel-efficient SUVs, sedans, trucks, and EVs with NRCan L/100km data."
+  canonical="/compare"
+  jsonLd={jsonLd}
+>
+  <div class="border-b border-white/[0.06] bg-[#07090E]/60 backdrop-blur-md">
+    <div class="container-site py-3">
+      <nav aria-label="Breadcrumb">
+        <ol class="flex items-center gap-2 text-xs text-slate-400 font-mono">
+          <li><a href="/" class="hover:text-neon-cyan transition-colors">Home</a></li>
+          <li class="text-slate-600">/</li>
+          <li class="text-slate-200 font-medium">Vehicle Comparisons</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <section class="relative py-16 md:py-20 bg-[#06080C] overflow-hidden">
+    <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-[700px] h-[300px] bg-gradient-to-b from-neon-cyan/10 to-transparent blur-3xl pointer-events-none rounded-full"></div>
+    <div class="container-site relative z-10 max-w-4xl">
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-neon-cyan/10 border border-neon-cyan/25 mb-6">
+        <span class="text-neon-cyan text-xs font-mono font-bold">📊 NRCan Official Data</span>
+      </div>
+      <h1 class="text-4xl md:text-5xl font-display font-black text-white leading-tight mb-4">
+        Canadian Vehicle Fuel Economy Rankings by Class
+      </h1>
+      <p class="text-lg text-slate-400 mb-6 max-w-2xl">
+        Compare L/100km and kWh/100km ratings across all vehicle segments sold in Canada. All figures from Natural Resources Canada (NRCan) 5-cycle testing.
+      </p>
+      <div class="flex flex-wrap gap-3 text-xs font-mono text-slate-400">
+        <span class="px-3 py-1.5 rounded-lg bg-white/[0.05] border border-white/[0.08]">🏷️ {allVehicles.length} vehicles</span>
+        <span class="px-3 py-1.5 rounded-lg bg-white/[0.05] border border-white/[0.08]">📁 {vehicleClasses.length} classes</span>
+        <span class="px-3 py-1.5 rounded-lg bg-white/[0.05] border border-white/[0.08]">🇨🇦 Canadian market only</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16 bg-[#06080C]">
+    <div class="container-site">
+      <h2 class="text-2xl font-display font-bold text-white mb-8">Browse by Vehicle Class</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {classStats.map(({ cls, slug, count, champion, avgGas, icon }) => (
+          <a href={`/compare/${slug}`}
+            class="group flex flex-col p-5 rounded-2xl bg-[#0D1117] border border-white/[0.08] hover:border-neon-cyan/30 transition-all">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <div class="text-2xl">{icon}</div>
+                <div>
+                  <div class="text-sm font-bold text-white group-hover:text-neon-cyan transition-colors">{cls}</div>
+                  <div class="text-xs text-slate-500 font-mono">{count} vehicles</div>
+                </div>
+              </div>
+              <svg class="w-4 h-4 text-slate-500 group-hover:text-neon-cyan transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </div>
+            {avgGas && (
+              <div class="mb-4 p-3 rounded-xl bg-[#06080C] border border-white/[0.06]">
+                <div class="text-xs text-slate-500 font-mono mb-1">Avg gasoline</div>
+                <div class="text-xl font-bold text-white font-mono">{avgGas} <span class="text-sm text-slate-400">L/100km</span></div>
+              </div>
+            )}
+            {champion && (
+              <div class="mt-auto pt-4 border-t border-white/[0.06]">
+                <div class="text-[10px] font-mono text-amber-400 uppercase tracking-widest mb-1">🏆 Most Efficient</div>
+                <div class="text-xs text-white font-semibold">{champion.year} {champion.make} {champion.model}</div>
+                <div class="text-xs font-mono text-neon-cyan mt-1">
+                  {champion.combinedL100km ? `${champion.combinedL100km} L/100km` : `${champion.kwhPer100km} kWh/100km`}
+                </div>
+              </div>
+            )}
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-12 bg-cyber-slate-2">
+    <div class="container-site max-w-2xl text-center">
+      <h2 class="text-2xl font-display font-bold text-white mb-3">Search Any Vehicle</h2>
+      <p class="text-slate-400 text-sm mb-6">Compare fuel costs across any make, model, or year in Canada.</p>
+      <a href="/search" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-neon-cyan text-cyber-slate font-bold hover:bg-neon-cyan/90 transition-all">
+        🔍 Open Vehicle Search
+      </a>
+    </div>
+  </section>
+</BaseLayout>

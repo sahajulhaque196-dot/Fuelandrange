@@ -1,0 +1,342 @@
+---
+// src/pages/recalls/index.astro
+// Transport Canada Safety Recalls Directory — High-Grade Canadian UI
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import recallData from '../../data/recalls.json';
+import { breadcrumbSchema } from '../../lib/schema.ts';
+import { toSlug } from '../../lib/calculations.ts';
+import type { RecallData } from '../../lib/schema.ts';
+
+const recalls = (recallData as any).recalls as RecallData[];
+
+const riskOrder: Record<string, number> = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, LOW: 3 };
+const sorted = [...recalls].sort((a, b) => (riskOrder[a.safetyRisk] ?? 9) - (riskOrder[b.safetyRisk] ?? 9));
+
+const totalAffected = recalls.reduce((acc, curr) => acc + (curr.affectedUnits || 0), 0);
+const uniqueMakes = [...new Set(recalls.map(r => r.make))];
+
+const systemIcons: Record<string, string> = {
+  'Fuel System': '⛽',
+  'Steering': '🎯',
+  'Brakes': '🛑',
+  'Suspension': '⚙️',
+  'Airbag': '🛡️',
+  'Electrical': '⚡',
+  'Visibility': '👁️',
+  'Door Latches': '🚪',
+};
+
+const recallsGovernmentSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'GovernmentService',
+  name: 'Transport Canada Motor Vehicle Safety Recalls Directory',
+  serviceType: 'Vehicle Safety Recalls & CMVSS Compliance',
+  provider: {
+    '@type': 'GovernmentOrganization',
+    name: 'Transport Canada',
+    url: 'https://tc.canada.ca',
+  },
+  areaServed: { '@type': 'Country', name: 'Canada' },
+  description: 'Official database of Canadian motor vehicle safety recalls, defect notifications, and free dealership corrective actions under the Motor Vehicle Safety Act.',
+};
+
+const jsonLd = [
+  recallsGovernmentSchema,
+  breadcrumbSchema([
+    { name: 'Home', url: '/' },
+    { name: 'Safety Recalls Directory', url: '/recalls' },
+  ]),
+];
+---
+
+<BaseLayout
+  title="Transport Canada Safety Recalls Directory — Official CMVSS Vehicle Bulletins | RangeAndFuel.ca"
+  description="Official Transport Canada Motor Vehicle Safety Recalls (MVSR). Search Canadian safety bulletins by make and model with free dealership repair instructions and CMVSS defect numbers."
+  canonical="/recalls"
+  jsonLd={jsonLd}
+>
+  <!-- Top Breadcrumb -->
+  <div class="border-b border-white/[0.06] bg-[#07090E]/60 backdrop-blur-md">
+    <div class="container-site py-3">
+      <nav aria-label="Breadcrumb">
+        <ol class="flex items-center gap-2 text-xs text-slate-400 font-mono">
+          <li><a href="/" class="hover:text-neon-cyan transition-colors">Home</a></li>
+          <li class="text-slate-600">/</li>
+          <li class="text-slate-200 font-medium">Safety Recalls Directory</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Hero Header Section -->
+  <section class="relative py-16 md:py-20 overflow-hidden bg-[#06080C]">
+    <!-- Ambient Red/Cyan Radial Glow -->
+    <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-b from-canadian-crimson/15 via-neon-cyan/5 to-transparent blur-3xl pointer-events-none rounded-full"></div>
+    <div class="absolute inset-0 bg-cyber-grid bg-[size:32px_32px] opacity-10 pointer-events-none"></div>
+
+    <div class="container-site relative z-10">
+      <div class="max-w-3xl">
+        <!-- Official Badge -->
+        <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full mb-6 bg-red-500/10 border border-red-500/25 shadow-lg shadow-red-500/5">
+          <span class="w-2 h-2 rounded-full bg-canadian-crimson animate-pulse" />
+          <span class="text-xs font-bold uppercase tracking-wider text-rose-400 font-mono">Transport Canada MVSR Bulletins</span>
+        </div>
+
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-display font-black text-white tracking-tight leading-[1.15] mb-5">
+          Canadian Motor Vehicle <br />
+          <span class="text-gradient-red">Safety Recall Directory</span>
+        </h1>
+
+        <p class="text-base text-slate-300 leading-relaxed">
+          Official safety recall notices issued under the Canadian <em>Motor Vehicle Safety Act (MVSA)</em>. 
+          By Canadian federal law, all defect inspections, replacement parts, and labor are <strong class="text-emerald-400">100% free of charge</strong> at authorized brand dealerships.
+        </p>
+      </div>
+
+      <!-- Quick Executive Metrics Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-10">
+        <div class="p-5 rounded-2xl bg-[#0D1117]/90 border border-white/[0.08] backdrop-blur-sm shadow-lg">
+          <div class="text-2xl sm:text-3xl font-black font-display text-white">{recalls.length}</div>
+          <div class="text-xs font-mono text-slate-400 mt-1 uppercase tracking-wider">Active Bulletins</div>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-[#0D1117]/90 border border-white/[0.08] backdrop-blur-sm shadow-lg">
+          <div class="text-2xl sm:text-3xl font-black font-display text-rose-400">{(totalAffected / 1000).toFixed(0)}k+</div>
+          <div class="text-xs font-mono text-slate-400 mt-1 uppercase tracking-wider">Affected Canadian Units</div>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-[#0D1117]/90 border border-white/[0.08] backdrop-blur-sm shadow-lg">
+          <div class="text-2xl sm:text-3xl font-black font-display text-emerald-400">$0 CAD</div>
+          <div class="text-xs font-mono text-slate-400 mt-1 uppercase tracking-wider">Dealer Repair Cost</div>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-[#0D1117]/90 border border-white/[0.08] backdrop-blur-sm shadow-lg">
+          <div class="text-2xl sm:text-3xl font-black font-display text-neon-cyan">CMVSS</div>
+          <div class="text-xs font-mono text-slate-400 mt-1 uppercase tracking-wider">Federal Safety Compliance</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Step-by-Step Canadian Driver Recall Guide -->
+  <section class="py-12 bg-[#090D14] border-y border-white/[0.06]">
+    <div class="container-site">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+        <div>
+          <span class="text-xs font-mono text-neon-cyan uppercase tracking-widest font-semibold block mb-1">🍁 Vehicle Safety Protocol</span>
+          <h2 class="text-2xl font-display font-bold text-white">How To Clear An Open Canadian Recall</h2>
+        </div>
+        <p class="text-xs text-slate-400 max-w-md">Follow these 3 official steps to verify eligibility and schedule your free dealership repair service.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Step 1 -->
+        <div class="p-6 rounded-2xl bg-[#0D1117] border border-white/[0.08] relative group hover:border-cyan-500/40 transition-all">
+          <div class="w-10 h-10 rounded-xl bg-neon-cyan/10 border border-neon-cyan/20 text-neon-cyan font-mono font-bold text-base flex items-center justify-center mb-4">
+            01
+          </div>
+          <h3 class="text-base font-bold text-white mb-2">Locate 17-Digit VIN</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Find your Vehicle Identification Number (VIN) on your Canadian vehicle ownership permit, insurance slip, or base of the windshield.
+          </p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="p-6 rounded-2xl bg-[#0D1117] border border-white/[0.08] relative group hover:border-emerald-500/40 transition-all">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono font-bold text-base flex items-center justify-center mb-4">
+            02
+          </div>
+          <h3 class="text-base font-bold text-white mb-2">Call Authorized Dealer</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Contact any local authorized franchise dealer in Ontario, BC, Alberta, Quebec, etc. Quote the CMVSS bulletin number from below.
+          </p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="p-6 rounded-2xl bg-[#0D1117] border border-white/[0.08] relative group hover:border-rose-500/40 transition-all">
+          <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 font-mono font-bold text-base flex items-center justify-center mb-4">
+            03
+          </div>
+          <h3 class="text-base font-bold text-white mb-2">100% Free Appointment</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            By Transport Canada mandate, OEM replacement components, software re-flashes, and labor are performed at zero cost.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Recalls Directory & Filtering -->
+  <section class="py-16 bg-[#06080C]" id="recall-catalog">
+    <div class="container-site">
+      
+      <!-- Filter Bar Controls -->
+      <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-10 pb-6 border-b border-white/[0.08]">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-display font-black text-white">
+            Active Recall Bulletins
+          </h2>
+          <p class="text-xs text-slate-400 font-mono mt-1">Showing {recalls.length} official Transport Canada safety notices</p>
+        </div>
+
+        <!-- Brand Filter Pills -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <button class="filter-btn active px-3.5 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all bg-neon-cyan text-cyber-slate" data-filter="all">
+            All Makes ({recalls.length})
+          </button>
+          {uniqueMakes.map(make => {
+            const count = recalls.filter(r => r.make === make).length;
+            return (
+              <button 
+                class="filter-btn px-3 py-1.5 rounded-lg text-xs font-mono text-slate-400 hover:text-white bg-white/[0.04] border border-white/[0.08] hover:border-neon-cyan/40 transition-all"
+                data-filter={make.toLowerCase()}
+              >
+                {make} ({count})
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <!-- Recalls Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="recalls-container">
+        {sorted.map(recall => {
+          const isCritical = recall.safetyRisk === 'CRITICAL';
+          const isHigh = recall.safetyRisk === 'HIGH';
+          const icon = systemIcons[recall.system] || '⚠️';
+
+          return (
+            <article 
+              class="recall-card flex flex-col justify-between p-6 rounded-2xl bg-[#0D1117] border border-white/[0.08] hover:border-white/[0.2] transition-all relative overflow-hidden group shadow-lg"
+              data-make={recall.make.toLowerCase()}
+              data-risk={recall.safetyRisk.toLowerCase()}
+            >
+              <!-- Card Top Header -->
+              <div>
+                <div class="flex items-center justify-between gap-3 mb-4">
+                  <!-- System Tag -->
+                  <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-white/[0.05] border border-white/[0.08] text-xs font-mono text-slate-300">
+                    <span>{icon}</span>
+                    <span>{recall.system}</span>
+                  </div>
+
+                  <!-- Risk Severity Pill -->
+                  <span class={`text-[11px] font-mono font-bold px-2.5 py-1 rounded-md border ${
+                    isCritical 
+                      ? 'bg-red-500/15 text-rose-400 border-red-500/30 animate-pulse' 
+                      : isHigh 
+                      ? 'bg-amber-500/15 text-amber-400 border-amber-500/30' 
+                      : 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                  }`}>
+                    {recall.safetyRisk} RISK
+                  </span>
+                </div>
+
+                <!-- Make, Model & Years -->
+                <h3 class="text-xl font-display font-black text-white group-hover:text-neon-cyan transition-colors mb-2">
+                  {recall.make} {recall.model}
+                </h3>
+
+                <!-- Model Year Chips & CMVSS Number -->
+                <div class="flex flex-wrap items-center gap-2 mb-4">
+                  <span class="text-xs font-mono text-rose-400 font-bold bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">
+                    TC #{recall.cmvssNumber}
+                  </span>
+                  <span class="text-xs font-mono text-slate-400 bg-white/[0.04] px-2 py-0.5 rounded">
+                    Years: {recall.years.join(', ')}
+                  </span>
+                  <span class="text-xs font-mono text-slate-400 bg-white/[0.04] px-2 py-0.5 rounded">
+                    🇨🇦 {recall.affectedUnits.toLocaleString()} units
+                  </span>
+                </div>
+
+                <!-- Defect Summary -->
+                <div class="p-4 rounded-xl bg-red-950/20 border border-red-500/20 mb-4">
+                  <div class="text-[11px] font-mono font-bold text-rose-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                    <span>⚠️</span> Defect Summary & Safety Risk:
+                  </div>
+                  <p class="text-xs text-slate-300 leading-relaxed">
+                    {recall.defectSummary}
+                  </p>
+                </div>
+
+                <!-- Dealer Corrective Action -->
+                <div class="p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/20 mb-5">
+                  <div class="text-[11px] font-mono font-bold text-emerald-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                    <span>✅</span> Free Dealer Corrective Action:
+                  </div>
+                  <p class="text-xs text-slate-300 leading-relaxed">
+                    {recall.correctiveAction}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Card Action Links Footer -->
+              <div class="pt-4 border-t border-white/[0.06] flex items-center justify-between gap-3 text-xs">
+                <a 
+                  href={`/makes/${toSlug(recall.make)}/${toSlug(recall.model)}`}
+                  class="font-semibold text-neon-cyan hover:underline flex items-center gap-1"
+                >
+                  View Model Fuel & Range Ratings →
+                </a>
+                <span class="text-slate-500 font-mono text-[11px]">
+                  Issued: {recall.recallDate}
+                </span>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+
+      <!-- Official Regulatory Footnote Box -->
+      <div class="mt-14 p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-cyan-500/20 shadow-2xl relative overflow-hidden">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-neon-cyan/10 border border-neon-cyan/30 flex items-center justify-center text-2xl shrink-0">
+            🍁
+          </div>
+          <div>
+            <h4 class="text-base font-bold text-white mb-1">
+              Official Transport Canada Motor Vehicle Safety Act Compliance
+            </h4>
+            <p class="text-xs text-slate-400 leading-relaxed max-w-3xl">
+              Recall information published here is indexed directly from the Transport Canada Motor Vehicle Safety Recalls (MVSR) database. 
+              Under Canadian federal law, safety recalls never expire and are legally required to be repaired free of charge by authorized franchise dealers regardless of vehicle age or ownership transfers.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Client-side Interactive Filter Script -->
+  <script is:inline>
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('.recall-card');
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Toggle active style
+        filterBtns.forEach(b => {
+          b.classList.remove('bg-neon-cyan', 'text-cyber-slate', 'active');
+          b.classList.add('bg-white/[0.04]', 'text-slate-400');
+        });
+        btn.classList.add('bg-neon-cyan', 'text-cyber-slate', 'active');
+        btn.classList.remove('bg-white/[0.04]', 'text-slate-400');
+
+        const filter = btn.getAttribute('data-filter');
+
+        cards.forEach(card => {
+          const make = card.getAttribute('data-make');
+          if (filter === 'all' || make === filter) {
+            card.style.display = 'flex';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+  </script>
+</BaseLayout>
+
+

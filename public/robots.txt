@@ -1,0 +1,35 @@
+User-agent: *
+Allow: /
+Disallow: /search?
+
+# Sitemap Index
+Sitemap: https://rangeandfuel.ca/sitemap-index.xml
+
+# Crawl budget hints
+Crawl-delay: 0
+
+# Generative Engine Optimization (GEO) & AI Search Engine Indexers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
