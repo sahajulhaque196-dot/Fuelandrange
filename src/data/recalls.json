@@ -854,6 +854,23 @@
       "cmvssNumber": "2024-325",
       "safetyRisk": "CRITICAL",
       "affectedUnits": 1900
+    },
+    {
+      "recallId": "2024-389",
+      "make": "Mitsubishi",
+      "model": "Outlander PHEV",
+      "years": [
+        2023,
+        2024
+      ],
+      "system": "Electrical",
+      "component": "Rear Inverter Motor Software",
+      "defectSummary": "Software logic error in the rear electric motor drive unit can cause an abrupt power reduction or shutdown while operating in sub-zero ambient conditions.",
+      "correctiveAction": "Authorized Mitsubishi dealers will reprogram the rear traction motor control software free of charge.",
+      "recallDate": "2024-05-14",
+      "cmvssNumber": "2024-412",
+      "safetyRisk": "MEDIUM",
+      "affectedUnits": 8950
     }
   ]
 }

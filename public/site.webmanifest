@@ -1,0 +1,29 @@
+{
+  "name": "RangeAndFuel.ca",
+  "short_name": "RangeAndFuel",
+  "description": "Canada's authoritative source for NRCan fuel consumption ratings (L/100km), EV range data, and Transport Canada safety recalls.",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#07090E",
+  "theme_color": "#00F0FF",
+  "lang": "en-CA",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -7,8 +7,15 @@ export const GET: APIRoute = () => {
 
   const coreUrls = [
     { loc: 'https://rangeandfuel.ca/', priority: '1.0', changefreq: 'daily' },
+    { loc: 'https://rangeandfuel.ca/makes', priority: '0.9', changefreq: 'daily' },
     { loc: 'https://rangeandfuel.ca/search', priority: '0.9', changefreq: 'daily' },
+    { loc: 'https://rangeandfuel.ca/provinces', priority: '0.9', changefreq: 'weekly' },
+    { loc: 'https://rangeandfuel.ca/compare', priority: '0.9', changefreq: 'weekly' },
     { loc: 'https://rangeandfuel.ca/recalls', priority: '0.9', changefreq: 'daily' },
+    { loc: 'https://rangeandfuel.ca/guides', priority: '0.9', changefreq: 'weekly' },
+    { loc: 'https://rangeandfuel.ca/guides/how-nrcan-5-cycle-testing-works', priority: '0.8', changefreq: 'monthly' },
+    { loc: 'https://rangeandfuel.ca/guides/canadian-winter-ev-range-guide', priority: '0.8', changefreq: 'monthly' },
+    { loc: 'https://rangeandfuel.ca/guides/canada-ev-rebates-izev-provincial', priority: '0.8', changefreq: 'monthly' },
     { loc: 'https://rangeandfuel.ca/about', priority: '0.8', changefreq: 'monthly' },
     { loc: 'https://rangeandfuel.ca/contact', priority: '0.8', changefreq: 'monthly' },
     { loc: 'https://rangeandfuel.ca/privacy', priority: '0.6', changefreq: 'monthly' },

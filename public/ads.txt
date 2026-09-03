@@ -1,0 +1,18 @@
+# RangeAndFuel.ca — Authorized Digital Sellers (ads.txt)
+# IAB Tech Lab standard: https://iabtechlab.com/ads-txt/
+# Last updated: 2026-09-03
+#
+# IMPORTANT: Replace ca-pub-XXXXXXXXXXXXXXXX with your real Google AdSense
+# Publisher ID BEFORE enabling AdSense on this site.
+# Find your Publisher ID at: https://adsense.google.com/start/
+
+# ── Google AdSense (Uncomment and replace with real Publisher ID once approved) ──
+# google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
+
+# ── Google Ad Manager (if used via GAM) ──────────────────────────────────
+# google.com, XXXXXXXXX, DIRECT, f08c47fec0942fa0
+
+# ── Amazon Publisher Services (optional future channel) ──────────────────
+# amazon.com, XXXXXXXXXX, DIRECT
+
+# ── Contact: data@rangeandfuel.ca

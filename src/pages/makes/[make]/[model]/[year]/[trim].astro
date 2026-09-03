@@ -379,31 +379,56 @@ const jsonLd = [
             </div>
 
             <div class="space-y-4 text-sm text-slate-300 leading-relaxed">
-              <p>
-                When driving the <strong>{vehicle.year} {vehicle.make} {vehicle.model} {vehicle.trim}</strong> on Canadian roads, fuel economy numbers are only half the story. 
-                Whether you are merging onto Toronto's Highway 401 in rush hour, commuting along Calgary's Deerfoot Trail in sub-zero January weather, or cruising the Sea-to-Sky highway in British Columbia, 
-                this vehicle delivers an official EnerGuide combined rating of <strong>{vehicle.combinedL100km ? `${vehicle.combinedL100km} L/100km` : `${vehicle.kwhPer100km} kWh/100km`}</strong>.
-              </p>
+              {vehicle.vehicleClass.toLowerCase().includes('pickup') ? (
+                <p>
+                  As a Canadian work and lifestyle pickup truck, the <strong>{vehicle.year} {vehicle.make} {vehicle.model} {vehicle.trim}</strong> is engineered to balance heavy bed payloads with highway cruising endurance. Under official Natural Resources Canada (NRCan) EnerGuide testing, it achieves a combined consumption rating of <strong>{vehicle.combinedL100km} L/100km</strong> ({vehicle.cityL100km} city / {vehicle.hwyL100km} highway). Equipped with a robust {vehicle.driveType} configuration and {vehicle.transmission} transmission, it provides dependable traction when towing utility trailers through muddy access roads or navigating snow-packed Northern Ontario and Prairie winter corridors.
+                </p>
+              ) : isEV ? (
+                <p>
+                  Built on a dedicated electric architecture, the <strong>{vehicle.year} {vehicle.make} {vehicle.model} {vehicle.trim}</strong> eliminates tailpipe emissions while delivering instant electric torque. Rated at <strong>{vehicle.kwhPer100km} kWh/100km</strong> with an official NRCan range of <strong>{vehicle.electricRangeKm} km</strong>, it easily covers daily Canadian metropolitan commutes on a fraction of the energy cost of fossil fuels. Paired with its {vehicle.driveType} electric drive, torque vectoring responds in milliseconds over icy intersections, delivering superior traction compared to mechanical differentials.
+                </p>
+              ) : isPlugin ? (
+                <p>
+                  The <strong>{vehicle.year} {vehicle.make} {vehicle.model} {vehicle.trim}</strong> offers the best of both worlds for Canadian drivers. With an NRCan-rated all-electric range of <strong>{vehicle.electricRangeKm} km</strong>, daily commutes across the Greater Toronto Area, Greater Montreal, or Metro Vancouver can be completed on pure battery power. For long weekend road trips across the Trans-Canada Highway, the hybrid powertrain achieves a frugal <strong>{vehicle.combinedL100km} L/100km</strong>, completely eliminating range anxiety in remote regions lacking DC fast charging infrastructure.
+                </p>
+              ) : vehicle.fuelType === 'HEV' ? (
+                <p>
+                  Engineered with an advanced full-hybrid powertrain, the <strong>{vehicle.year} {vehicle.make} {vehicle.model} {vehicle.trim}</strong> excels in stop-and-go Canadian city traffic where traditional gas engines are least efficient. Rated at <strong>{vehicle.combinedL100km} L/100km</strong> ({vehicle.cityL100km} city / {vehicle.hwyL100km} highway), its electric motor recaptures kinetic energy during every deceleration on congested urban thoroughfares, dramatically reducing monthly pump expenditures without ever requiring a wall plug.
+                </p>
+              ) : vehicle.fuelType === 'Z' ? (
+                <p>
+                  The high-output <strong>{vehicle.year} {vehicle.make} {vehicle.model} {vehicle.trim}</strong> is calibrated for 91-octane premium fuel, delivering crisp throttle response and strong passing acceleration. Its official NRCan combined rating of <strong>{vehicle.combinedL100km} L/100km</strong> reflects high-performance engineering designed for confident passing power on two-lane Canadian provincial highways and mountain passes.
+                </p>
+              ) : (
+                <p>
+                  Designed for practical Canadian everyday motoring, the <strong>{vehicle.year} {vehicle.make} {vehicle.model} {vehicle.trim}</strong> delivers a balanced official NRCan combined rating of <strong>{vehicle.combinedL100km} L/100km</strong>. Running on regular 87-octane unleaded fuel and featuring a {vehicle.driveType} drivetrain, it provides predictable, low-maintenance reliability for year-round commuting through wet coastal conditions and icy winter roads alike.
+                </p>
+              )}
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                 <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.06]">
                   <h3 class="text-white font-bold mb-1.5 flex items-center gap-1.5">
-                    <span>🛣️</span> Highway & Passing Power
+                    <span>🛣️</span> Highway Cruising & High-Speed Dynamics
                   </h3>
                   <p class="text-xs text-slate-400 leading-relaxed">
-                    At Canadian highway speeds of 110 to 120 km/h, the {vehicle.transmission} keeps engine revs low and steady. 
-                    With {vehicle.driveType} traction, lane changes over highway slush and wet pavement feel predictable and composed.
+                    {vehicle.vehicleClass.toLowerCase().includes('pickup')
+                      ? `At sustained Canadian highway speeds of 110–120 km/h, the ${vehicle.transmission} keeps cabin noise subdued. Expect fuel consumption to increase by 25% to 35% when towing travel trailers due to blunt frontal aero drag.`
+                      : isEV
+                      ? `On open Canadian expressways, aerodynamic drag is the primary energy drain. Cruising at 110 km/h yields predictable efficiency, with DC fast charging stations along the 401, Trans-Canada, and Coquihalla corridors enabling 10% to 80% top-ups in ~25 to 35 minutes.`
+                      : `At Canadian highway cruising speeds of 110 to 120 km/h, the ${vehicle.transmission} gearbox maintains optimal engine RPMs. With ${vehicle.driveType} traction, stability through wet slush ruts and crosswinds remains planted and controlled.`}
                   </p>
                 </div>
 
                 <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.06]">
                   <h3 class="text-white font-bold mb-1.5 flex items-center gap-1.5">
-                    <span>🏙️</span> City Commuting & Stop-and-Go
+                    <span>🏙️</span> Metropolitan City & Commuter Operations
                   </h3>
                   <p class="text-xs text-slate-400 leading-relaxed">
-                    In heavy metropolitan traffic across Vancouver, Montreal, or Ottawa, official city consumption is 
-                    <strong>{vehicle.cityL100km ? `${vehicle.cityL100km} L/100km` : `${vehicle.cityLe100km || vehicle.kwhPer100km} Le/100km`}</strong>. 
-                    Low-speed throttle response is smooth and easy to modulate in tight parking structures.
+                    {isEV || isPlugin
+                      ? `In congested urban centers like Toronto, Montreal, or Vancouver, regenerative braking recharges the traction pack during deceleration, providing maximum efficiency in start-and-stop gridlock.`
+                      : vehicle.fuelType === 'HEV'
+                      ? `City fuel efficiency is rated at an impressive ${vehicle.cityL100km} L/100km. Frequent electric-only low-speed coasting keeps engine off during long drive-thru queues and heavy traffic jams.`
+                      : `In daily urban commuting, official city consumption is ${vehicle.cityL100km || vehicle.combinedL100km} L/100km. Smooth throttle modulation and intuitive steering assist simplify tight parking manoeuvres in underground parking garages.`}
                   </p>
                 </div>
               </div>

@@ -4,25 +4,48 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Fuse from 'fuse.js';
-import type { Vehicle } from '../../lib/calculations.js';
 import { fuelTypePill, fuelTypeLabel, toSlug } from '../../lib/calculations.js';
 
+export interface SearchItem {
+  id: string;
+  year: number;
+  make: string;
+  model: string;
+  trim: string;
+  vehicleClass: string;
+  fuelType: string;
+  combinedL100km?: number | null;
+  kwhPer100km?: number | null;
+}
+
 interface Props {
-  vehicles: Vehicle[];
+  vehicles?: SearchItem[];
   placeholder?: string;
   className?: string;
 }
 
-export default function SearchBar({ vehicles, placeholder = 'Search any Canadian vehicle… e.g. RAV4, Tesla, F-150', className = '' }: Props) {
+export default function SearchBar({ vehicles = [], placeholder = 'Search any Canadian vehicle… e.g. RAV4, Tesla, F-150', className = '' }: Props) {
+  const [vehicleList, setVehicleList] = useState<SearchItem[]>(vehicles);
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<Vehicle[]>([]);
+  const [results, setResults] = useState<SearchItem[]>([]);
   const [open, setOpen] = useState(false);
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const fuseRef  = useRef<Fuse<Vehicle>>(null!);
+  const fuseRef  = useRef<Fuse<SearchItem>>(null!);
 
   useEffect(() => {
-    fuseRef.current = new Fuse(vehicles, {
+    if (vehicles && vehicles.length >= 100) {
+      setVehicleList(vehicles);
+      return;
+    }
+    fetch('/data/search-vehicles.json')
+      .then(res => res.json())
+      .then((data: SearchItem[]) => setVehicleList(data))
+      .catch(() => {});
+  }, [vehicles]);
+
+  useEffect(() => {
+    fuseRef.current = new Fuse(vehicleList, {
       keys: [
         { name: 'make',  weight: 0.4 },
         { name: 'model', weight: 0.4 },
@@ -33,7 +56,7 @@ export default function SearchBar({ vehicles, placeholder = 'Search any Canadian
       distance: 100,
       includeScore: true,
     });
-  }, [vehicles]);
+  }, [vehicleList]);
 
   const search = useCallback((q: string) => {
     setQuery(q);
@@ -47,8 +70,10 @@ export default function SearchBar({ vehicles, placeholder = 'Search any Canadian
     if (e.key === 'Escape') { setOpen(false); inputRef.current?.blur(); }
   };
 
-  const goto = (v: Vehicle) => {
-    const url = `/makes/${toSlug(v.make)}/${toSlug(v.model)}/${v.year}`;
+  const goto = (v: SearchItem) => {
+    const url = v.trim 
+      ? `/makes/${toSlug(v.make)}/${toSlug(v.model)}/${v.year}/${toSlug(v.trim)}`
+      : `/makes/${toSlug(v.make)}/${toSlug(v.model)}/${v.year}`;
     window.location.href = url;
   };
 

@@ -7,9 +7,20 @@ import vehicles from '../data/vehicles.json';
 import type { Vehicle } from '../lib/calculations.ts';
 
 const allVehicles = vehicles as unknown as Vehicle[];
+const searchVehicles = allVehicles.map(v => ({
+  id: v.id,
+  year: v.year,
+  make: v.make,
+  model: v.model,
+  trim: v.trim,
+  vehicleClass: v.vehicleClass,
+  fuelType: v.fuelType,
+  combinedL100km: v.combinedL100km,
+  kwhPer100km: v.kwhPer100km,
+}));
 
 const title = '404 — Telemetry Signal Lost | RangeAndFuel.ca';
-const description = 'The Canadian vehicle data page or fuel rating guide you requested could not be located on RangeAndFuel.ca. Search our complete NRCan catalog of 800+ models.';
+const description = 'The Canadian vehicle data page or fuel rating guide you requested could not be located on RangeAndFuel.ca. Search our complete NRCan catalog of 330+ Canadian vehicle trims.';
 ---
 
 <BaseLayout title={title} description={description} noIndex={true}>
@@ -37,7 +48,7 @@ const description = 'The Canadian vehicle data page or fuel rating guide you req
 
       <!-- Instant Search Bar Widget -->
       <div class="pt-2 pb-4">
-        <SearchBar vehicles={allVehicles} placeholder="Search make, model, or year (e.g. RAV4, F-150, Tesla)..." client:load />
+        <SearchBar vehicles={searchVehicles} placeholder="Search make, model, or year (e.g. RAV4, F-150, Tesla)..." client:load />
       </div>
 
       <!-- Quick Action Directory Cards -->
@@ -45,7 +56,7 @@ const description = 'The Canadian vehicle data page or fuel rating guide you req
         <a href="/search" class="p-5 rounded-2xl bg-[#0D1117] border border-white/[0.08] hover:border-cyan-400/50 transition-all group">
           <div class="text-2xl mb-2">🔍</div>
           <h2 class="text-sm font-bold text-white group-hover:text-neon-cyan transition-colors">Complete Catalog</h2>
-          <p class="text-xs text-slate-400 mt-1">Filter 800+ Canadian vehicles by L/100km, MSRP, and fuel type.</p>
+          <p class="text-xs text-slate-400 mt-1">Filter 330+ Canadian vehicles by L/100km, MSRP, and fuel type.</p>
         </a>
 
         <a href="/provinces" class="p-5 rounded-2xl bg-[#0D1117] border border-white/[0.08] hover:border-emerald-400/50 transition-all group">

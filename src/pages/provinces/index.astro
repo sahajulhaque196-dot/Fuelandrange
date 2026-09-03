@@ -25,6 +25,8 @@ const provinceEmoji: Record<string, string> = {
   SK: '🌻', NS: '🦞', NB: '🌊', NL: '🐋', PE: '🥔',
 };
 
+const currentYear = new Date().getFullYear();
+
 const jsonLd = [
   breadcrumbSchema([
     { name: 'Home',                 url: '/' },
@@ -33,7 +35,7 @@ const jsonLd = [
   {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: 'Canadian Province Fuel Prices 2024',
+    name: `Canadian Province Fuel Prices ${currentYear}`,
     description: 'Gas, diesel, and electricity fuel prices for all 10 Canadian provinces. Compare annual vehicle fuel costs by province.',
     url: 'https://rangeandfuel.ca/provinces',
     mainEntity: {
@@ -43,7 +45,7 @@ const jsonLd = [
       itemListElement: provinces.map((p, i) => ({
         '@type': 'ListItem',
         position: i + 1,
-        name: `${p.name} Fuel Cost Guide 2024`,
+        name: `${p.name} Fuel Cost Guide ${currentYear}`,
         url: `https://rangeandfuel.ca/provinces/${p.code.toLowerCase()}`,
       })),
     },
@@ -52,7 +54,7 @@ const jsonLd = [
 ---
 
 <BaseLayout
-  title="Canadian Province Fuel Prices 2024 — Gas, Diesel & EV Rates | RangeAndFuel.ca"
+  title={`Canadian Province Fuel Prices ${currentYear} — Gas, Diesel & EV Rates | RangeAndFuel.ca`}
   description="Current fuel prices across all 10 Canadian provinces: gas, diesel, and electricity ¢/kWh. Find the cheapest province for EV charging and compare annual vehicle fuel costs."
   canonical="/provinces"
   jsonLd={jsonLd}
@@ -92,7 +94,7 @@ const jsonLd = [
 
       <div class="mb-8">
         <h1 class="text-3xl sm:text-4xl md:text-5xl font-display font-black text-white tracking-tight leading-tight">
-          Canadian Fuel Prices by Province 2024
+          Canadian Fuel Prices by Province {currentYear}
         </h1>
         <p class="text-base sm:text-lg text-slate-400 mt-3 max-w-2xl leading-relaxed">
           Regular gas, diesel, and electricity rates across all 10 provinces. Compare annual vehicle fuel costs to find the best powertrain for your province.

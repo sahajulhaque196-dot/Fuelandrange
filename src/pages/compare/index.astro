@@ -53,10 +53,12 @@ const jsonLd = [
     },
   },
 ];
+
+const currentYear = new Date().getFullYear();
 ---
 
 <BaseLayout
-  title="Compare Vehicles by Class — Canadian Fuel Economy Rankings 2024 | RangeAndFuel.ca"
+  title={`Compare Vehicles by Class — Canadian Fuel Economy Rankings ${currentYear} | RangeAndFuel.ca`}
   description="Compare fuel consumption across all Canadian vehicle classes. Find the most fuel-efficient SUVs, sedans, trucks, and EVs with NRCan L/100km data."
   canonical="/compare"
   jsonLd={jsonLd}

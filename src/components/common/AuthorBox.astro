@@ -2,6 +2,7 @@
 // src/components/common/AuthorBox.astro
 // Global E-E-A-T Editorial Verification & Author Authority Card
 // Rendered on all pages directly above the site footer
+// Industry-grade: full name, credentials, social proof, editorial standards link
 ---
 
 <section class="border-t border-white/[0.08] bg-[#07090E]/90 relative overflow-hidden py-12" aria-labelledby="author-authority-heading">
@@ -18,7 +19,7 @@
           <div class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden p-1 bg-gradient-to-br from-cyan-400 via-emerald-400 to-rose-500 shadow-xl shadow-cyan-500/10">
             <img 
               src="/images/author-sahajul.jpg" 
-              alt="Sahajul — Lead Automotive Data Architect & Founder" 
+              alt="Sahajul Haque — Founder &amp; Lead Automotive Data Researcher, RangeAndFuel.ca" 
               class="w-full h-full object-cover rounded-[14px]"
               width="112"
               height="112"
@@ -39,14 +40,18 @@
             <div>
               <div class="flex items-center justify-center md:justify-start gap-2.5">
                 <h3 id="author-authority-heading" class="text-xl sm:text-2xl font-display font-bold text-white tracking-tight">
-                  Sahajul
+                  Sahajul Haque
                 </h3>
-                <span class="text-xs font-mono px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.08] text-slate-300">
-                  Assam, India 🇮🇳
+                <span class="text-xs font-mono px-2.5 py-0.5 rounded-md bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-bold">
+                  Lead Data Engineer
                 </span>
               </div>
-              <p class="text-xs font-mono text-neon-cyan font-semibold mt-0.5">
-                Founder &amp; Lead Automotive Data Architect · RangeAndFuel.ca
+              <p class="text-xs font-mono text-emerald-400 font-semibold mt-0.5">
+                Founder &amp; Automotive Telemetry Architect · RangeAndFuel.ca
+              </p>
+              <!-- Credentials row -->
+              <p class="text-[11px] font-mono text-slate-400 mt-1">
+                NRCan 5-Cycle EnerGuide Modeling · Transport Canada CMVSS Sync · EV Thermodynamics
               </p>
             </div>
 
@@ -57,7 +62,7 @@
                 target="_blank" 
                 rel="noopener noreferrer author" 
                 class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#06080C] border border-white/[0.1] hover:border-cyan-400 text-slate-300 hover:text-white text-xs font-mono transition-all group"
-                title="Follow Sahajul on X (Twitter)"
+                title="Follow Sahajul Haque on X (Twitter)"
               >
                 <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-cyan-400 transition-colors" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
@@ -69,7 +74,7 @@
                 href="/about" 
                 class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 text-xs font-mono font-bold transition-all"
               >
-                <span>About Desk</span>
+                <span>Editorial Standards</span>
                 <span>→</span>
               </a>
             </div>
@@ -77,7 +82,7 @@
 
           <!-- Bio Description -->
           <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
-            Automotive data researcher and engineer dedicated to building transparent, high-precision vehicle telemetry algorithms. Leading research on Canadian winter sub-zero (-15°C) battery thermodynamic degradation, Natural Resources Canada (NRCan) 5-cycle EnerGuide consumption models, and provincial energy cost simulations across all 10 provinces.
+            Automotive data researcher and engineer dedicated to building transparent, high-precision vehicle telemetry algorithms for Canadian drivers. Leads research on Canadian sub-zero (-15°C) battery thermodynamic degradation models, Natural Resources Canada (NRCan) 5-cycle EnerGuide consumption standards, Transport Canada safety recall tracking, and provincial energy cost simulations across all 10 provinces and 3 territories.
           </p>
 
           <!-- Editorial Verification Badges -->

@@ -3,6 +3,7 @@
 // Master layout for all pages — SEO meta, fonts, global styles
 import '../styles/global.css';
 import AuthorBox from '../components/common/AuthorBox.astro';
+import CookieBanner from '../components/common/CookieBanner.astro';
 
 interface Props {
   title: string;
@@ -32,11 +33,11 @@ const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
   <!-- Primary Meta -->
   <title>{title}</title>
   <meta name="description" content={description} />
+  <meta name="author" content="Sahajul Haque, RangeAndFuel.ca" />
   {noIndex ? <meta name="robots" content="noindex, nofollow" /> : <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />}
   <link rel="canonical" href={fullCanonical} />
   <meta name="geo.region" content="CA" />
@@ -57,15 +58,33 @@ const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
   <meta name="twitter:description" content={description} />
   <meta name="twitter:image" content={ogImage} />
 
-  <!-- Favicon -->
+  <!-- Favicon & Web App Manifest -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
   <meta name="theme-color" content="#00F0FF" />
 
-  <!-- High-Performance Preconnect & Font Links (Eliminates Render-Blocking Waterfall) -->
+  <!-- ── Non-blocking Google Fonts (eliminates render-blocking LCP penalty) ── -->
+  <!-- Preconnect hints: establish TCP+TLS early -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" />
+  <!-- Async font load: media=print loads non-blocking, onload swaps to screen -->
+  <link
+    rel="preload"
+    as="style"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+  />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    media="print"
+    onload="this.media='all'"
+  />
+  <!-- Fallback for no-JS -->
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" />
+  </noscript>
 
   <!-- Sitemap -->
   <link rel="sitemap" href="/sitemap-index.xml" />
@@ -74,6 +93,16 @@ const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
   {ldArray.map(schema => (
     <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
   ))}
+
+  <!-- Google AdSense Verification (Ready for custom domain connection) -->
+  <!-- When applying on https://adsense.google.com, replace ca-pub-XXXXXXXXXXXXXXXX and uncomment: -->
+  <!--
+  <script
+    async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+    crossorigin="anonymous"
+  ></script>
+  -->
 </head>
 
 <body>
@@ -100,9 +129,12 @@ const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 
       <!-- Right-Aligned Clean Navigation Links -->
       <div class="flex items-center gap-6">
-        <nav class="hidden md:flex items-center gap-6 font-medium text-sm" aria-label="Primary navigation">
+        <nav class="hidden md:flex items-center gap-5 lg:gap-6 font-medium text-sm" aria-label="Primary navigation">
           <a href="/" class="text-slate-300 hover:text-neon-cyan transition-colors">
             Home
+          </a>
+          <a href="/makes" class="text-slate-400 hover:text-neon-cyan transition-colors">
+            Makes
           </a>
           <a href="/search" class="text-slate-400 hover:text-neon-cyan transition-colors flex items-center gap-1.5">
             <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -119,6 +151,9 @@ const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
           <a href="/recalls" class="text-slate-400 hover:text-canadian-crimson transition-colors flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-500/10 border border-red-500/20">
             <span class="w-1.5 h-1.5 rounded-full bg-canadian-crimson animate-pulse-slow" aria-hidden="true"></span>
             <span class="text-rose-400 text-xs font-mono font-bold uppercase">Recalls</span>
+          </a>
+          <a href="/guides" class="text-slate-400 hover:text-neon-cyan transition-colors">
+            Guides
           </a>
           <a href="/about" class="text-slate-400 hover:text-neon-cyan transition-colors">
             About
@@ -154,6 +189,9 @@ const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
       <a href="/" class="block py-2.5 px-3 rounded-lg text-sm text-slate-200 font-medium hover:bg-white/5 hover:text-neon-cyan transition-colors">
         🏠 Home
       </a>
+      <a href="/makes" class="block py-2.5 px-3 rounded-lg text-sm text-slate-300 hover:bg-white/5 hover:text-neon-cyan transition-colors">
+        🚗 Vehicle Brands &amp; Makes
+      </a>
       <a href="/search" class="block py-2.5 px-3 rounded-lg text-sm text-slate-300 hover:bg-white/5 hover:text-neon-cyan transition-colors">
         🔍 Vehicle Search Hub
       </a>
@@ -165,6 +203,9 @@ const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
       </a>
       <a href="/recalls" class="block py-2.5 px-3 rounded-lg text-sm text-canadian-crimson font-medium hover:bg-red-500/10 transition-colors">
         ⚠️ Transport Canada Recalls Directory
+      </a>
+      <a href="/guides" class="block py-2.5 px-3 rounded-lg text-sm text-slate-300 hover:bg-white/5 hover:text-neon-cyan transition-colors">
+        📚 Research &amp; Engineering Guides
       </a>
       <a href="/about" class="block py-2.5 px-3 rounded-lg text-sm text-slate-300 hover:bg-white/5 hover:text-neon-cyan transition-colors">
         🍁 About Us & Editorial Standards
@@ -180,7 +221,7 @@ const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
     <slot />
   </main>
 
-  <!-- Global E-E-A-T Editorial Authority Card (Sahajul) -->
+  <!-- Global E-E-A-T Editorial Authority Card (Sahajul Haque) -->
   <AuthorBox />
 
   <!-- Enhanced Symmetrical Canadian Footer -->
@@ -338,6 +379,12 @@ const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
               </a>
             </li>
             <li>
+              <a href="/guides" class="text-xs text-slate-400 hover:text-neon-cyan transition-all flex items-center justify-between group">
+                <span class="group-hover:translate-x-1 transition-transform">Automotive Research Guides</span>
+                <span class="text-slate-600 group-hover:text-neon-cyan text-[10px]">→</span>
+              </a>
+            </li>
+            <li>
               <a href="/#cockpit" class="text-xs text-slate-400 hover:text-neon-cyan transition-all flex items-center justify-between group">
                 <span class="group-hover:translate-x-1 transition-transform">-15°C Winter Range Simulator</span>
                 <span class="text-slate-600 group-hover:text-neon-cyan text-[10px]">→</span>
@@ -384,6 +431,7 @@ const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 
         <div class="flex items-center gap-6 font-mono text-[11px]">
           <a href="/about" class="text-slate-400 hover:text-neon-cyan transition-colors">About</a>
+          <a href="/guides" class="text-slate-400 hover:text-neon-cyan transition-colors">Guides</a>
           <a href="/contact" class="text-slate-400 hover:text-neon-cyan transition-colors">Contact</a>
           <a href="/privacy" class="text-slate-400 hover:text-neon-cyan transition-colors">Privacy</a>
           <a href="/terms" class="text-slate-400 hover:text-neon-cyan transition-colors">Terms</a>
@@ -404,6 +452,14 @@ const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
     const menu = document.getElementById('mobile-menu');
     btn?.addEventListener('click', () => menu?.classList.toggle('hidden'));
   </script>
+
+  <!-- Cookie Consent Banner (PIPEDA / CASL / Quebec Law 25 Compliant) -->
+  <CookieBanner />
+
+  <!-- Cloudflare Web Analytics — Privacy-first, no cookies, GDPR/PIPEDA compliant -->
+  <!-- Replace TOKEN with your real Cloudflare Web Analytics token from dash.cloudflare.com -->
+  <!-- <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
+    data-cf-beacon='{"token": "REPLACE_WITH_YOUR_CF_TOKEN"}'></script> -->
+
 </body>
 </html>
-

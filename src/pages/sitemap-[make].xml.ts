@@ -27,22 +27,31 @@ export const GET: APIRoute = ({ params }) => {
   }
 
   // Deduplicate Unique Model + Year combinations
+  // Only include the model-year URL if there are multiple trims (lineup comparison)
+  // Single-trim model years canonicalize to their trim URL, which is submitted below.
   const modelYears = [...new Set(makeVehicles.map(v => `${toSlug(v.model)}|${v.year}`))];
   for (const item of modelYears) {
-    const [model, yr] = item.split('|');
-    urls.push({
-      loc: `https://rangeandfuel.ca/makes/${make}/${model}/${yr}`,
-      priority: '0.9',
-      changefreq: 'monthly',
-    });
+    const [model, yrStr] = item.split('|');
+    const yr = parseInt(yrStr, 10);
+    const yrVehicles = makeVehicles.filter(v => toSlug(v.model) === model && v.year === yr);
+    if (yrVehicles.length > 1) {
+      urls.push({
+        loc: `https://rangeandfuel.ca/makes/${make}/${model}/${yr}`,
+        priority: '0.9',
+        changefreq: 'monthly',
+      });
+    }
   }
 
-  // Trim pages
+  // Trim pages (always canonical)
   for (const v of makeVehicles) {
     const model = toSlug(v.model);
+    const yrVehicles = makeVehicles.filter(item => toSlug(item.model) === model && item.year === v.year);
+    // If it's a single-trim model year, it serves as the primary landing page, so boost priority
+    const priority = yrVehicles.length === 1 ? '0.9' : '0.7';
     urls.push({
       loc: `https://rangeandfuel.ca/makes/${make}/${model}/${v.year}/${toSlug(v.trim)}`,
-      priority: '0.7',
+      priority,
       changefreq: 'monthly',
     });
   }

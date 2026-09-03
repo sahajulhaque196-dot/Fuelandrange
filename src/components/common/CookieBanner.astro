@@ -1,0 +1,96 @@
+---
+// src/components/common/CookieBanner.astro
+// PIPEDA / CASL / Quebec Law 25 Compliant Cookie Consent Banner
+// Required for Google AdSense approval and Canadian privacy law compliance
+// Stores user consent in localStorage — no server needed, no cookie tracking before consent
+---
+
+<div
+  id="cookie-banner"
+  class="fixed bottom-0 left-0 right-0 z-50 hidden"
+  role="dialog"
+  aria-modal="false"
+  aria-label="Cookie and Privacy Notice"
+>
+  <div class="border-t border-white/[0.08] bg-[#07090E]/97 backdrop-blur-2xl shadow-2xl shadow-black/60">
+    <div class="container-site py-4 sm:py-5">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+
+        <!-- Icon + Text -->
+        <div class="flex items-start gap-3 flex-1">
+          <div class="shrink-0 w-8 h-8 rounded-lg bg-neon-cyan/10 border border-neon-cyan/20 flex items-center justify-center text-sm mt-0.5">
+            🍁
+          </div>
+          <div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              <strong class="text-white">RangeAndFuel.ca</strong> uses essential cookies for site functionality and may use analytics cookies to improve your experience. 
+              By continuing, you agree to our{' '}
+              <a href="/privacy" class="text-neon-cyan underline hover:text-cyan-300 transition-colors">Privacy Policy</a>
+              {' '}and{' '}
+              <a href="/terms" class="text-neon-cyan underline hover:text-cyan-300 transition-colors">Terms of Service</a>.
+              We comply with Canadian <strong>PIPEDA</strong>, <strong>CASL</strong>, and Quebec <strong>Law 25</strong>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-3 shrink-0 w-full sm:w-auto">
+          <button
+            id="cookie-reject"
+            class="flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-mono font-bold text-slate-400 border border-white/[0.08] hover:border-white/20 hover:text-white transition-all bg-white/[0.04]"
+            aria-label="Use essential cookies only"
+          >
+            Essential Only
+          </button>
+          <button
+            id="cookie-accept"
+            class="flex-1 sm:flex-none px-5 py-2 rounded-xl text-xs font-mono font-bold bg-neon-cyan text-cyber-slate hover:bg-cyan-300 transition-all shadow-lg shadow-neon-cyan/20"
+            aria-label="Accept all cookies"
+          >
+            Accept All
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function() {
+    var CONSENT_KEY = 'raf_cookie_consent';
+    var banner = document.getElementById('cookie-banner');
+    var acceptBtn = document.getElementById('cookie-accept');
+    var rejectBtn = document.getElementById('cookie-reject');
+
+    // Only show if no decision yet
+    function checkConsent() {
+      try {
+        if (!localStorage.getItem(CONSENT_KEY)) {
+          // Small delay to avoid layout shift on first paint
+          setTimeout(function() {
+            if (banner) banner.classList.remove('hidden');
+          }, 1200);
+        }
+      } catch(e) {
+        // localStorage not available — show banner
+        if (banner) banner.classList.remove('hidden');
+      }
+    }
+
+    function setConsent(value) {
+      try { localStorage.setItem(CONSENT_KEY, value); } catch(e) {}
+      if (banner) banner.classList.add('hidden');
+    }
+
+    if (acceptBtn) acceptBtn.addEventListener('click', function() { setConsent('all'); });
+    if (rejectBtn) rejectBtn.addEventListener('click', function() { setConsent('essential'); });
+
+    // Run on DOM ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', checkConsent);
+    } else {
+      checkConsent();
+    }
+  })();
+</script>

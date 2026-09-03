@@ -96,10 +96,12 @@ const jsonLd = [
     })),
   },
 ];
+
+const currentYear = new Date().getFullYear();
 ---
 
 <BaseLayout
-  title={'Best ' + vehicleClass + ' Fuel Economy Canada 2024 — NRCan Ratings | RangeAndFuel.ca'}
+  title={'Best ' + vehicleClass + ' Fuel Economy Canada ' + currentYear + ' — NRCan Ratings | RangeAndFuel.ca'}
   description={'Compare all ' + vehicleClass + ' vehicles in Canada. ' + sortedVehicles.length + ' vehicles from ' + uniqueMakes + ' brands ranked by NRCan L/100km.'}
   canonical={'/compare/' + classSlug}
   jsonLd={jsonLd}

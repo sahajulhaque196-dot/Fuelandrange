@@ -70,14 +70,28 @@ const jsonLd = [
   ]),
 ];
 
-const title = `${vehicle.year} ${vehicle.make} ${vehicle.model} Fuel Consumption Canada (L/100km & Costs) — All Trims | RangeAndFuel.ca`;
-const description = `Official NRCan ${vehicle.year} ${vehicle.make} ${vehicle.model} fuel consumption ratings (L/100km & kWh/100km), provincial CAD operating costs, -15°C winter range degradation, and Transport Canada safety recalls across all Canadian trims.`;
+const isSingleTrim = yearVehicles.length === 1;
+const singleTrimSlug = isSingleTrim ? toSlug(yearVehicles[0].trim) : '';
+const pageCanonical = isSingleTrim 
+  ? `/makes/${make}/${model}/${year}/${singleTrimSlug}` 
+  : `/makes/${make}/${model}/${year}`;
+
+const minMsrp = Math.min(...yearVehicles.map(v => v.msrpCAD).filter(Boolean));
+const maxMsrp = Math.max(...yearVehicles.map(v => v.msrpCAD).filter(Boolean));
+
+const title = isSingleTrim
+  ? `${vehicle.year} ${vehicle.make} ${vehicle.model} (${vehicle.trim}) Fuel Economy Canada | L/100km Ratings`
+  : `${vehicle.year} ${vehicle.make} ${vehicle.model} Lineup & Trim Comparison Canada | L/100km & CAD Costs`;
+
+const description = isSingleTrim
+  ? `${vehicle.year} ${vehicle.make} ${vehicle.model} ${vehicle.trim}: ${vehicle.combinedL100km ? `${vehicle.combinedL100km} L/100km combined` : `${vehicle.kwhPer100km} kWh/100km`}. Official NRCan ratings, provincial CAD operating costs, and Transport Canada safety bulletins.`
+  : `Compare all ${yearVehicles.length} Canadian trims of the ${vehicle.year} ${vehicle.make} ${vehicle.model}. Starting MSRP from $${minMsrp.toLocaleString()} to $${maxMsrp.toLocaleString()} CAD, official NRCan L/100km ratings, provincial operating costs, and recall notices.`;
 ---
 
 <BaseLayout
   title={title}
   description={description}
-  canonical={`/makes/${make}/${model}/${year}`}
+  canonical={pageCanonical}
   jsonLd={jsonLd}
 >
   <!-- Breadcrumb -->
@@ -123,10 +137,10 @@ const description = `Official NRCan ${vehicle.year} ${vehicle.make} ${vehicle.mo
           </div>
 
           <h1 class="text-3xl md:text-5xl font-display font-black text-white leading-tight mb-2">
-            {vehicle.year} {vehicle.make} {vehicle.model} Fuel Consumption Canada
+            {vehicle.year} {vehicle.make} {vehicle.model} Canadian Lineup
           </h1>
           <p class="text-sm sm:text-base text-slate-400 mb-8 font-mono">
-            NRCan EnerGuide Ratings &amp; Real CAD Fuel Costs · Featuring {vehicle.trim}
+            Compare All {yearVehicles.length} Canadian Trims · MSRP ${minMsrp.toLocaleString()}{maxMsrp > minMsrp ? ` – $${maxMsrp.toLocaleString()}` : ''} CAD
           </p>
 
           <!-- Hero HUD Grid -->

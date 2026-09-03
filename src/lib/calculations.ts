@@ -40,11 +40,22 @@ export interface Province {
 }
 
 // ── Winter Penalty Constants (Canadian -15°C Baseline) ──────────────────────
-export const WINTER_ICE_PENALTY_PCT   = 0.15;   // +15% fuel consumption
-export const WINTER_EV_RANGE_LOSS_PCT = 0.32;   // -32% range (cabin heating)
-export const WINTER_HEV_PENALTY_PCT   = 0.12;   // +12% for hybrid (smaller EV buffer)
-export const WINTER_PHEV_EV_LOSS_PCT  = 0.35;   // -35% EV-only range
-export const WINTER_BASELINE_CELSIUS  = -15;
+export const WINTER_ICE_PENALTY_PCT       = 0.15;   // +15% fuel consumption
+export const WINTER_EV_RANGE_LOSS_PCT     = 0.32;   // -32% range for standard resistive heating
+export const WINTER_EV_HEAT_PUMP_LOSS_PCT = 0.22;   // -22% range for heat pump equipped vehicles
+export const WINTER_HEV_PENALTY_PCT       = 0.12;   // +12% for hybrid (smaller EV buffer)
+export const WINTER_PHEV_EV_LOSS_PCT      = 0.35;   // -35% EV-only range
+export const WINTER_BASELINE_CELSIUS      = -15;
+
+export function hasHeatPump(v: Vehicle): boolean {
+  // Canadian-spec models equipped with standard heat pump thermodynamic thermal loops
+  const hpMakes = ['Tesla', 'Hyundai', 'Kia', 'Genesis', 'Polestar', 'Porsche', 'Rivian'];
+  if (hpMakes.includes(v.make)) return true;
+  if (v.make === 'BMW' && v.model.startsWith('i')) return true;
+  if (v.make === 'Volvo' && (v.model.includes('Recharge') || v.model.startsWith('EX'))) return true;
+  if (v.make === 'Volkswagen' && v.model.startsWith('ID')) return true;
+  return false;
+}
 
 // ── Fuel type helpers ────────────────────────────────────────────────────────
 export function isBEV(v: Vehicle): boolean  { return v.fuelType === 'BEV'; }
@@ -168,18 +179,24 @@ export function calcWinterPenalty(vehicle: Vehicle): WinterPenaltyResult {
 
   if (isBEV(vehicle)) {
     const base = vehicle.electricRangeKm;
-    if (!base) return { winterConsumption: null, winterRange: null, summerBaseline: null, lossPct: WINTER_EV_RANGE_LOSS_PCT * 100, tempC: WINTER_BASELINE_CELSIUS, advice: [] };
-    const winterRange = Math.round(base * (1 - WINTER_EV_RANGE_LOSS_PCT));
-    advice.push('Pre-condition battery while plugged in to minimize range loss.');
-    advice.push('Use seat heaters instead of cabin air heating where possible.');
-    advice.push('Plan charging stops: winter range is ~32% less than rated.');
-    advice.push('Keep battery charge above 20% to preserve heat management capacity.');
-    advice.push('Park in a garage where possible to reduce overnight battery cooling.');
+    const hasHP = hasHeatPump(vehicle);
+    const lossPct = hasHP ? WINTER_EV_HEAT_PUMP_LOSS_PCT : WINTER_EV_RANGE_LOSS_PCT;
+    if (!base) return { winterConsumption: null, winterRange: null, summerBaseline: null, lossPct: lossPct * 100, tempC: WINTER_BASELINE_CELSIUS, advice: [] };
+    const winterRange = Math.round(base * (1 - lossPct));
+    
+    if (hasHP) {
+      advice.push('Heat Pump Equipped: advanced thermodynamic heating limits -15°C loss to ~22%.');
+    } else {
+      advice.push('Resistive Heater: sub-zero cabin heating draws 3-5 kW directly from traction battery.');
+    }
+    advice.push('Pre-condition battery while plugged into Level 2 charger to maximize driving range.');
+    advice.push('Use seat heaters and heated steering wheel instead of continuous high cabin HVAC.');
+    advice.push('Keep battery charge above 20% to preserve active thermal management capability.');
     return {
-      winterConsumption: vehicle.kwhPer100km ? +(vehicle.kwhPer100km * 1.47).toFixed(1) : null,
+      winterConsumption: vehicle.kwhPer100km ? +(vehicle.kwhPer100km * (1 + lossPct * 1.4)).toFixed(1) : null,
       winterRange,
       summerBaseline: base,
-      lossPct: WINTER_EV_RANGE_LOSS_PCT * 100,
+      lossPct: Math.round(lossPct * 100),
       tempC: WINTER_BASELINE_CELSIUS,
       advice,
     };

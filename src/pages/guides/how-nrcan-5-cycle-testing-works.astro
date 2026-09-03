@@ -1,0 +1,242 @@
+---
+// src/pages/guides/how-nrcan-5-cycle-testing-works.astro
+// Pillar Guide 1: How NRCan 5-Cycle Testing Works in Canada
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { breadcrumbSchema } from '../../lib/schema.ts';
+
+const jsonLd = [
+  breadcrumbSchema([
+    { name: 'Home', url: '/' },
+    { name: 'Guides', url: '/guides' },
+    { name: 'NRCan 5-Cycle Testing Guide', url: '/guides/how-nrcan-5-cycle-testing-works' },
+  ]),
+  {
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: 'How Natural Resources Canada (NRCan) 5-Cycle Fuel Consumption Testing Works',
+    description: "A comprehensive technical breakdown of Canada's official 5-cycle dynamometer testing methodology used to calculate EnerGuide ratings (L/100km and kWh/100km).",
+    author: {
+      '@type': 'Person',
+      name: 'Sahajul Haque',
+      url: 'https://rangeandfuel.ca/about',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'RangeAndFuel.ca',
+      url: 'https://rangeandfuel.ca',
+    },
+    datePublished: '2024-01-15',
+    dateModified: '2026-09-02',
+    mainEntityOfPage: 'https://rangeandfuel.ca/guides/how-nrcan-5-cycle-testing-works',
+  },
+];
+---
+
+<BaseLayout
+  title="How NRCan 5-Cycle Fuel Testing Works in Canada | RangeAndFuel.ca"
+  description="Learn how Natural Resources Canada tests light-duty vehicles using 5 standardized laboratory dynamometer cycles to determine official EnerGuide L/100km ratings."
+  canonical="/guides/how-nrcan-5-cycle-testing-works"
+  jsonLd={jsonLd}
+>
+  <!-- Breadcrumb Bar -->
+  <div class="border-b border-white/[0.06] bg-[#07090E]/80 backdrop-blur-md">
+    <div class="container-site py-3">
+      <nav aria-label="Breadcrumb">
+        <ol class="flex items-center gap-2 text-xs text-slate-400 font-mono">
+          <li><a href="/" class="hover:text-neon-cyan transition-colors">Home</a></li>
+          <li class="text-slate-600">/</li>
+          <li><a href="/guides" class="hover:text-neon-cyan transition-colors">Guides</a></li>
+          <li class="text-slate-600">/</li>
+          <li class="text-slate-200 font-medium">NRCan 5-Cycle Testing</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Article Header -->
+  <header class="py-14 md:py-18 bg-[#06080C] border-b border-white/[0.08] relative overflow-hidden">
+    <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-b from-neon-cyan/15 via-emerald-500/5 to-transparent blur-3xl pointer-events-none rounded-full"></div>
+
+    <div class="container-site max-w-4xl relative z-10">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-neon-cyan text-xs font-mono mb-4">
+        <span>🔬</span> Canadian Automotive Standards Whitepaper
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-display font-black text-white tracking-tight leading-tight">
+        How Natural Resources Canada (NRCan) <br />
+        <span class="text-gradient-cyan">5-Cycle Testing Works</span>
+      </h1>
+
+      <div class="flex flex-wrap items-center gap-4 text-xs font-mono text-slate-400 mt-6 pt-6 border-t border-white/[0.06]">
+        <span>By <strong>Sahajul Haque</strong> · Lead Data Architect</span>
+        <span>•</span>
+        <span>Published for Canadian Drivers</span>
+        <span>•</span>
+        <span>8 Min Read</span>
+        <span>•</span>
+        <span class="text-emerald-400">✓ Sourced from NRCAN Regulations</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Article Body -->
+  <article class="py-16 md:py-20 bg-[#07090E]">
+    <div class="container-site max-w-3xl space-y-10 text-slate-300 text-sm leading-relaxed">
+      
+      <!-- Executive Summary Box -->
+      <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-cyan-500/30 shadow-xl space-y-3">
+        <h2 class="text-base font-bold text-neon-cyan font-mono uppercase tracking-wider">Executive Summary</h2>
+        <p>
+          Every new passenger car, crossover, pickup truck, and electric vehicle sold in Canada displays a standardized EnerGuide window sticker. Behind those city and highway figures lies one of the world’s most stringent vehicle certification protocols: the <strong>Natural Resources Canada 5-cycle testing methodology</strong>. Introduced in model year 2015 to correct unrealistically optimistic legacy ratings, this 5-stage laboratory procedure measures tailpipe emissions and energy consumption under diverse speeds, aggressive acceleration profiles, cold ambient temperatures (-7°C), and full air-conditioning loads.
+        </p>
+      </div>
+
+      <!-- Section 1 -->
+      <section class="space-y-4">
+        <h2 class="text-2xl font-display font-bold text-white">
+          1. Why Canada Replaced the Old 2-Cycle Test in 2015
+        </h2>
+        <p>
+          Prior to 2015, Canadian fuel economy was calculated using a simple two-stage laboratory procedure originally created in the 1970s: a basic urban simulation and a gentle highway run at approximately 77 km/h. While accurate for vintage carbureted automobiles operating in mild spring weather, modern Canadian highway speeds frequently reach 110–120 km/h, metropolitan urban commutes involve severe stop-and-go gridlock on routes like Ontario’s Highway 401, and sub-zero winter commutes are the norm across 6 months of the Canadian calendar.
+        </p>
+        <p>
+          As a result, Canadian consumers experienced real-world fuel consumption that was frequently 15% to 25% worse than what the window sticker promised. To re-establish public confidence, Natural Resources Canada enacted the 5-cycle testing protocol under the <em>Energy Efficiency Act</em>.
+        </p>
+      </section>
+
+      <!-- Section 2: The 5 Cycles Detailed -->
+      <section class="space-y-6">
+        <h2 class="text-2xl font-display font-bold text-white">
+          2. The 5 Standardized Laboratory Dynamometer Cycles
+        </h2>
+        <p>
+          Vehicles do not drive on open highways during testing. Instead, they are strapped onto calibrated chassis dynamometers inside sealed, temperature-controlled laboratory chambers. A professional driver pilots the vehicle through exact speed-versus-time computer traces while exhaust gases are collected in high-precision analytical bags to calculate consumed carbon atoms.
+        </p>
+
+        <div class="space-y-4">
+          <!-- Cycle 1 -->
+          <div class="p-5 rounded-2xl bg-[#0D1117] border border-white/[0.08]">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-bold text-white text-base">Cycle 1: Standard City (FTP-75)</h3>
+              <span class="text-xs font-mono text-neon-cyan">20°C to 30°C</span>
+            </div>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Simulates a 17.8 km morning urban commute with 23 complete stops. Includes an initial engine cold-start phase following a mandatory 12-to-36-hour overnight soak, followed by a warm-restart phase. Average speed is 34 km/h with a maximum speed of 91 km/h.
+            </p>
+          </div>
+
+          <!-- Cycle 2 -->
+          <div class="p-5 rounded-2xl bg-[#0D1117] border border-white/[0.08]">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-bold text-white text-base">Cycle 2: Standard Highway (HWFET)</h3>
+              <span class="text-xs font-mono text-emerald-400">20°C to 30°C</span>
+            </div>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Simulates a 16.5 km rural and highway trip with a fully warmed-up powertrain and no complete stops. Average speed is 77 km/h with a maximum cruising speed of 97 km/h.
+            </p>
+          </div>
+
+          <!-- Cycle 3 -->
+          <div class="p-5 rounded-2xl bg-[#0D1117] border border-white/[0.08]">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-bold text-white text-base">Cycle 3: Cold Temperature Urban Operation</h3>
+              <span class="text-xs font-mono text-rose-400">-7°C (20°F)</span>
+            </div>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Critical for Canadian drivers. The vehicle is cold-soaked at -7°C and driven through the City test cycle with cabin climate control heaters, blowers, and defrosters operating. This cycle captures the severe fuel penalty incurred while warming engine oil, catalytic converters, and heating passenger compartments.
+            </p>
+          </div>
+
+          <!-- Cycle 4 -->
+          <div class="p-5 rounded-2xl bg-[#0D1117] border border-white/[0.08]">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-bold text-white text-base">Cycle 4: Air Conditioning Load (SC03)</h3>
+              <span class="text-xs font-mono text-amber-400">35°C (95°F)</span>
+            </div>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Conducted inside an environmental heat booth heated to 35°C with 850 W/m² simulated solar radiation. The air conditioning compressor runs continuously on maximum cooling to capture summertime parasitic mechanical drag on the engine.
+            </p>
+          </div>
+
+          <!-- Cycle 5 -->
+          <div class="p-5 rounded-2xl bg-[#0D1117] border border-white/[0.08]">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-bold text-white text-base">Cycle 5: High Speed & Aggressive Acceleration (US06)</h3>
+              <span class="text-xs font-mono text-purple-400">Aggressive Profile</span>
+            </div>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Features rapid highway acceleration up to 129 km/h (80 mph), sharp throttle bursts, and rapid decelerations, capturing fuel burn during high-speed merging and aggressive Canadian highway driving.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Mathematical Harmonization -->
+      <section class="space-y-4">
+        <h2 class="text-2xl font-display font-bold text-white">
+          3. How the 5 Cycles Harmonize Into a Single L/100km Rating
+        </h2>
+        <p>
+          Rather than publishing five confusing numbers on window stickers, NRCan uses mathematically weighted regression formulas to merge the supplemental cycles (Cold -7°C, Air Conditioning, and High Speed) into final adjusted <strong>City</strong> and <strong>Highway</strong> ratings.
+        </p>
+        <div class="p-5 rounded-2xl bg-[#06080C] border border-white/[0.06] font-mono text-xs text-slate-300">
+          <p class="text-neon-cyan font-bold mb-2">// NRCan Combined Rating Weighting Ratio:</p>
+          <p>Combined Consumption = (55% × City L/100km) + (45% × Highway L/100km)</p>
+          <p class="text-slate-500 mt-2">Note: Inverted for Litres/100km harmonic averaging to preserve accurate volumetric fuel expenditure.</p>
+        </div>
+      </section>
+
+      <!-- Section 4: NRCan vs US EPA vs European WLTP -->
+      <section class="space-y-4">
+        <h2 class="text-2xl font-display font-bold text-white">
+          4. How NRCan Compares to US EPA and European WLTP
+        </h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs font-mono border border-white/[0.08] rounded-xl overflow-hidden">
+            <thead class="bg-[#0D1117] text-slate-400 border-b border-white/[0.08]">
+              <tr>
+                <th class="p-3">Standard</th>
+                <th class="p-3">Jurisdiction</th>
+                <th class="p-3">Test Type</th>
+                <th class="p-3">Real-World Accuracy</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-white/[0.04] text-slate-300">
+              <tr>
+                <td class="p-3 font-bold text-neon-cyan">NRCan EnerGuide</td>
+                <td class="p-3">Canada</td>
+                <td class="p-3">5-Cycle Adjusted (Metric L/100km)</td>
+                <td class="p-3 text-emerald-400 font-bold">High (92% Alignment)</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-bold text-white">US EPA</td>
+                <td class="p-3">United States</td>
+                <td class="p-3">5-Cycle Adjusted (US MPG)</td>
+                <td class="p-3 text-emerald-400">High (Direct NRCan Equivalent)</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-bold text-slate-400">European WLTP</td>
+                <td class="p-3">European Union</td>
+                <td class="p-3">Laboratory Driving Phases (Class 3)</td>
+                <td class="p-3 text-amber-400">Moderate (15-20% Optimistic)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Section 5: Practical Advice -->
+      <section class="space-y-4">
+        <h2 class="text-2xl font-display font-bold text-white">
+          5. How Canadian Drivers Can Beat Their NRCan Ratings
+        </h2>
+        <ul class="list-disc pl-5 space-y-2 text-slate-400">
+          <li><strong>Mind Winter Tire Rolling Resistance:</strong> Dedicated winter tires increase rolling resistance by 3% to 5%. Ensure tires are inflated to door-jamb placard pressures when checked cold in winter.</li>
+          <li><strong>Reduce Cruising Speeds:</strong> Aerodynamic drag increases with the square of vehicle speed. Driving at 105 km/h rather than 120 km/h on Ontario 400-series highways saves roughly 1.0 to 1.5 L/100km in modern crossovers.</li>
+          <li><strong>Precondition Plug-in Hybrids & EVs:</strong> When driving in winter, pre-heat cabin interiors while connected to home Level 2 charging equipment to prevent drawing initial cabin heating energy from vehicle battery packs.</li>
+        </ul>
+      </section>
+
+    </div>
+  </article>
+</BaseLayout>

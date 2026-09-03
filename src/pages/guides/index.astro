@@ -1,0 +1,138 @@
+﻿---
+// src/pages/guides/index.astro
+// Canadian Automotive Intelligence & Editorial Research Hub
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { breadcrumbSchema } from '../../lib/schema.ts';
+
+const guides = [
+  {
+    slug: 'how-nrcan-5-cycle-testing-works',
+    title: 'How NRCan 5-Cycle Fuel Consumption Testing Works in Canada',
+    badge: 'Laboratory Standards',
+    badgeColor: 'border-cyan-500/30 bg-cyan-500/10 text-neon-cyan',
+    readTime: '8 min read',
+    date: 'Updated September 2026',
+    desc: 'Why Canadian EnerGuide ratings differ from US EPA and European WLTP numbers. A complete breakdown of the 5 dynamometer test cycles: city, highway, cold weather, air conditioning, and high speed.',
+    icon: '🔬',
+  },
+  {
+    slug: 'canadian-winter-ev-range-guide',
+    title: 'Canadian Sub-Zero Winter EV Range Guide: Real -15°C to -30°C Telemetry',
+    badge: 'Cold Climate Physics',
+    badgeColor: 'border-rose-500/30 bg-rose-500/10 text-rose-400',
+    readTime: '10 min read',
+    date: 'Updated September 2026',
+    desc: 'The thermal physics behind winter EV battery degradation. Why heat pump-equipped EVs save 15-20% range over resistive heating, and essential preconditioning routines for Canadian drivers.',
+    icon: '❄️',
+  },
+  {
+    slug: 'canada-ev-rebates-izev-provincial',
+    title: 'Canada EV Rebates & Incentives Guide 2024–2026: Federal iZEV & Provincial Programs',
+    badge: 'Financial Incentives',
+    badgeColor: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400',
+    readTime: '7 min read',
+    date: 'Updated September 2026',
+    desc: 'How to stack the $5,000 Transport Canada iZEV incentive with provincial rebates in Quebec (Roulez vert), British Columbia (CleanBC), and Nova Scotia for up to $12,000 in total buyer savings.',
+    icon: '🍁',
+  },
+];
+
+const jsonLd = [
+  breadcrumbSchema([
+    { name: 'Home', url: '/' },
+    { name: 'Automotive Research & Guides', url: '/guides' },
+  ]),
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Canadian Automotive Fuel Economy & EV Intelligence Guides',
+    description: 'Authoritative, metric-first research guides on NRCan 5-cycle fuel testing, winter EV battery degradation, and federal/provincial green vehicle rebates.',
+    url: 'https://rangeandfuel.ca/guides',
+  },
+];
+---
+
+<BaseLayout
+  title="Canadian Automotive Fuel & EV Intelligence Guides | RangeAndFuel.ca"
+  description="Comprehensive research guides and engineering analyses on Natural Resources Canada (NRCan) 5-cycle testing, EV winter range degradation at -15°C, and Canadian EV rebate incentives."
+  canonical="/guides"
+  jsonLd={jsonLd}
+>
+  <!-- Top Breadcrumb Bar -->
+  <div class="border-b border-white/[0.06] bg-[#07090E]/80 backdrop-blur-md">
+    <div class="container-site py-3">
+      <nav aria-label="Breadcrumb">
+        <ol class="flex items-center gap-2 text-xs text-slate-400 font-mono">
+          <li><a href="/" class="hover:text-neon-cyan transition-colors">Home</a></li>
+          <li class="text-slate-600">/</li>
+          <li class="text-slate-200 font-medium">Research & Editorial Guides</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Hero Header -->
+  <header class="relative py-14 md:py-20 bg-[#06080C] border-b border-white/[0.08] overflow-hidden">
+    <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-b from-neon-cyan/15 via-emerald-500/5 to-transparent blur-3xl pointer-events-none rounded-full"></div>
+    <div class="absolute inset-0 bg-cyber-grid bg-[size:32px_32px] opacity-10 pointer-events-none"></div>
+
+    <div class="container-site relative z-10 max-w-4xl text-center">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-5 bg-cyan-500/10 border border-cyan-500/25">
+        <span class="w-2 h-2 rounded-full bg-neon-cyan animate-pulse"></span>
+        <span class="text-xs font-mono font-bold uppercase tracking-wider text-neon-cyan">Canadian Automotive Editorial Bureau</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-display font-black text-white tracking-tight leading-tight mb-4">
+        Canadian Automotive <br />
+        <span class="text-gradient-cyan">Research &amp; Engineering Guides</span>
+      </h1>
+
+      <p class="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl mx-auto">
+        Deep technical analyses, official regulatory breakdowns, and cold-climate operating data engineered exclusively for drivers across Canada's 10 provinces and 3 territories.
+      </p>
+    </div>
+  </header>
+
+  <!-- Guides Grid Section -->
+  <section class="py-16 md:py-20 bg-[#07090E]">
+    <div class="container-site max-w-5xl">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {guides.map((g) => (
+          <article class="p-6 sm:p-7 rounded-3xl bg-[#0D1117] border border-white/[0.08] hover:border-cyan-400/40 transition-all flex flex-col justify-between group shadow-xl hover:shadow-cyan-500/5">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-4">
+                <span class={`text-[11px] font-mono font-bold px-2.5 py-1 rounded-full border ${g.badgeColor}`}>
+                  {g.badge}
+                </span>
+                <span class="text-[11px] font-mono text-slate-500">{g.readTime}</span>
+              </div>
+
+              <div class="text-3xl mb-3">{g.icon}</div>
+
+              <h2 class="text-lg sm:text-xl font-display font-bold text-white group-hover:text-neon-cyan transition-colors leading-snug mb-3">
+                <a href={`/guides/${g.slug}`}>
+                  {g.title}
+                </a>
+              </h2>
+
+              <p class="text-xs text-slate-400 leading-relaxed mb-6">
+                {g.desc}
+              </p>
+            </div>
+
+            <div class="pt-4 border-t border-white/[0.06] flex items-center justify-between">
+              <span class="text-[11px] font-mono text-slate-500">{g.date}</span>
+              <a
+                href={`/guides/${g.slug}`}
+                class="inline-flex items-center gap-1 text-xs font-mono font-bold text-neon-cyan group-hover:translate-x-1 transition-transform"
+              >
+                <span>Read Guide</span>
+                <span>→</span>
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

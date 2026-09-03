@@ -12,6 +12,45 @@ import type { Vehicle } from '../lib/calculations.ts';
 
 const allVehicles = vehicles as unknown as Vehicle[];
 
+// Initial popular vehicles to render immediately without bloating initial HTML payload
+const popularIds = [
+  '2024-toyota-rav4-hybrid-xle-awd',
+  '2024-honda-crv-hybrid-sport-awd',
+  '2024-ford-f150-powerboost-hybrid-4x4',
+  '2024-tesla-model-y-long-range-awd',
+  '2024-honda-civic-sport-fwd',
+  '2024-toyota-camry-hybrid-xse-fwd',
+  '2024-hyundai-tucson-hybrid-preferred-awd',
+  '2024-chevrolet-silverado-1500-rst-4x4',
+  '2024-ford-maverick-hybrid-xl-fwd',
+  '2024-toyota-corolla-hybrid-se-awd',
+];
+
+const initialVehicles = allVehicles
+  .filter(v => popularIds.includes(v.id))
+  .map(v => ({
+    id: v.id,
+    year: v.year,
+    make: v.make,
+    model: v.model,
+    trim: v.trim,
+    vehicleClass: v.vehicleClass,
+    fuelType: v.fuelType,
+    combinedL100km: v.combinedL100km,
+    kwhPer100km: v.kwhPer100km,
+    electricRangeKm: v.electricRangeKm,
+    fuelTankLitres: v.fuelTankLitres,
+    msrpCAD: v.msrpCAD,
+    co2GPerKm: v.co2GPerKm,
+  }));
+
+const comparisonProvinces = (fuelPrices as any).provinces.map((p: any) => ({
+  code: p.code,
+  name: p.name,
+  gasolineCentsPerL: p.gasolineCentsPerL,
+  electricityCentsPerKwh: p.electricityCentsPerKwh,
+}));
+
 // Stats
 const totalVehicles = allVehicles.length;
 const totalMakes    = [...new Set(allVehicles.map(v => v.make))].length;
@@ -96,7 +135,7 @@ const canonicalUrl = '/';
 
             <!-- Search bar -->
             <div class="hero-search-wrap animate-fade-up-4">
-              <SearchBar vehicles={allVehicles} client:load />
+              <SearchBar client:load vehicles={initialVehicles} />
               <p class="hero-search-hint">
                 {totalVehicles.toLocaleString()} vehicles &nbsp;·&nbsp; {totalMakes} makes &nbsp;·&nbsp; All metric
               </p>
@@ -123,14 +162,19 @@ const canonicalUrl = '/';
                 style="background: linear-gradient(135deg, #00F0FF 0%, #10B981 45%, rgba(255,46,77,0.6) 80%, #00F0FF 100%);">
                 
                 <div class="relative rounded-[26px] overflow-hidden bg-[#07090E]">
-                  <img
-                    src="/images/hero-car.jpg"
-                    alt="Canadian EV and Hybrid Winter Testing in the Rocky Mountains"
-                    class="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
-                    width="800"
-                    height="600"
-                    loading="eager"
-                  />
+                  <picture>
+                    <source srcset="/images/hero-car.webp" type="image/webp" />
+                    <img
+                      src="/images/hero-car-opt.jpg"
+                      alt="Canadian EV and Hybrid Winter Testing in the Rocky Mountains"
+                      class="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
+                      width="800"
+                      height="600"
+                      loading="eager"
+                      fetchpriority="high"
+                      decoding="async"
+                    />
+                  </picture>
 
                   <!-- Ambient Gradient Dark Overlay -->
                   <div class="absolute inset-0 bg-gradient-to-t from-[#07090E]/95 via-[#07090E]/20 to-transparent pointer-events-none"></div>
@@ -434,121 +478,7 @@ const canonicalUrl = '/';
       margin: 0 auto;
     }
 
-    .hero-3d-hologram-wrap {
-      position: relative;
-      border-radius: 28px;
-      line-height: 0;
-      width: 100%;
-      animation: holoFloat 5s ease-in-out infinite;
-    }
-    @keyframes holoFloat {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50%       { transform: translateY(-7px) rotate(0.4deg); }
-    }
 
-    /* Outer Dynamic Multilayer Neon Border */
-    .hero-3d-hologram-wrap::before {
-      content: '';
-      position: absolute;
-      inset: -3.5px;
-      border-radius: 30px;
-      background: conic-gradient(
-        from var(--holo-angle, 0deg),
-        #8B5CF6 0%,
-        #00F0FF 25%,
-        #10B981 50%,
-        #FF2E4D 75%,
-        #8B5CF6 100%
-      );
-      z-index: 0;
-      animation: holoBorderSpin 4s linear infinite;
-    }
-    @property --holo-angle {
-      syntax: '<angle>';
-      initial-value: 0deg;
-      inherits: false;
-    }
-    @keyframes holoBorderSpin {
-      to { --holo-angle: 360deg; }
-    }
-
-    /* Ultra-Glow Ambient Halo Blur */
-    .hero-3d-hologram-wrap::after {
-      content: '';
-      position: absolute;
-      inset: -4px;
-      border-radius: 30px;
-      background: conic-gradient(
-        from var(--holo-angle, 0deg),
-        #8B5CF6, #00F0FF, #10B981, #FF2E4D, #8B5CF6
-      );
-      z-index: 0;
-      animation: holoBorderSpin 4s linear infinite;
-      filter: blur(20px);
-      opacity: 0.75;
-    }
-
-    .hero-3d-hologram-inner {
-      position: relative;
-      z-index: 1;
-      border-radius: 26px;
-      overflow: hidden;
-      background: #07090E;
-      line-height: 0;
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      border: 1px solid rgba(255,255,255,0.12);
-      box-shadow: inset 0 0 40px rgba(0,240,255,0.15);
-    }
-
-    .hero-3d-hologram-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      display: block;
-      border-radius: 26px;
-      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s ease;
-      filter: brightness(1.08) contrast(1.05) saturate(1.15);
-    }
-    .hero-3d-hologram-inner:hover .hero-3d-hologram-img {
-      transform: scale(1.03);
-      filter: brightness(1.15) contrast(1.1) saturate(1.25);
-    }
-
-    /* Inside Image Dynamic Color-Shifting Light Wave Overlay */
-    .holo-ambient-pulse {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 10;
-      background: radial-gradient(circle at 60% 40%, rgba(0,240,255,0.18) 0%, rgba(139,92,246,0.14) 40%, transparent 70%);
-      mix-blend-mode: color-dodge;
-      animation: ambientShift 6s ease-in-out infinite alternate;
-    }
-    @keyframes ambientShift {
-      0%   { opacity: 0.4; transform: scale(0.95); background: radial-gradient(circle at 40% 30%, rgba(0,240,255,0.25) 0%, rgba(139,92,246,0.15) 50%, transparent 75%); }
-      50%  { opacity: 0.8; transform: scale(1.05); background: radial-gradient(circle at 70% 60%, rgba(16,185,129,0.25) 0%, rgba(0,240,255,0.2) 50%, transparent 75%); }
-      100% { opacity: 0.5; transform: scale(1.0); background: radial-gradient(circle at 50% 50%, rgba(139,92,246,0.25) 0%, rgba(255,46,77,0.18) 50%, transparent 75%); }
-    }
-
-    /* Hologram Scanning Light Line */
-    .holo-scan-bar {
-      position: absolute;
-      left: 0; right: 0;
-      height: 2px;
-      z-index: 15;
-      pointer-events: none;
-      background: linear-gradient(90deg, transparent, rgba(0,240,255,0.85), rgba(139,92,246,0.85), transparent);
-      box-shadow: 0 0 12px #00F0FF;
-      animation: scanSweep 3.5s linear infinite;
-    }
-    @keyframes scanSweep {
-      0%   { top: 0%; opacity: 0; }
-      10%  { opacity: 0.9; }
-      90%  { opacity: 0.9; }
-      100% { top: 100%; opacity: 0; }
-    }
 
     /* ── Mid Hero Fuel Ticker Strip (above Stat Cards) ── */
     .hero-mid-ticker-wrap {
@@ -875,9 +805,9 @@ const canonicalUrl = '/';
   <section class="py-20 bg-cyber-slate-2" id="comparison">
     <div class="container-site">
       <CanadianComparisonTool 
-        vehicles={allVehicles} 
-        provinces={(fuelPrices as any).provinces} 
-        client:load 
+        vehicles={initialVehicles.slice(0, 4)} 
+        provinces={comparisonProvinces} 
+        client:visible 
       />
     </div>
   </section>

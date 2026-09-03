@@ -1,0 +1,197 @@
+---
+// src/pages/makes/index.astro
+// Canadian Automotive Brands & Makes Directory Hub
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import vehicles from '../../data/vehicles.json';
+import recallData from '../../data/recalls.json';
+import { breadcrumbSchema } from '../../lib/schema.ts';
+import { toSlug, fuelTypePill, fuelTypeLabel } from '../../lib/calculations.ts';
+import type { Vehicle } from '../../lib/calculations.ts';
+
+const all = vehicles as unknown as Vehicle[];
+const uniqueMakes = [...new Set(all.map(v => v.make))].sort();
+
+const makeSummaries = uniqueMakes.map(makeName => {
+  const slug = toSlug(makeName);
+  const makeVehicles = all.filter(v => v.make === makeName);
+  const models = [...new Set(makeVehicles.map(v => v.model))];
+  const hasEV = makeVehicles.some(v => v.fuelType === 'BEV' || v.fuelType === 'PHEV');
+  const hasHybrid = makeVehicles.some(v => v.fuelType === 'HEV' || v.fuelType === 'PHEV');
+  
+  // Best vehicle
+  const champion = [...makeVehicles].sort((a, b) => {
+    const aVal = a.combinedL100km ?? a.kwhPer100km ?? 99;
+    const bVal = b.combinedL100km ?? b.kwhPer100km ?? 99;
+    return aVal - bVal;
+  })[0];
+
+  const recalls = ((recallData as any).recalls || []).filter((r: any) => toSlug(r.make) === slug);
+  const msrps = makeVehicles.map(v => v.msrpCAD).filter(Boolean);
+  const minMsrp = msrps.length ? Math.min(...msrps) : 0;
+
+  return {
+    name: makeName,
+    slug,
+    totalTrims: makeVehicles.length,
+    totalModels: models.length,
+    models,
+    hasEV,
+    hasHybrid,
+    champion,
+    recallCount: recalls.length,
+    minMsrp,
+  };
+}).sort((a, b) => b.totalTrims - a.totalTrims);
+
+const jsonLd = [
+  breadcrumbSchema([
+    { name: 'Home', url: '/' },
+    { name: 'Vehicle Makes & Brands', url: '/makes' },
+  ]),
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Canadian Automotive Brands & Manufacturers Directory',
+    description: 'Browse official NRCan fuel consumption ratings, electric range, and Transport Canada safety bulletins across all 29 major vehicle brands in Canada.',
+    url: 'https://rangeandfuel.ca/makes',
+    mainEntity: {
+      '@type': 'ItemList',
+      name: 'Automotive Manufacturers Sold in Canada',
+      numberOfItems: makeSummaries.length,
+      itemListElement: makeSummaries.map((m, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: `${m.name} Canada Fuel Economy`,
+        url: `https://rangeandfuel.ca/makes/${m.slug}`,
+      })),
+    },
+  },
+];
+---
+
+<BaseLayout
+  title="Canadian Vehicle Brands & Manufacturers Directory | L/100km Ratings | RangeAndFuel.ca"
+  description="Explore official NRCan fuel consumption ratings, electric vehicle range, and Transport Canada safety recalls across all 29 automotive manufacturers sold in Canada."
+  canonical="/makes"
+  jsonLd={jsonLd}
+>
+  <!-- Top Breadcrumb -->
+  <div class="border-b border-white/[0.06] bg-[#07090E]/80 backdrop-blur-md">
+    <div class="container-site py-3">
+      <nav aria-label="Breadcrumb">
+        <ol class="flex items-center gap-2 text-xs text-slate-400 font-mono">
+          <li><a href="/" class="hover:text-neon-cyan transition-colors">Home</a></li>
+          <li class="text-slate-600">/</li>
+          <li class="text-slate-200 font-medium">Makes & Brands</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Hero Header -->
+  <header class="relative py-14 md:py-20 bg-[#06080C] border-b border-white/[0.08] overflow-hidden">
+    <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-b from-neon-cyan/15 via-emerald-500/5 to-transparent blur-3xl pointer-events-none rounded-full"></div>
+    <div class="absolute inset-0 bg-cyber-grid bg-[size:32px_32px] opacity-10 pointer-events-none"></div>
+
+    <div class="container-site relative z-10 max-w-4xl text-center">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-5 bg-cyan-500/10 border border-cyan-500/25">
+        <span class="w-2 h-2 rounded-full bg-neon-cyan animate-pulse"></span>
+        <span class="text-xs font-mono font-bold uppercase tracking-wider text-neon-cyan">Canadian Automotive Fleet Hub</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-display font-black text-white tracking-tight leading-tight mb-4">
+        Automotive Brands <br />
+        <span class="text-gradient-cyan">In Canada</span>
+      </h1>
+
+      <p class="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl mx-auto mb-8">
+        Compare official Natural Resources Canada (NRCan) 5-cycle fuel consumption ratings, provincial CAD operating costs, and Transport Canada safety bulletins across all major brands.
+      </p>
+
+      <div class="flex flex-wrap justify-center gap-3 text-xs font-mono text-slate-400">
+        <span class="px-3.5 py-1.5 rounded-xl bg-[#0D1117] border border-white/[0.08]">
+          🚗 <strong class="text-white">{uniqueMakes.length}</strong> Manufacturers
+        </span>
+        <span class="px-3.5 py-1.5 rounded-xl bg-[#0D1117] border border-white/[0.08]">
+          🍁 <strong class="text-emerald-400">100%</strong> Canadian Metric Specs
+        </span>
+        <span class="px-3.5 py-1.5 rounded-xl bg-[#0D1117] border border-white/[0.08]">
+          ⚡ Hybrid &amp; Electric Coverage
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Makes Directory Grid -->
+  <section class="py-14 md:py-20 bg-[#07090E]">
+    <div class="container-site">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {makeSummaries.map((m) => (
+          <a
+            href={`/makes/${m.slug}`}
+            class="group p-6 rounded-3xl bg-[#0D1117] border border-white/[0.08] hover:border-cyan-400/50 hover:shadow-xl hover:shadow-cyan-500/10 transition-all duration-300 flex flex-col justify-between"
+          >
+            <div>
+              <!-- Header Row -->
+              <div class="flex items-start justify-between gap-3 mb-4">
+                <div class="w-12 h-12 rounded-2xl bg-[#06080C] border border-white/[0.08] flex items-center justify-center font-display font-black text-lg text-white group-hover:text-neon-cyan group-hover:scale-105 transition-all">
+                  {m.name.slice(0, 2).toUpperCase()}
+                </div>
+                <div class="flex flex-col items-end gap-1">
+                  <span class="text-[11px] font-mono font-bold text-slate-400">
+                    {m.totalModels} Models · {m.totalTrims} Trims
+                  </span>
+                  {m.recallCount > 0 && (
+                    <span class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-red-500/10 text-rose-400 border border-red-500/20">
+                      ⚠️ {m.recallCount} Recalls
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <!-- Title -->
+              <h2 class="text-xl font-display font-bold text-white mb-2 group-hover:text-neon-cyan transition-colors">
+                {m.name}
+              </h2>
+
+              <!-- Sample Models -->
+              <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed mb-4">
+                {m.models.slice(0, 4).join(', ')}{m.models.length > 4 ? `, +${m.models.length - 4} more` : ''}
+              </p>
+            </div>
+
+            <!-- Bottom Badges & Champion Stats -->
+            <div class="pt-4 border-t border-white/[0.06] space-y-3">
+              {m.champion && (
+                <div class="flex items-center justify-between text-xs font-mono">
+                  <span class="text-slate-500 text-[11px]">Best Rating:</span>
+                  <span class="font-bold text-emerald-400">
+                    {m.champion.combinedL100km ? `${m.champion.combinedL100km} L/100km` : `${m.champion.kwhPer100km} kWh`}
+                  </span>
+                </div>
+              )}
+
+              <div class="flex items-center justify-between text-xs">
+                <div class="flex items-center gap-1.5">
+                  {m.hasEV && (
+                    <span class="px-2 py-0.5 rounded-md bg-cyan-500/10 text-neon-cyan text-[10px] font-mono border border-cyan-500/20">
+                      ⚡ EV
+                    </span>
+                  )}
+                  {m.hasHybrid && (
+                    <span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">
+                      🌿 Hybrid
+                    </span>
+                  )}
+                </div>
+                <span class="text-slate-500 group-hover:text-neon-cyan text-xs font-mono flex items-center gap-1 transition-colors">
+                  Lineup Guide <span class="group-hover:translate-x-1 transition-transform">→</span>
+                </span>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

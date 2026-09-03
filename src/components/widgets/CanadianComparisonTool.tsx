@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface Props {
   vehicles: Array<{
@@ -23,14 +23,30 @@ interface Props {
   }>;
 }
 
-export default function CanadianComparisonTool({ vehicles, provinces }: Props) {
+export default function CanadianComparisonTool({ vehicles = [], provinces }: Props) {
+  const [vehicleList, setVehicleList] = useState(vehicles);
   const [veh1Id, setVeh1Id] = useState(vehicles[0]?.id || '');
   const [veh2Id, setVeh2Id] = useState(vehicles[1]?.id || vehicles[0]?.id || '');
   const [selectedProvCode, setSelectedProvCode] = useState('ON');
   const [annualKm, setAnnualKm] = useState(20000);
 
-  const v1 = vehicles.find(v => v.id === veh1Id) || vehicles[0];
-  const v2 = vehicles.find(v => v.id === veh2Id) || vehicles[1] || vehicles[0];
+  useEffect(() => {
+    if (vehicles && vehicles.length >= 100) {
+      setVehicleList(vehicles);
+      return;
+    }
+    fetch('/data/search-vehicles.json')
+      .then(res => res.json())
+      .then((data) => {
+        setVehicleList(data);
+        if (!veh1Id && data[0]) setVeh1Id(data[0].id);
+        if (!veh2Id && data[1]) setVeh2Id(data[1].id);
+      })
+      .catch(() => {});
+  }, [vehicles]);
+
+  const v1 = vehicleList.find(v => v.id === veh1Id) || vehicleList[0];
+  const v2 = vehicleList.find(v => v.id === veh2Id) || vehicleList[1] || vehicleList[0];
   const prov = provinces.find(p => p.code === selectedProvCode) || provinces[0];
 
   function calcCost(v: typeof v1) {
@@ -94,7 +110,7 @@ export default function CanadianComparisonTool({ vehicles, provinces }: Props) {
             aria-label="Select First Vehicle"
             className="w-full bg-[#07090E] text-white text-sm font-semibold p-3 rounded-xl border border-cyan-500/30 focus:outline-none focus:border-cyan-400"
           >
-            {vehicles.map(v => (
+            {vehicleList.map(v => (
               <option key={`v1-${v.id}`} value={v.id}>
                 {v.year} {v.make} {v.model} - {v.trim} ({v.fuelType})
               </option>
@@ -113,7 +129,7 @@ export default function CanadianComparisonTool({ vehicles, provinces }: Props) {
             aria-label="Select Second Vehicle"
             className="w-full bg-[#07090E] text-white text-sm font-semibold p-3 rounded-xl border border-purple-500/30 focus:outline-none focus:border-purple-400"
           >
-            {vehicles.map(v => (
+            {vehicleList.map(v => (
               <option key={`v2-${v.id}`} value={v.id}>
                 {v.year} {v.make} {v.model} - {v.trim} ({v.fuelType})
               </option>

@@ -70,6 +70,8 @@ const provinceEmoji: Record<string, string> = {
 };
 const emoji = provinceEmoji[provinceData.code] ?? '🍁';
 
+const currentYear = new Date().getFullYear();
+
 const jsonLd = [
   breadcrumbSchema([
     { name: 'Home',                 url: '/' },
@@ -79,13 +81,13 @@ const jsonLd = [
   {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
-    name: `${provinceData.name} Fuel Cost Guide 2024`,
+    name: `${provinceData.name} Fuel Cost Guide ${currentYear}`,
     url: `https://rangeandfuel.ca/provinces/${province}`,
   },
 ];
 
-const pageTitle = `${provinceData.name} Fuel Cost Guide 2024 — Gas Prices & EV Rates | RangeAndFuel.ca`;
-const pageDesc  = `Fuel prices in ${provinceData.name}: gas ${provinceData.gasolineCentsPerL}¢/L, electricity ${provinceData.electricityCentsPerKwh}¢/kWh. Calculate annual fuel costs for any vehicle in ${provinceData.name} with real NRCan data.`;
+const pageTitle = `${provinceData.name} Fuel Cost Guide ${currentYear} — Gas Prices & EV Rates | RangeAndFuel.ca`;
+const pageDesc  = `Current fuel prices in ${provinceData.name}: gas ${provinceData.gasolineCentsPerL}¢/L, electricity ${provinceData.electricityCentsPerKwh}¢/kWh. Calculate annual fuel costs for any vehicle in ${provinceData.name} with real NRCan data.`;
 ---
 <BaseLayout
   title={pageTitle}
@@ -137,7 +139,7 @@ const pageDesc  = `Fuel prices in ${provinceData.name}: gas ${provinceData.gasol
       <!-- H1 -->
       <div class="mb-8">
         <h1 class="text-3xl sm:text-4xl md:text-5xl font-display font-black text-white tracking-tight leading-tight">
-          {provinceData.name} Fuel Cost Guide 2024
+          {provinceData.name} Fuel Cost Guide {currentYear}
         </h1>
         <p class="text-base sm:text-lg text-slate-400 mt-3 max-w-2xl leading-relaxed">
           Real fuel prices for {provinceData.name} drivers. Annual cost rankings across {ranked.length.toLocaleString('en-CA')} Canadian vehicles at 20,000 km/yr — sourced from NRCan EnerGuide ratings.

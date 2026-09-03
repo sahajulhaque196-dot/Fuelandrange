@@ -1,14 +1,17 @@
+# robots.txt — RangeAndFuel.ca
+# Generated: September 2026
+
+# ── Default: Allow all crawlers ──────────────────────────────────────────
 User-agent: *
 Allow: /
-Disallow: /search?
+# Disallow infinite crawl trap combinations while allowing /search and Sitelinks Searchbox
+Disallow: /*?*sort=
+Disallow: /*?*page=
 
-# Sitemap Index
+# ── Sitemap Index ─────────────────────────────────────────────────────────
 Sitemap: https://rangeandfuel.ca/sitemap-index.xml
 
-# Crawl budget hints
-Crawl-delay: 0
-
-# Generative Engine Optimization (GEO) & AI Search Engine Indexers
+# ── GEO: AI Search Engine & Generative AI Indexers (explicitly allowed) ──
 User-agent: GPTBot
 Allow: /
 
@@ -33,3 +36,8 @@ Allow: /
 User-agent: cohere-ai
 Allow: /
 
+User-agent: Bytespider
+Allow: /
+
+User-agent: CCBot
+Allow: /

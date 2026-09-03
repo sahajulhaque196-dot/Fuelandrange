@@ -194,19 +194,11 @@ export function vehicleSchema(v: Vehicle, customUrl?: string) {
   }
 
   if (v.msrpCAD) {
-    schema['offers'] = {
-      '@type': 'Offer',
-      priceCurrency: 'CAD',
-      price: v.msrpCAD,
-      priceValidUntil: `${v.year + 2}-12-31`,
-      availability: 'https://schema.org/InStock',
-      itemCondition: 'https://schema.org/NewCondition',
-      seller: {
-        '@type': 'Organization',
-        name: 'Authorized Canadian Automotive Dealers',
-        areaServed: { '@type': 'Country', name: 'Canada' },
-      },
-    };
+    additionalProps.push({
+      '@type': 'PropertyValue',
+      name: 'Manufacturer Suggested Retail Price (MSRP CAD)',
+      value: `$${v.msrpCAD.toLocaleString()} CAD`,
+    });
   }
 
   return schema;

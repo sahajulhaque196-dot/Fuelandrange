@@ -65,7 +65,7 @@ const jsonLd = [
   makeHubSchema(makeDisplay, models),
   breadcrumbSchema([
     { name: 'Home', url: '/' },
-    { name: 'Makes', url: '/#makes' },
+    { name: 'Makes', url: '/makes' },
     { name: makeDisplay, url: `/makes/${make}` },
   ]),
 ];
@@ -84,7 +84,7 @@ const jsonLd = [
         <ol class="flex items-center gap-2 text-xs text-slate-400 font-mono">
           <li><a href="/" class="hover:text-neon-cyan transition-colors">Home</a></li>
           <li class="text-slate-600">/</li>
-          <li><a href="/#makes" class="hover:text-neon-cyan transition-colors">Makes</a></li>
+          <li><a href="/makes" class="hover:text-neon-cyan transition-colors">Makes</a></li>
           <li class="text-slate-600">/</li>
           <li class="text-slate-200 font-medium">{makeDisplay}</li>
         </ol>
