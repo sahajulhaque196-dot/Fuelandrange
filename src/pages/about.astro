@@ -1,20 +1,22 @@
 ---
 // src/pages/about.astro
-// About Us, Editorial Mission & Contact — Google AdSense Trust & Authority Standard
+// About Us, Editorial Mission & Creator Authority — Top-Tier E-E-A-T & Google Quality Guidelines
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { breadcrumbSchema } from '../lib/schema.ts';
+import { breadcrumbSchema, authorPersonSchema, orgSchema } from '../lib/schema.ts';
 
 const jsonLd = [
   breadcrumbSchema([
     { name: 'Home', url: '/' },
     { name: 'About & Editorial Standards', url: '/about' },
   ]),
+  orgSchema(),
+  authorPersonSchema(),
 ];
 ---
 
 <BaseLayout
-  title="About Us & Editorial Mission | RangeAndFuel.ca"
-  description="Learn about RangeAndFuel.ca, Canada's premier independent automotive fuel economy, electric vehicle range, and Transport Canada safety intelligence platform."
+  title="About Us, Editorial Mission & Leadership | RangeAndFuel.ca"
+  description="Meet the editorial and telemetry team behind RangeAndFuel.ca. Learn our NRCan 5-cycle modeling methodology, editorial review policies, corrections protocol, and Canadian Open Government data compliance."
   canonical="/about"
   jsonLd={jsonLd}
 >
@@ -25,7 +27,7 @@ const jsonLd = [
         <ol class="flex items-center gap-2 text-xs text-slate-400 font-mono">
           <li><a href="/" class="hover:text-neon-cyan transition-colors">Home</a></li>
           <li class="text-slate-600">/</li>
-          <li class="text-slate-200 font-medium">About Us</li>
+          <li class="text-slate-200 font-medium">About Us &amp; Editorial Standards</li>
         </ol>
       </nav>
     </div>
@@ -40,7 +42,7 @@ const jsonLd = [
       <!-- Page Header -->
       <div class="mb-12 border-b border-white/[0.08] pb-8">
         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-neon-cyan text-xs font-mono mb-4">
-          <span>🍁</span> Independent Canadian Automotive Intelligence
+          <span>🍁</span> Independent Canadian Automotive Telemetry Bureau
         </div>
         <h1 class="text-3xl sm:text-4xl md:text-5xl font-display font-black text-white tracking-tight">
           About <span class="text-gradient-cyan">RangeAndFuel.ca</span>
@@ -66,7 +68,7 @@ const jsonLd = [
           </p>
           <ul class="list-disc pl-5 space-y-2 text-slate-400">
             <li>We measure fuel efficiency in <strong>Litres per 100 Kilometres (L/100km)</strong> and electricity in <strong>kWh/100km</strong> according to Natural Resources Canada (NRCan) EnerGuide standards.</li>
-            <li>Our energy costs vary widely by province—from hydro-rich Quebec to carbon-taxed Ontario and market-rate Alberta petroleum.</li>
+            <li>Our energy costs vary widely by province—from hydro-rich Quebec to market-rate Alberta petroleum and regulated price plans in Ontario.</li>
             <li>Our winter climate reaches sustained <strong>-15°C to -30°C</strong> temperatures, inflicting severe battery range penalties and cold-start fuel consumption spikes that American test cycles overlook.</li>
             <li>Our vehicle safety compliance is governed by <strong>Transport Canada</strong> under the <em>Motor Vehicle Safety Act (MVSA)</em> and Canadian Motor Vehicle Safety Standards (CMVSS).</li>
           </ul>
@@ -75,45 +77,146 @@ const jsonLd = [
           </p>
         </div>
 
-        <!-- Editorial Standards Section -->
+        <!-- Author & Creator Profile Section -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-cyan-500/20 shadow-xl space-y-6" id="sahajul-haque" itemscope itemtype="https://schema.org/Person">
+          <div class="flex items-center justify-between border-b border-white/[0.08] pb-4">
+            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+              <span class="text-neon-cyan font-mono">02.</span> Founder &amp; Chief Automotive Data Architect
+            </h2>
+            <span class="text-xs font-mono text-cyan-400 font-bold px-2.5 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30">
+              Verified Creator
+            </span>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+            <div class="shrink-0 text-center">
+              <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden p-1 bg-gradient-to-br from-cyan-400 via-emerald-400 to-rose-500 shadow-xl shadow-cyan-500/10">
+                <img 
+                  src="/images/author-sahajul.jpg" 
+                  alt="Sahajul Haque — Founder &amp; Chief Telemetry Researcher" 
+                  class="w-full h-full object-cover rounded-[14px]"
+                  width="112"
+                  height="112"
+                  itemprop="image"
+                />
+              </div>
+            </div>
+
+            <div class="flex-1 space-y-3 text-center sm:text-left">
+              <div>
+                <h3 class="text-xl font-display font-bold text-white" itemprop="name">Sahajul Haque</h3>
+                <p class="text-xs font-mono text-emerald-400 font-semibold" itemprop="jobTitle">
+                  Founder &amp; Lead Automotive Telemetry Architect
+                </p>
+                <p class="text-[11px] font-mono text-slate-400 mt-1">
+                  Specialization: NRCan 5-Cycle EnerGuide Harmonization · Sub-Zero (-15°C) Battery Thermodynamics · CMVSS Safety Compliance
+                </p>
+              </div>
+
+              <p class="text-xs sm:text-sm text-slate-300 leading-relaxed" itemprop="description">
+                Sahajul Haque is an automotive data researcher and engineer dedicated to bringing scientific rigor and consumer transparency to Canadian vehicle ownership. With deep expertise in statistical modeling and automotive engineering standards, Sahajul spearheads the development of RangeAndFuel.ca's computational telemetry algorithms—including our proprietary -15°C Canadian winter degradation model, provincial multi-tier energy cost simulations, and automated synchronization with Transport Canada's Motor Vehicle Safety Recalls database.
+              </p>
+
+              <div class="pt-2 flex flex-wrap items-center justify-center sm:justify-start gap-3">
+                <a 
+                  href="https://x.com/saddamh58509953" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  itemprop="sameAs"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#06080C] border border-white/[0.1] hover:border-cyan-400 text-slate-300 hover:text-white text-xs font-mono transition-all"
+                >
+                  <svg class="w-3.5 h-3.5 text-slate-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
+                  <span>Connect on X</span>
+                </a>
+                <a 
+                  href="mailto:editorial@rangeandfuel.ca" 
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 text-xs font-mono font-bold transition-all"
+                >
+                  <span>Direct Desk: editorial@rangeandfuel.ca</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Editorial Review & Fact-Checking Process -->
         <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4">
           <h2 class="text-xl font-bold text-white flex items-center gap-2">
-            <span class="text-neon-cyan font-mono">02.</span> Editorial Independence & Fact-Checking Policy
+            <span class="text-neon-cyan font-mono">03.</span> Editorial Review Process &amp; Verification Protocol
           </h2>
           <p>
-            Editorial objectivity is the cornerstone of our platform. Our data team adheres to strict verification principles:
+            To guarantee authoritative, decision-ready data, every figure and editorial guide published on RangeAndFuel.ca undergoes a multi-stage verification pipeline:
           </p>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
             <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.04]">
-              <div class="font-bold text-white text-xs mb-1">🏛️ Government Verified Data</div>
-              <p class="text-xs text-slate-400">Every fuel economy and power consumption rating is validated against official Natural Resources Canada EnerGuide laboratory test files.</p>
+              <div class="font-bold text-white text-xs mb-1">1. Government Primary Source Ingestion</div>
+              <p class="text-xs text-slate-400">Raw fuel ratings and emissions figures are ingested directly from Natural Resources Canada (NRCan) annual EnerGuide laboratory testing releases published under the Open Government Licence - Canada.</p>
             </div>
             <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.04]">
-              <div class="font-bold text-white text-xs mb-1">🛡️ Transport Canada Verification</div>
-              <p class="text-xs text-slate-400">Safety recall bulletins are synchronized with Transport Canada’s public MVSR database to ensure accurate CMVSS defect tracking.</p>
+              <div class="font-bold text-white text-xs mb-1">2. Manufacturer OEM Cross-Referencing</div>
+              <p class="text-xs text-slate-400">Trim packages, tank volumes, battery capacities (usable vs gross kWh), and MSRP (CAD) are corroborated against official Canadian manufacturer order guides and spec sheets.</p>
             </div>
             <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.04]">
-              <div class="font-bold text-white text-xs mb-1">📈 Weekly Provincial Fuel Sync</div>
-              <p class="text-xs text-slate-400">Pump prices and hydro rates are monitored weekly across all 10 provinces using Statistics Canada petroleum data and public utility tariff schedules.</p>
+              <div class="font-bold text-white text-xs mb-1">3. Transport Canada CMVSS Synchronization</div>
+              <p class="text-xs text-slate-400">Safety recall records are cross-referenced with Transport Canada’s public Motor Vehicle Safety Recalls database (MVSR), verifying CMVSS recall numbers, defect descriptions, and remedial actions.</p>
             </div>
             <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.04]">
-              <div class="font-bold text-white text-xs mb-1">✍️ 100% Human Automotive Journalism</div>
-              <p class="text-xs text-slate-400">Our vehicle assessments and buyer guides are written by experienced Canadian automotive analysts, free from automated AI buzzwords or manufacturer marketing spin.</p>
+              <div class="font-bold text-white text-xs mb-1">4. Thermodynamic &amp; Energy Tariff Modeling</div>
+              <p class="text-xs text-slate-400">Winter range degradation algorithms and provincial charging calculations are updated using Statistics Canada petroleum monitors and public utility filings (Hydro-Québec, BC Hydro, Ontario Energy Board).</p>
             </div>
+          </div>
+        </div>
+
+        <!-- Corrections & Retractions Policy -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-neon-cyan font-mono">04.</span> Editorial Corrections &amp; Retractions Policy
+          </h2>
+          <p>
+            Data integrity is paramount. If you detect any inaccuracy, typographical discrepancy, missing Canadian trim configuration, or outdated provincial energy tariff, we invite prompt notification:
+          </p>
+          <ul class="list-disc pl-5 space-y-2 text-slate-400">
+            <li><strong>Investigation SLA:</strong> Submitted data correction requests are logged and investigated against official NRCan or Transport Canada records within <strong>24 to 48 business hours</strong>.</li>
+            <li><strong>Correction Notices:</strong> Where an error affects vehicle specifications, consumption ratings, or recall alerts, updates are pushed immediately to our live dataset with revision timestamps.</li>
+            <li><strong>Reporting Channel:</strong> Direct all verification requests and manufacturer technical bulletins to <a href="mailto:data@rangeandfuel.ca" class="text-neon-cyan hover:underline font-mono">data@rangeandfuel.ca</a> or submit via our <a href="/contact" class="text-neon-cyan hover:underline">Contact Desk</a>.</li>
+          </ul>
+        </div>
+
+        <!-- Open Government Licence & Dataset Attribution -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-emerald-500/20 shadow-xl space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-emerald-400 font-mono">05.</span> Open Government Licence – Canada Disclosure
+          </h2>
+          <p>
+            RangeAndFuel.ca uses information provided by the Government of Canada under the <strong>Open Government Licence – Canada</strong>. Specifically:
+          </p>
+          <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.06] text-xs text-slate-400 space-y-2 font-mono">
+            <p class="text-emerald-400 font-bold">Official Statutory Attribution Notice:</p>
+            <p>
+              "Contains information licensed under the Open Government Licence – Canada."
+            </p>
+            <p class="text-slate-500">
+              Primary datasets: Natural Resources Canada (NRCan) Fuel Consumption Ratings dataset and Transport Canada Motor Vehicle Safety Recalls (MVSR) database.
+            </p>
+            <p>
+              Full licence terms: <a href="https://open.canada.ca/en/open-government-licence-canada" target="_blank" rel="noopener noreferrer" class="text-neon-cyan underline">open.canada.ca/en/open-government-licence-canada</a>
+            </p>
           </div>
         </div>
 
         <!-- How We Are Funded Section -->
         <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4">
           <h2 class="text-xl font-bold text-white flex items-center gap-2">
-            <span class="text-neon-cyan font-mono">03.</span> How We Are Funded (Transparency Disclosure)
+            <span class="text-neon-cyan font-mono">06.</span> How We Are Funded (Transparency Disclosure)
           </h2>
           <p>
-            RangeAndFuel.ca is free for all Canadian consumers. We maintain operations through two transparent revenue streams:
+            RangeAndFuel.ca is completely free for all Canadian motorists. We maintain operations through two transparent revenue streams:
           </p>
           <ul class="list-disc pl-5 space-y-2 text-slate-400">
-            <li><strong>Contextual Display Advertising:</strong> We partner with trusted advertising networks such as Google AdSense to serve relevant automotive advertisements.</li>
-            <li><strong>Affiliate Partnerships:</strong> When users choose to compare insurance quotes or trade-in valuations through our widgets, we may receive a referral fee from licensed Canadian partners at zero additional cost to the user.</li>
+            <li><strong>Contextual Display Advertising:</strong> We partner with trusted advertising networks such as Google AdSense to serve non-intrusive, contextually relevant automotive advertisements.</li>
+            <li><strong>Affiliate Partnerships:</strong> When users choose to compare insurance quotes or vehicle valuation tools through our platform, we may receive a referral fee from licensed Canadian partners at zero additional cost to the user.</li>
           </ul>
           <p class="text-xs text-slate-400">
             Commercial relationships never influence our vehicle ratings, winter penalty calculations, or editorial recommendations.
@@ -123,23 +226,23 @@ const jsonLd = [
         <!-- Contact & Corporate Information -->
         <div class="p-6 sm:p-8 rounded-3xl bg-[#0D1117] border border-white/[0.08] shadow-xl space-y-4" id="contact">
           <h2 class="text-xl font-bold text-white flex items-center gap-2">
-            <span class="text-neon-cyan font-mono">04.</span> Contact & Editorial Office
+            <span class="text-neon-cyan font-mono">07.</span> Operational Presence &amp; Editorial Desk
           </h2>
           <p>
-            We welcome inquiries from Canadian drivers, automotive journalists, researchers, and vehicle manufacturers:
+            RangeAndFuel.ca maintains independent operational and data desks in the Province of Ontario, Canada:
           </p>
           
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 text-xs font-mono">
             <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.06] space-y-1">
-              <div class="text-white font-bold">General & Editorial Inquiries</div>
+              <div class="text-white font-bold">General &amp; Editorial Inquiries</div>
               <div class="text-slate-400">Email: <span class="text-neon-cyan">editorial@rangeandfuel.ca</span></div>
-              <div class="text-slate-500">Response Time: Within 24-48 business hours</div>
+              <div class="text-slate-500">Response SLA: 24–48 business hours</div>
             </div>
 
             <div class="p-4 rounded-2xl bg-[#06080C] border border-white/[0.06] space-y-1">
-              <div class="text-white font-bold">Privacy & Legal Compliance</div>
-              <div class="text-slate-400">Email: <span class="text-emerald-400">privacy@rangeandfuel.ca</span></div>
-              <div class="text-slate-500">Governing Law: Ontario, Canada</div>
+              <div class="text-white font-bold">Data Verification &amp; Corrections</div>
+              <div class="text-slate-400">Email: <span class="text-cyan-400">data@rangeandfuel.ca</span></div>
+              <div class="text-slate-500">Jurisdiction: Province of Ontario, Canada</div>
             </div>
           </div>
         </div>

@@ -2,7 +2,7 @@
 // src/pages/guides/how-nrcan-5-cycle-testing-works.astro
 // Pillar Guide 1: How NRCan 5-Cycle Testing Works in Canada
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { breadcrumbSchema } from '../../lib/schema.ts';
+import { breadcrumbSchema, authorPersonSchema, orgSchema } from '../../lib/schema.ts';
 
 const jsonLd = [
   breadcrumbSchema([
@@ -15,16 +15,8 @@ const jsonLd = [
     '@type': 'TechArticle',
     headline: 'How Natural Resources Canada (NRCan) 5-Cycle Fuel Consumption Testing Works',
     description: "A comprehensive technical breakdown of Canada's official 5-cycle dynamometer testing methodology used to calculate EnerGuide ratings (L/100km and kWh/100km).",
-    author: {
-      '@type': 'Person',
-      name: 'Sahajul Haque',
-      url: 'https://rangeandfuel.ca/about',
-    },
-    publisher: {
-      '@type': 'Organization',
-      name: 'RangeAndFuel.ca',
-      url: 'https://rangeandfuel.ca',
-    },
+    author: authorPersonSchema(),
+    publisher: orgSchema(),
     datePublished: '2024-01-15',
     dateModified: '2026-09-02',
     mainEntityOfPage: 'https://rangeandfuel.ca/guides/how-nrcan-5-cycle-testing-works',

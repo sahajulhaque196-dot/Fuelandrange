@@ -6,20 +6,12 @@ export const GET = () => {
   const baseUrl = 'https://rangeandfuel.ca';
   const today = new Date().toISOString().split('T')[0];
 
-  const urls = [
-    `  <url>
-    <loc>${baseUrl}/provinces</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>`,
-    ...provinces.map(p => `  <url>
+  const urls = provinces.map(p => `  <url>
     <loc>${baseUrl}/provinces/${p.code.toLowerCase()}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-  </url>`),
-  ].join('\n');
+  </url>`).join('\n');
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

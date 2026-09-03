@@ -12,6 +12,9 @@ interface Props {
   ogImage?: string;
   jsonLd?: object | object[];
   noIndex?: boolean;
+  showAuthorBox?: boolean;
+  preloadImage?: string;
+  preloadImageType?: string;
 }
 
 const {
@@ -21,10 +24,24 @@ const {
   ogImage = 'https://rangeandfuel.ca/og-default.png',
   jsonLd,
   noIndex = false,
+  showAuthorBox = true,
+  preloadImage,
+  preloadImageType = 'image/webp',
 } = Astro.props;
 
-const siteUrl  = 'https://rangeandfuel.ca';
-const fullCanonical = canonical ? `${siteUrl}${canonical}` : `${siteUrl}${Astro.url.pathname}`;
+const siteUrl = 'https://rangeandfuel.ca';
+
+// Normalize canonical: strip trailing slash unless root, omit completely if noIndex
+let cleanCanonical = '';
+if (!noIndex) {
+  if (canonical) {
+    cleanCanonical = canonical === '/' ? `${siteUrl}/` : `${siteUrl}${canonical.replace(/\/+$/, '')}`;
+  } else {
+    const pathname = Astro.url.pathname.replace(/\/+$/, '');
+    cleanCanonical = pathname === '' ? `${siteUrl}/` : `${siteUrl}${pathname}`;
+  }
+}
+const fullCanonical = cleanCanonical;
 const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 ---
 
@@ -38,14 +55,20 @@ const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
   <title>{title}</title>
   <meta name="description" content={description} />
   <meta name="author" content="Sahajul Haque, RangeAndFuel.ca" />
-  {noIndex ? <meta name="robots" content="noindex, nofollow" /> : <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />}
-  <link rel="canonical" href={fullCanonical} />
+  {noIndex ? (
+    <meta name="robots" content="noindex, nofollow" />
+  ) : (
+    <>
+      <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+      <link rel="canonical" href={fullCanonical} />
+    </>
+  )}
   <meta name="geo.region" content="CA" />
   <meta name="language" content="en-CA" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content={fullCanonical} />
+  {!noIndex && <meta property="og:url" content={fullCanonical} />}
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
   <meta property="og:image" content={ogImage} />
@@ -57,6 +80,41 @@ const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
   <meta name="twitter:title" content={title} />
   <meta name="twitter:description" content={description} />
   <meta name="twitter:image" content={ogImage} />
+
+  <!-- LCP Hero Image Preload Hint -->
+  {preloadImage && (
+    <link
+      rel="preload"
+      as="image"
+      href={preloadImage}
+      type={preloadImageType}
+      fetchpriority="high"
+    />
+  )}
+
+  <!-- Google Consent Mode v2 (Default: Denied until user consents) -->
+  <script is:inline>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', {
+      'ad_storage': 'denied',
+      'ad_user_data': 'denied',
+      'ad_personalization': 'denied',
+      'analytics_storage': 'denied',
+      'wait_for_update': 500
+    });
+    try {
+      var savedConsent = localStorage.getItem('raf_cookie_consent');
+      if (savedConsent === 'all') {
+        gtag('consent', 'update', {
+          'ad_storage': 'granted',
+          'ad_user_data': 'granted',
+          'ad_personalization': 'granted',
+          'analytics_storage': 'granted'
+        });
+      }
+    } catch(e) {}
+  </script>
 
   <!-- Favicon & Web App Manifest -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -221,8 +279,8 @@ const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
     <slot />
   </main>
 
-  <!-- Global E-E-A-T Editorial Authority Card (Sahajul Haque) -->
-  <AuthorBox />
+  <!-- E-E-A-T Editorial Authority Card (Sahajul Haque) -->
+  {showAuthorBox && <AuthorBox />}
 
   <!-- Enhanced Symmetrical Canadian Footer -->
   <footer class="border-t border-white/[0.08] bg-[#06080C] relative overflow-hidden" aria-labelledby="footer-heading">
@@ -318,8 +376,8 @@ const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
               </a>
             </li>
             <li>
-              <a href="/makes/hyundai" class="text-xs text-slate-400 hover:text-neon-cyan transition-all flex items-center justify-between group">
-                <span class="group-hover:translate-x-1 transition-transform">Hyundai Electric (IONIQ 5, IONIQ 6)</span>
+              <a href="/makes/bmw" class="text-xs text-slate-400 hover:text-neon-cyan transition-all flex items-center justify-between group">
+                <span class="group-hover:translate-x-1 transition-transform">BMW Electric (i4, iX, i7)</span>
                 <span class="text-slate-600 group-hover:text-neon-cyan text-[10px]">→</span>
               </a>
             </li>
@@ -385,8 +443,8 @@ const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
               </a>
             </li>
             <li>
-              <a href="/#cockpit" class="text-xs text-slate-400 hover:text-neon-cyan transition-all flex items-center justify-between group">
-                <span class="group-hover:translate-x-1 transition-transform">-15°C Winter Range Simulator</span>
+              <a href="/guides/canadian-winter-ev-range-guide" class="text-xs text-slate-400 hover:text-neon-cyan transition-all flex items-center justify-between group">
+                <span class="group-hover:translate-x-1 transition-transform">-15°C Winter Range Guide</span>
                 <span class="text-slate-600 group-hover:text-neon-cyan text-[10px]">→</span>
               </a>
             </li>

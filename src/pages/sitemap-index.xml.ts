@@ -30,10 +30,6 @@ export const GET = () => {
     <lastmod>${today}</lastmod>
   </sitemap>
 ${sitemapEntries}
-  <sitemap>
-    <loc>https://rangeandfuel.ca/sitemap-recalls.xml</loc>
-    <lastmod>${today}</lastmod>
-  </sitemap>
 </sitemapindex>`;
 
   return new Response(xml, {

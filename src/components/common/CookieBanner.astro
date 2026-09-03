@@ -79,7 +79,29 @@
     }
 
     function setConsent(value) {
-      try { localStorage.setItem(CONSENT_KEY, value); } catch(e) {}
+      try { 
+        localStorage.setItem(CONSENT_KEY, value); 
+        if (window.gtag) {
+          if (value === 'all') {
+            gtag('consent', 'update', {
+              'ad_storage': 'granted',
+              'ad_user_data': 'granted',
+              'ad_personalization': 'granted',
+              'analytics_storage': 'granted'
+            });
+          } else {
+            gtag('consent', 'update', {
+              'ad_storage': 'denied',
+              'ad_user_data': 'denied',
+              'ad_personalization': 'denied',
+              'analytics_storage': 'granted'
+            });
+            if (window.adsbygoogle) {
+              window.adsbygoogle.requestNonPersonalizedAds = 1;
+            }
+          }
+        }
+      } catch(e) {}
       if (banner) banner.classList.add('hidden');
     }
 

@@ -1,43 +1,56 @@
 # robots.txt — RangeAndFuel.ca
 # Generated: September 2026
 
-# ── Default: Allow all crawlers ──────────────────────────────────────────
-User-agent: *
-Allow: /
-# Disallow infinite crawl trap combinations while allowing /search and Sitelinks Searchbox
-Disallow: /*?*sort=
-Disallow: /*?*page=
-
-# ── Sitemap Index ─────────────────────────────────────────────────────────
+# Sitemaps
 Sitemap: https://rangeandfuel.ca/sitemap-index.xml
 
-# ── GEO: AI Search Engine & Generative AI Indexers (explicitly allowed) ──
+# ── Primary Search Crawlers (Googlebot, Bingbot, Default) ────────────────
+User-agent: *
+Allow: /
+# Crawl-trap protection: Disallow query parameter combinations while allowing clean URLs
+Disallow: /*?*sort=
+Disallow: /*?*page=
+Disallow: /*?*cat=
+Disallow: /*?*class=
+Disallow: /*?*filter=
+Disallow: /data/
+
+User-agent: Googlebot
+Allow: /
+Disallow: /*?*sort=
+Disallow: /*?*page=
+Disallow: /*?*cat=
+Disallow: /*?*class=
+Disallow: /*?*filter=
+Disallow: /data/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /*?*sort=
+Disallow: /*?*page=
+Disallow: /*?*cat=
+Disallow: /*?*class=
+Disallow: /*?*filter=
+Disallow: /data/
+
+# ── Generative AI & LLM Crawlers (Explicitly Allowed with Crawl Trap Protections) ──
 User-agent: GPTBot
-Allow: /
-
 User-agent: ClaudeBot
-Allow: /
-
-User-agent: Google-Extended
-Allow: /
-
 User-agent: PerplexityBot
-Allow: /
-
 User-agent: OAI-SearchBot
-Allow: /
-
 User-agent: Applebot-Extended
-Allow: /
-
+User-agent: Google-Extended
 User-agent: Meta-ExternalAgent
-Allow: /
-
 User-agent: cohere-ai
 Allow: /
+Disallow: /*?*sort=
+Disallow: /*?*page=
+Disallow: /*?*cat=
+Disallow: /*?*class=
+Disallow: /*?*filter=
+Disallow: /data/
 
+# ── Block Aggressive / Low-Quality Scrapers ───────────────────────────────
 User-agent: Bytespider
-Allow: /
-
 User-agent: CCBot
-Allow: /
+Disallow: /

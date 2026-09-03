@@ -30,29 +30,48 @@ const {
   format    = 'auto',
   label     = 'Advertisement',
   className = '',
-  minHeight = '120px',
+  minHeight = format === 'rectangle' ? '280px' : format === 'horizontal' ? '100px' : '250px',
 } = Astro.props;
 
 const isLive = ADSENSE_ENABLED && adClient !== 'ca-pub-XXXXXXXXXXXXXXXX';
 ---
 
 {isLive && (
-  <div class={`w-full my-6 text-center ${className}`} style={`min-height: ${minHeight};`}>
-    <p class="text-[10px] font-mono tracking-widest uppercase text-slate-500 mb-1">{label}</p>
-    <ins
-      class="adsbygoogle"
-      style="display:block;"
-      data-ad-client={adClient}
-      data-ad-slot={slotId}
-      data-ad-format={format}
-      data-full-width-responsive="true"
-    ></ins>
-    <script is:inline>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-    <script
-      is:inline
-      async
-      src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adClient}`}
-      crossorigin="anonymous"
-    ></script>
+  <div 
+    class={`ad-slot-container w-full my-8 text-center transition-all ${className}`} 
+    style={`min-height: ${minHeight}; contain: layout style; content-visibility: auto;`}
+  >
+    <div class="ad-inner-wrapper max-w-full mx-auto inline-block">
+      <p class="ad-label text-[10px] font-mono tracking-widest uppercase text-slate-500 mb-1.5 select-none" aria-hidden="true">
+        {label}
+      </p>
+      <ins
+        class="adsbygoogle"
+        style={`display:block; min-height: ${minHeight};`}
+        data-ad-client={adClient}
+        data-ad-slot={slotId}
+        data-ad-format={format}
+        data-full-width-responsive="true"
+      ></ins>
+      <script is:inline>
+        (function() {
+          try {
+            (window.adsbygoogle = window.adsbygoogle || []).push({});
+          } catch (e) {
+            console.warn('AdSense slot execution error:', e);
+          }
+        })();
+      </script>
+    </div>
   </div>
 )}
+
+<style>
+  /* Automatically collapse the entire container if Google AdSense returns no ad */
+  .ad-slot-container:has(ins[data-ad-status="unfilled"]) {
+    display: none !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+</style>

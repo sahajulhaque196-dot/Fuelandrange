@@ -2,7 +2,7 @@
 // src/pages/guides/canada-ev-rebates-izev-provincial.astro
 // Pillar Guide: Canada EV Rebates & Incentives — Updated for 2024–2026 reality
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { breadcrumbSchema } from '../../lib/schema.ts';
+import { breadcrumbSchema, authorPersonSchema, orgSchema } from '../../lib/schema.ts';
 
 const jsonLd = [
   breadcrumbSchema([
@@ -15,16 +15,8 @@ const jsonLd = [
     '@type': 'TechArticle',
     headline: 'Canada EV Rebates & Incentives Guide 2024–2026: Federal iZEV Closure & 2026 EVAP Framework',
     description: 'Complete guide to Canadian electric vehicle incentive programs: federal iZEV transition, the federal Electric Vehicle Affordability Program (EVAP), and active provincial EV rebates in Quebec, BC, Nova Scotia, PEI, and New Brunswick.',
-    author: {
-      '@type': 'Person',
-      name: 'Sahajul Haque',
-      url: 'https://rangeandfuel.ca/about',
-    },
-    publisher: {
-      '@type': 'Organization',
-      name: 'RangeAndFuel.ca',
-      url: 'https://rangeandfuel.ca',
-    },
+    author: authorPersonSchema(),
+    publisher: orgSchema(),
     datePublished: '2024-03-01',
     dateModified: '2026-09-02',
     mainEntityOfPage: 'https://rangeandfuel.ca/guides/canada-ev-rebates-izev-provincial',

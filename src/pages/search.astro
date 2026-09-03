@@ -9,6 +9,27 @@ import type { Vehicle } from '../lib/calculations.ts';
 
 const allVehicles = vehicles as unknown as Vehicle[];
 
+// Project only fields needed by SmartVehicleDirectory to reduce HTML props from 325 KB to ~55 KB
+const catalogVehicles = allVehicles.map(v => ({
+  id: v.id,
+  year: v.year,
+  make: v.make,
+  model: v.model,
+  trim: v.trim,
+  vehicleClass: v.vehicleClass,
+  driveType: v.driveType,
+  fuelType: v.fuelType,
+  combinedL100km: v.combinedL100km,
+  cityL100km: v.cityL100km,
+  hwyL100km: v.hwyL100km,
+  kwhPer100km: v.kwhPer100km,
+  electricRangeKm: v.electricRangeKm,
+  msrpCAD: v.msrpCAD,
+  engineSize: v.engineSize,
+  transmission: v.transmission,
+  co2GPerKm: v.co2GPerKm,
+}));
+
 const jsonLd = [
   breadcrumbSchema([
     { name: 'Home', url: '/' },
@@ -64,7 +85,7 @@ const jsonLd = [
   <!-- Interactive Smart Directory Island -->
   <section class="py-12 bg-[#07090E] min-h-screen" id="catalog-top">
     <div class="container-site">
-      <SmartVehicleDirectory vehicles={allVehicles} client:load />
+      <SmartVehicleDirectory vehicles={catalogVehicles as any} client:idle />
     </div>
   </section>
 </BaseLayout>

@@ -176,7 +176,7 @@ export default function LeadGenWidget({ vehicleMake, vehicleModel, vehicleYear, 
 
             <a
               href="/guides/canadian-winter-ev-range-guide"
-              class="block w-full text-center py-2 px-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-cyan-400 font-mono text-[11px] transition-colors border border-white/[0.08]"
+              className="block w-full text-center py-2 px-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-cyan-400 font-mono text-[11px] transition-colors border border-white/[0.08]"
             >
               Read Full Winter Engineering Guide →
             </a>

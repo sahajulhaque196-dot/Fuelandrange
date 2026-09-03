@@ -2,7 +2,7 @@
 // src/pages/guides/canadian-winter-ev-range-guide.astro
 // Pillar Guide: Sub-Zero Winter EV Range Guide — Expanded to 2000+ words
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { breadcrumbSchema } from '../../lib/schema.ts';
+import { breadcrumbSchema, authorPersonSchema, orgSchema } from '../../lib/schema.ts';
 
 const jsonLd = [
   breadcrumbSchema([
@@ -15,16 +15,8 @@ const jsonLd = [
     '@type': 'TechArticle',
     headline: 'Canadian Sub-Zero Winter EV Range Guide: Real -15°C to -30°C Battery Degradation Analysis',
     description: 'Detailed analysis of electric vehicle battery performance in Canadian sub-zero winters. Covers lithium-ion thermodynamics, heat pumps vs resistive heating, Canadian climate zone data, and winter charging best practices.',
-    author: {
-      '@type': 'Person',
-      name: 'Sahajul Haque',
-      url: 'https://rangeandfuel.ca/about',
-    },
-    publisher: {
-      '@type': 'Organization',
-      name: 'RangeAndFuel.ca',
-      url: 'https://rangeandfuel.ca',
-    },
+    author: authorPersonSchema(),
+    publisher: orgSchema(),
     datePublished: '2024-02-10',
     dateModified: '2026-09-02',
     mainEntityOfPage: 'https://rangeandfuel.ca/guides/canadian-winter-ev-range-guide',

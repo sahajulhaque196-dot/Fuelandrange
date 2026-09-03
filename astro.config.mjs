@@ -5,6 +5,7 @@ import tailwind from '@astrojs/tailwind';
 export default defineConfig({
   site: 'https://rangeandfuel.ca',
   output: 'static',
+  trailingSlash: 'never',
   integrations: [
     react(),
     tailwind({ applyBaseStyles: false }),

@@ -98,12 +98,14 @@ const jsonLd = [
 ];
 
 const currentYear = new Date().getFullYear();
+const isThinClass = classVehicles.length < 4;
 ---
 
 <BaseLayout
   title={'Best ' + vehicleClass + ' Fuel Economy Canada ' + currentYear + ' — NRCan Ratings | RangeAndFuel.ca'}
   description={'Compare all ' + vehicleClass + ' vehicles in Canada. ' + sortedVehicles.length + ' vehicles from ' + uniqueMakes + ' brands ranked by NRCan L/100km.'}
   canonical={'/compare/' + classSlug}
+  noIndex={isThinClass}
   jsonLd={jsonLd}
 >
 <style>
@@ -138,7 +140,7 @@ const currentYear = new Date().getFullYear();
             <span class="text-neon-cyan text-xs font-mono">NRCan Official 5-Cycle Data</span>
           </div>
           <h1 class="text-3xl md:text-4xl font-display font-black text-white leading-tight mb-3">
-            Best {vehicleClass} Fuel Economy in Canada 2024
+            Best {vehicleClass} Fuel Economy in Canada {currentYear}
           </h1>
           <p class="text-slate-400 mb-4">
             Ranked by NRCan combined L/100km — {sortedVehicles.length} vehicles from {uniqueMakes} brands.
